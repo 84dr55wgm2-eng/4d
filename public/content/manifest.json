@@ -1,0 +1,534 @@
+{
+ "format": "cws-manifest",
+ "version": "2026.10.1",
+ "assets": [
+  {
+   "id": "env.bistro",
+   "name": "Paris Bistro Street",
+   "category": "ARCHITECTURE",
+   "source": "Amazon Lumberyard Bistro (NVIDIA ORCA), via NVIDIA-RTX/RTXPT-Assets",
+   "sourceUrl": "https://developer.nvidia.com/orca/amazon-lumberyard-bistro",
+   "url": "content/worlds/bistro/bistro.glb",
+   "format": "glb",
+   "bytes": 74911304,
+   "license": {
+    "id": "CC-BY-4.0",
+    "attribution": "Amazon Lumberyard Bistro, \u00a9 2017 Amazon Lumberyard, CC-BY 4.0",
+    "verified": true,
+    "notes": "Prepared by tools/prepare (spec/gloss->metal/rough, BC7->WebP 1024, meshopt, instancing)"
+   },
+   "tags": [
+    "paris",
+    "street",
+    "bistro",
+    "urban",
+    "exterior",
+    "terrace",
+    "cobblestone"
+   ],
+   "entityType": "ENVIRONMENT",
+   "bounds": [
+    152.4,
+    31.9,
+    143.7
+   ]
+  },
+  {
+   "id": "hdri.venice-sunset",
+   "name": "Venice Sunset HDRI",
+   "category": "ENVIRONMENT",
+   "source": "Poly Haven (via three.js examples)",
+   "sourceUrl": "https://polyhaven.com/a/venice_sunset",
+   "url": "content/env/venice_sunset_1k.hdr",
+   "format": "hdr",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "sky",
+    "sunset",
+    "golden hour"
+   ]
+  },
+  {
+   "id": "hdri.san-giuseppe-bridge",
+   "name": "San Giuseppe Bridge HDRI",
+   "category": "ENVIRONMENT",
+   "source": "Poly Haven (via three.js examples)",
+   "sourceUrl": "https://polyhaven.com/a/san_giuseppe_bridge",
+   "url": "content/env/san_giuseppe_bridge_2k.hdr",
+   "format": "hdr",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "sky",
+    "day",
+    "urban"
+   ]
+  },
+  {
+   "id": "hdri.pedestrian-overpass",
+   "name": "Pedestrian Overpass HDRI",
+   "category": "ENVIRONMENT",
+   "source": "Poly Haven (via three.js examples)",
+   "sourceUrl": "https://polyhaven.com/a/pedestrian_overpass",
+   "url": "content/env/pedestrian_overpass_1k.hdr",
+   "format": "hdr",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "sky",
+    "day",
+    "urban"
+   ]
+  },
+  {
+   "id": "actor.rpm-civilian",
+   "name": "Civilian \u2014 Bearded Man",
+   "category": "CHARACTERS",
+   "source": "Ready Player Me avatar (three.js examples)",
+   "sourceUrl": "https://github.com/mrdoob/three.js/tree/dev/examples/models/gltf",
+   "url": "https://raw.githubusercontent.com/mrdoob/three.js/5d8e8a89347650ee210e120cdd70f9e9288f0abc/examples/models/gltf/readyplayer.me.glb",
+   "format": "glb",
+   "bytes": 1838884,
+   "license": {
+    "id": "LicenseRef-ReadyPlayerMe",
+    "verified": false,
+    "notes": "Distributed in the three.js examples; fetched at runtime from upstream, not redistributed. Verify terms before commercial use."
+   },
+   "tags": [
+    "human",
+    "civilian",
+    "male",
+    "suit",
+    "rigged"
+   ],
+   "entityType": "ACTOR",
+   "runtime": {
+    "rigProfile": "rpm-mixamo-like",
+    "clips": {
+     "idle": "anim.rpm.idle",
+     "walk": "anim.rpm.walk",
+     "run": "anim.rpm.jog"
+    },
+    "parts": {
+     "body": "Wolf3D_Body",
+     "head": "Wolf3D_Head",
+     "hair": "Wolf3D_Hair",
+     "outfit": [
+      "Wolf3D_Outfit_Top",
+      "Wolf3D_Outfit_Bottom",
+      "Wolf3D_Outfit_Footwear"
+     ]
+    }
+   }
+  },
+  {
+   "id": "anim.rpm.idle",
+   "name": "Motion \u2014 Standing Idle",
+   "category": "ANIMATIONS",
+   "source": "Ready Player Me Animation Library",
+   "sourceUrl": "https://github.com/readyplayerme/animation-library",
+   "url": "https://raw.githubusercontent.com/readyplayerme/animation-library/c841f8ba6f290b62fa0a3c19dddd0e5e8444f1e5/masculine/glb/idle/M_Standing_Idle_001.glb",
+   "format": "glb",
+   "license": {
+    "id": "LicenseRef-RPM-Animation-Library",
+    "verified": true,
+    "notes": "Use with Ready Player Me avatars only; no redistribution. Fetched at runtime from the upstream repository."
+   },
+   "tags": [
+    "motion",
+    "masculine",
+    "standing",
+    "idle"
+   ]
+  },
+  {
+   "id": "anim.rpm.walk",
+   "name": "Motion \u2014 Walk",
+   "category": "ANIMATIONS",
+   "source": "Ready Player Me Animation Library",
+   "sourceUrl": "https://github.com/readyplayerme/animation-library",
+   "url": "https://raw.githubusercontent.com/readyplayerme/animation-library/c841f8ba6f290b62fa0a3c19dddd0e5e8444f1e5/masculine/glb/locomotion/M_Walk_001.glb",
+   "format": "glb",
+   "license": {
+    "id": "LicenseRef-RPM-Animation-Library",
+    "verified": true,
+    "notes": "Use with Ready Player Me avatars only; no redistribution. Fetched at runtime from the upstream repository."
+   },
+   "tags": [
+    "motion",
+    "masculine",
+    "walk"
+   ]
+  },
+  {
+   "id": "anim.rpm.jog",
+   "name": "Motion \u2014 Jog Run",
+   "category": "ANIMATIONS",
+   "source": "Ready Player Me Animation Library",
+   "sourceUrl": "https://github.com/readyplayerme/animation-library",
+   "url": "https://raw.githubusercontent.com/readyplayerme/animation-library/c841f8ba6f290b62fa0a3c19dddd0e5e8444f1e5/masculine/glb/locomotion/M_Jog_001.glb",
+   "format": "glb",
+   "license": {
+    "id": "LicenseRef-RPM-Animation-Library",
+    "verified": true,
+    "notes": "Use with Ready Player Me avatars only; no redistribution. Fetched at runtime from the upstream repository."
+   },
+   "tags": [
+    "motion",
+    "masculine",
+    "jog",
+    "run"
+   ]
+  },
+  {
+   "id": "anim.rpm.run",
+   "name": "Motion \u2014 Sprint Run",
+   "category": "ANIMATIONS",
+   "source": "Ready Player Me Animation Library",
+   "sourceUrl": "https://github.com/readyplayerme/animation-library",
+   "url": "https://raw.githubusercontent.com/readyplayerme/animation-library/c841f8ba6f290b62fa0a3c19dddd0e5e8444f1e5/masculine/glb/locomotion/M_Run_001.glb",
+   "format": "glb",
+   "license": {
+    "id": "LicenseRef-RPM-Animation-Library",
+    "verified": true,
+    "notes": "Use with Ready Player Me avatars only; no redistribution. Fetched at runtime from the upstream repository."
+   },
+   "tags": [
+    "motion",
+    "masculine",
+    "sprint",
+    "run"
+   ]
+  },
+  {
+   "id": "khr.carconcept",
+   "name": "Concept Car",
+   "category": "VEHICLES",
+   "source": "Khronos glTF Sample Assets",
+   "sourceUrl": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/CarConcept",
+   "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/edc7c9e67c639d230715049ee31f9a96a6babbbe/Models/CarConcept/glTF-Binary/CarConcept.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "notes": "Based on public-domain model by Unity Fan"
+   },
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 1.32
+   },
+   "tags": [
+    "car",
+    "vehicle"
+   ],
+   "entityType": "VEHICLE",
+   "bytes": 11778688
+  },
+  {
+   "id": "khr.trafficcone",
+   "name": "Traffic Cone",
+   "category": "PROPS",
+   "source": "Khronos glTF Sample Assets",
+   "sourceUrl": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/TrafficCone",
+   "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/edc7c9e67c639d230715049ee31f9a96a6babbbe/Models/TrafficCone/glTF-Binary/TrafficCone.glb",
+   "format": "glb",
+   "license": {
+    "id": "see-upstream-README",
+    "verified": false,
+    "notes": "License listed in the upstream README"
+   },
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 0.7
+   },
+   "tags": [
+    "street",
+    "cone",
+    "road works"
+   ],
+   "entityType": "PROP",
+   "bytes": 1922464
+  },
+  {
+   "id": "khr.lantern",
+   "name": "Iron Lantern",
+   "category": "PROPS",
+   "source": "Khronos glTF Sample Assets",
+   "sourceUrl": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/Lantern",
+   "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/edc7c9e67c639d230715049ee31f9a96a6babbbe/Models/Lantern/glTF-Binary/Lantern.glb",
+   "format": "glb",
+   "license": {
+    "id": "see-upstream-README",
+    "verified": false,
+    "notes": "License listed in the upstream README"
+   },
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 0.6
+   },
+   "tags": [
+    "lantern",
+    "light",
+    "street"
+   ],
+   "entityType": "PROP",
+   "bytes": 9564264
+  },
+  {
+   "id": "khr.potofcoals",
+   "name": "Pot of Coals",
+   "category": "PROPS",
+   "source": "Khronos glTF Sample Assets",
+   "sourceUrl": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/PotOfCoals",
+   "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/edc7c9e67c639d230715049ee31f9a96a6babbbe/Models/PotOfCoals/glTF-Binary/PotOfCoals.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC-BY-4.0",
+    "verified": true
+   },
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 0.32
+   },
+   "tags": [
+    "pot",
+    "fire"
+   ],
+   "entityType": "PROP",
+   "bytes": 4696240
+  },
+  {
+   "id": "khr.chairdamaskpurplegold",
+   "name": "Damask Chair",
+   "category": "FURNITURE",
+   "source": "Khronos glTF Sample Assets",
+   "sourceUrl": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/ChairDamaskPurplegold",
+   "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/edc7c9e67c639d230715049ee31f9a96a6babbbe/Models/ChairDamaskPurplegold/glTF-Binary/ChairDamaskPurplegold.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC-BY-4.0",
+    "attribution": "\u00a9 2021 Wayfair",
+    "verified": true
+   },
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 0.98
+   },
+   "tags": [
+    "chair",
+    "seat"
+   ],
+   "entityType": "CHAIR",
+   "bytes": 2028924
+  },
+  {
+   "id": "khr.sheenchair",
+   "name": "Fabric Chair",
+   "category": "FURNITURE",
+   "source": "Khronos glTF Sample Assets",
+   "sourceUrl": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/SheenChair",
+   "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/edc7c9e67c639d230715049ee31f9a96a6babbbe/Models/SheenChair/glTF-Binary/SheenChair.glb",
+   "format": "glb",
+   "license": {
+    "id": "see-upstream-README",
+    "verified": false,
+    "notes": "License listed in the upstream README"
+   },
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 0.9
+   },
+   "tags": [
+    "chair",
+    "seat"
+   ],
+   "entityType": "CHAIR",
+   "bytes": 4125648
+  },
+  {
+   "id": "khr.glamvelvetsofa",
+   "name": "Velvet Sofa",
+   "category": "FURNITURE",
+   "source": "Khronos glTF Sample Assets",
+   "sourceUrl": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/GlamVelvetSofa",
+   "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/edc7c9e67c639d230715049ee31f9a96a6babbbe/Models/GlamVelvetSofa/glTF-Binary/GlamVelvetSofa.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC-BY-4.0",
+    "attribution": "\u00a9 2021 Wayfair",
+    "verified": true
+   },
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 0.85
+   },
+   "tags": [
+    "sofa",
+    "seat"
+   ],
+   "entityType": "FURNITURE",
+   "bytes": 3149844
+  },
+  {
+   "id": "khr.specularsilkpouf",
+   "name": "Silk Pouf",
+   "category": "FURNITURE",
+   "source": "Khronos glTF Sample Assets",
+   "sourceUrl": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/SpecularSilkPouf",
+   "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/edc7c9e67c639d230715049ee31f9a96a6babbbe/Models/SpecularSilkPouf/glTF-Binary/SpecularSilkPouf.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC-BY-4.0",
+    "attribution": "\u00a9 2023 Wayfair",
+    "verified": true
+   },
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 0.45
+   },
+   "tags": [
+    "pouf",
+    "seat"
+   ],
+   "entityType": "FURNITURE",
+   "bytes": 4632512
+  },
+  {
+   "id": "khr.commercialrefrigerator",
+   "name": "Shop Refrigerator",
+   "category": "FURNITURE",
+   "source": "Khronos glTF Sample Assets",
+   "sourceUrl": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/CommercialRefrigerator",
+   "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/edc7c9e67c639d230715049ee31f9a96a6babbbe/Models/CommercialRefrigerator/glTF-Binary/CommercialRefrigerator.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC-BY-4.0",
+    "attribution": "Commercial Fridge by Sean Thomas",
+    "verified": true
+   },
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 2.0
+   },
+   "tags": [
+    "fridge",
+    "shop"
+   ],
+   "entityType": "FURNITURE",
+   "bytes": 10131180
+  },
+  {
+   "id": "khr.diffusetransmissionplant",
+   "name": "Potted Plant",
+   "category": "VEGETATION",
+   "source": "Khronos glTF Sample Assets",
+   "sourceUrl": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/DiffuseTransmissionPlant",
+   "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/edc7c9e67c639d230715049ee31f9a96a6babbbe/Models/DiffuseTransmissionPlant/glTF-Binary/DiffuseTransmissionPlant.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC-BY-4.0",
+    "attribution": "\u00a9 2024 Darmstadt Graphics Group",
+    "verified": true
+   },
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 1.1
+   },
+   "tags": [
+    "plant",
+    "pot",
+    "green"
+   ],
+   "entityType": "VEGETATION",
+   "bytes": 5759100
+  },
+  {
+   "id": "khr.glassvaseflowers",
+   "name": "Vase of Flowers",
+   "category": "VEGETATION",
+   "source": "Khronos glTF Sample Assets",
+   "sourceUrl": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/GlassVaseFlowers",
+   "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/edc7c9e67c639d230715049ee31f9a96a6babbbe/Models/GlassVaseFlowers/glTF-Binary/GlassVaseFlowers.glb",
+   "format": "glb",
+   "license": {
+    "id": "see-upstream-README",
+    "verified": false,
+    "notes": "License listed in the upstream README"
+   },
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 0.45
+   },
+   "tags": [
+    "flowers",
+    "vase",
+    "glass"
+   ],
+   "entityType": "PROP",
+   "bytes": 1819824
+  },
+  {
+   "id": "tjs.ferrari",
+   "name": "Italian Sports Car",
+   "category": "VEHICLES",
+   "source": "three.js examples",
+   "sourceUrl": "https://github.com/mrdoob/three.js/tree/dev/examples/models/gltf",
+   "url": "https://raw.githubusercontent.com/mrdoob/three.js/5d8e8a89347650ee210e120cdd70f9e9288f0abc/examples/models/gltf/ferrari.glb",
+   "format": "glb",
+   "license": {
+    "id": "see-upstream",
+    "verified": false,
+    "notes": "Distributed in the three.js examples (Draco compressed)"
+   },
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 1.2
+   },
+   "tags": [
+    "car",
+    "vehicle",
+    "red"
+   ],
+   "entityType": "VEHICLE",
+   "bytes": 1681572
+  },
+  {
+   "id": "tjs.bike",
+   "name": "Carbon Road Bike",
+   "category": "VEHICLES",
+   "source": "three.js examples",
+   "sourceUrl": "https://github.com/mrdoob/three.js/tree/dev/examples/models/gltf",
+   "url": "https://raw.githubusercontent.com/mrdoob/three.js/5d8e8a89347650ee210e120cdd70f9e9288f0abc/examples/models/gltf/CarbonFrameBike.glb",
+   "format": "glb",
+   "license": {
+    "id": "see-upstream",
+    "verified": false
+   },
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 1.05
+   },
+   "tags": [
+    "bicycle",
+    "bike",
+    "vehicle"
+   ],
+   "entityType": "VEHICLE",
+   "bytes": 3395040
+  }
+ ],
+ "worlds": [
+  {
+   "id": "bistro",
+   "name": "Paris Bistro Street",
+   "url": "content/worlds/bistro/world.json"
+  }
+ ]
+}

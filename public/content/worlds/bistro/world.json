@@ -1,0 +1,187 @@
+{
+ "format": "cws-world",
+ "version": 2,
+ "id": "bistro",
+ "name": "Paris Bistro Street",
+ "environment": {
+  "assetId": "env.bistro",
+  "collision": "content/worlds/bistro/collision.json",
+  "navmesh": "content/worlds/bistro/navmesh.bin",
+  "hdri": "hdri.venice-sunset",
+  "sun": {
+   "azimuth": 215,
+   "elevation": 28,
+   "intensity": 3.4
+  },
+  "exposure": 0.95
+ },
+ "spawn": {
+  "position": [
+   -13,
+   0.2,
+   6
+  ],
+  "heading": 2.65
+ },
+ "zones": [
+  {
+   "id": "zone.street",
+   "name": "Rue du Bistro",
+   "kind": "street",
+   "bounds": [
+    -20,
+    -30,
+    8,
+    25
+   ],
+   "tags": [
+    "street",
+    "walkable"
+   ]
+  },
+  {
+   "id": "zone.terrace",
+   "name": "Bistro Terrace",
+   "kind": "terrace",
+   "bounds": [
+    -12,
+    10,
+    -2,
+    22
+   ],
+   "tags": [
+    "sheltered",
+    "awning",
+    "seating"
+   ]
+  },
+  {
+   "id": "zone.square",
+   "name": "Place (Square)",
+   "kind": "square",
+   "bounds": [
+    14,
+    20,
+    56,
+    60
+   ],
+   "tags": [
+    "square",
+    "tree",
+    "open"
+   ]
+  }
+ ],
+ "entities": [
+  {
+   "id": "actor.hero",
+   "type": "ACTOR",
+   "name": "Hero \u2014 Civilian",
+   "assetId": "actor.rpm-civilian",
+   "transform": {
+    "position": [
+     -13,
+     0.2,
+     6
+    ],
+    "rotation": [
+     0,
+     0.9699,
+     0,
+     0.2433
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "parentId": null,
+   "tags": [
+    "hero",
+    "human"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "directable",
+    "collidable"
+   ]
+  },
+  {
+   "id": "prop.cone1",
+   "type": "PROP",
+   "name": "Traffic Cone",
+   "assetId": "khr.trafficcone",
+   "transform": {
+    "position": [
+     -10.2,
+     0.2,
+     1.2
+    ],
+    "rotation": [
+     0,
+     0.1987,
+     0,
+     0.9801
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "parentId": null,
+   "tags": [
+    "street"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "scalable",
+    "collidable"
+   ]
+  },
+  {
+   "id": "veg.plant1",
+   "type": "VEGETATION",
+   "name": "Potted Plant",
+   "assetId": "khr.diffusetransmissionplant",
+   "transform": {
+    "position": [
+     -15.2,
+     0.2,
+     3.5
+    ],
+    "rotation": [
+     0,
+     0.0,
+     0,
+     1.0
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "parentId": null,
+   "tags": [
+    "plant"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "scalable",
+    "collidable"
+   ]
+  }
+ ],
+ "shots": [],
+ "worldState": {
+  "timeOfDay": "golden"
+ }
+}

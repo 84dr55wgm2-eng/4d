@@ -1,0 +1,5 @@
+node_modules
+dist
+public/_scratch
+tools/out
+*.log
