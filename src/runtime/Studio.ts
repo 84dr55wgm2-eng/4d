@@ -77,6 +77,7 @@ export class Studio extends Emitter<Events> {
     this.gizmo.setSize(0.85);
     this.engine.scene.add(this.gizmo.getHelper());
     this.gizmo.addEventListener('dragging-changed', (e) => this.onGizmoDrag(e.value as boolean));
+    this.gizmo.addEventListener('objectChange', () => (this.engine.shadowsDirty = true));
     this.cameras.on('change', ({ mode, focalLength }) => this.set({ cameraMode: mode, focalLength }));
     this.cameras.lookAtProvider = () => (this.actor ? this.actor.headPosition(new THREE.Vector3()) : null);
     addEventListener('resize', () => this.engine.resize());
@@ -148,6 +149,7 @@ export class Studio extends Emitter<Events> {
         this.engine.scene.add(actor.actor.root);
       }
       this.entities.onLoadError = (e) => this.toast(`Could not load ${e.name}`);
+      this.entities.onSpawn = () => (this.engine.shadowsDirty = true);
       this.entities.sync(this.store.doc);
       this.placeActorFromDoc();
       this.resetFollowCamera();
@@ -167,7 +169,8 @@ export class Studio extends Emitter<Events> {
     if (!res.ok) throw new Error(`world HTTP ${res.status}`);
     const pkg = (await res.json()) as WorldDocument;
     const saved = await idb.get<WorldDocument>('worlds', pkg.id).catch(() => undefined);
-    if (saved && saved.format === pkg.format && saved.version === pkg.version) return saved;
+    // User edits (entities, shots, world state) persist; environment settings always come from the package.
+    if (saved && saved.format === pkg.format && saved.version === pkg.version) return { ...saved, environment: pkg.environment, zones: pkg.zones };
     return pkg;
   }
 
@@ -189,9 +192,18 @@ export class Studio extends Emitter<Events> {
       return { clip: c, speed: dist / c.duration };
     };
     const model = this.registry.instantiate(avatar);
+    // Adapt before generating: wardrobe tints are asset metadata, not code.
+    const tints = (rec.runtime?.materialTints ?? {}) as Record<string, [number, number, number]>;
     model.traverse((o) => {
       const m = o as THREE.SkinnedMesh;
-      if (m.isSkinnedMesh) m.frustumCulled = false;
+      if (!m.isSkinnedMesh) return;
+      m.frustumCulled = false;
+      const mat = m.material as THREE.MeshStandardMaterial;
+      const t = tints[mat.name];
+      if (t) {
+        m.material = mat.clone();
+        (m.material as THREE.MeshStandardMaterial).color.setRGB(...t);
+      }
     });
     const actor = new Actor(model, { idle: idleClip, walk: loco(walk), run: loco(run) });
     return { actor, entityId: ent.id };
@@ -236,7 +248,10 @@ export class Studio extends Emitter<Events> {
           a.desiredSpeed = 0;
         }
       }
+      const before = a.position.x + a.position.z * 7.31 + a.heading * 3.7;
       a.update(dt);
+      // an animated actor always changes its shadow; an idle one only breathes
+      if (a.state !== 'idle' || Math.abs(before - (a.position.x + a.position.z * 7.31 + a.heading * 3.7)) > 1e-5) this.engine.shadowsDirty = true;
       if (a.state !== this.ui.actorState) this.set({ actorState: a.state });
       this.cameras.followPivot.lerp(_v.copy(a.position).setY(a.position.y + 1.45), 1 - Math.exp(-dt * 10));
       this.engine.shadowFocus.copy(this.ui.cameraMode === 'follow' ? a.position : this.cameras.mode === 'director' ? this.cameras.orbitTarget : a.position);
@@ -313,6 +328,7 @@ export class Studio extends Emitter<Events> {
 
   private onDocChange(source: string) {
     this.entities.sync(this.store.doc);
+    this.engine.shadowsDirty = true;
     if (source === 'undo' || source === 'redo' || source === 'load') this.placeActorFromDoc();
     if (this.ui.selection && !this.store.entity(this.ui.selection)) this.select(null);
     else if (this.ui.selection) this.select(this.ui.selection);

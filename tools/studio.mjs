@@ -24,6 +24,9 @@ const wait = (ms) => page.waitForTimeout(ms);
 /** advance N rendered frames (headless frames are slow; wait on the engine's own counter) */
 const frames = async (n) => { const f0 = await run(() => window.studio.engine.frameCount); await page.waitForFunction(([f0, n]) => window.studio.engine.frameCount >= f0 + n, [f0, n], { timeout: 300000 }); };
 const shot = async (name) => { const f = path.join(outDir, `${name}.png`); await page.screenshot({ path: f, timeout: 180000 }); log('shot', f); return f; };
+/** deterministic: pause realtime loop, simulate N seconds, render one frame, capture */
+const step = (sec) => run((s) => { window.studio.engine.paused = true; window.studio.engine.step(s); }, sec);
+const capture = async (name) => { await run(() => { window.studio.engine.paused = true; window.studio.engine.renderOnce(); }); return shot(name); };
 const key = async (code, down) => run(([c, d]) => window.studio.input.set(c, d), [code, down]);
 await page.goto(url);
 for (let i = 0; ; i++) {
@@ -37,6 +40,6 @@ const phase = await run(() => window.studio.ui.phase + ' ' + (window.studio.ui.e
 log('phase', phase);
 if (phase.startsWith('ready')) {
   const scenario = (await import(pathToFileURL(path.resolve(scenarioPath)).href)).default;
-  await scenario({ page, shot, run, wait, key, frames, log });
+  await scenario({ page, shot, run, wait, key, frames, log, step, capture });
 } else await shot('error');
 await browser.close();

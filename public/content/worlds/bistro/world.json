@@ -9,8 +9,8 @@
   "navmesh": "content/worlds/bistro/navmesh.bin",
   "hdri": "hdri.venice-sunset",
   "sun": {
-   "azimuth": 215,
-   "elevation": 28,
+   "azimuth": -25,
+   "elevation": 33,
    "intensity": 3.4
   },
   "exposure": 0.95

@@ -1,6 +1,6 @@
 {
  "format": "cws-manifest",
- "version": "2026.10.1",
+ "version": "2026.10.2",
  "assets": [
   {
    "id": "env.bistro",
@@ -10,7 +10,7 @@
    "sourceUrl": "https://developer.nvidia.com/orca/amazon-lumberyard-bistro",
    "url": "content/worlds/bistro/bistro.glb",
    "format": "glb",
-   "bytes": 74911304,
+   "bytes": 71467344,
    "license": {
     "id": "CC-BY-4.0",
     "attribution": "Amazon Lumberyard Bistro, \u00a9 2017 Amazon Lumberyard, CC-BY 4.0",
@@ -124,6 +124,18 @@
       "Wolf3D_Outfit_Top",
       "Wolf3D_Outfit_Bottom",
       "Wolf3D_Outfit_Footwear"
+     ]
+    },
+    "materialTints": {
+     "Wolf3D_Outfit_Top": [
+      0.3,
+      0.32,
+      0.37
+     ],
+     "Wolf3D_Outfit_Bottom": [
+      0.24,
+      0.25,
+      0.29
      ]
     }
    }
@@ -254,7 +266,12 @@
     "road works"
    ],
    "entityType": "PROP",
-   "bytes": 1922464
+   "bytes": 1922464,
+   "runtime": {
+    "keepNodes": [
+     "Cone Normal"
+    ]
+   }
   },
   {
    "id": "khr.lantern",

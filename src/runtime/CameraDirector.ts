@@ -42,6 +42,7 @@ export class CameraDirector extends Emitter<Events> {
     this.camera = new THREE.PerspectiveCamera(50, 1, 0.05, 1500);
     this.camera.filmGauge = 36;
     this.camera.setFocalLength(35);
+    this.camera.userData.lensMm = 35;
     this.orbit = new OrbitControls(this.camera, dom);
     this.orbit.enableDamping = true;
     this.orbit.dampingFactor = 0.08;
@@ -79,9 +80,10 @@ export class CameraDirector extends Emitter<Events> {
   /** set by the editor: when a gizmo or selection owns left-drag, free-look uses right-drag only */
   freeLookWithLeft = true;
 
-  get focalLength() { return Math.round(this.camera.getFocalLength()); }
+  get focalLength() { return Math.round(this.camera.userData.lensMm ?? this.camera.getFocalLength()); }
 
   setLens(mm: number) {
+    this.camera.userData.lensMm = mm;
     this.camera.setFocalLength(mm);
     this.camera.updateProjectionMatrix();
     this.emit('change', { mode: this.mode, focalLength: mm });
@@ -126,7 +128,7 @@ export class CameraDirector extends Emitter<Events> {
     this.transition = {
       from: this.camera.position.clone(), fromT: this.orbit.target.clone(),
       to: new THREE.Vector3(...shot.position), toT,
-      fromF: this.camera.getFocalLength(), toF: shot.focalLength, t: 0, dur: duration,
+      fromF: this.focalLength, toF: shot.focalLength, t: 0, dur: duration,
     };
     if (duration <= 0) this.transition.t = 1;
   }
@@ -192,6 +194,7 @@ export class CameraDirector extends Emitter<Events> {
       this.camera.position.lerpVectors(tr.from, tr.to, e);
       this.orbit.target.lerpVectors(tr.fromT, tr.toT, e);
       this.camera.setFocalLength(THREE.MathUtils.lerp(tr.fromF, tr.toF, e));
+      this.camera.userData.lensMm = this.camera.getFocalLength();
       this.camera.updateProjectionMatrix();
       this.camera.lookAt(this.orbit.target);
       if (tr.t >= 1) {

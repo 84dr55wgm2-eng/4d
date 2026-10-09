@@ -90,6 +90,23 @@ export class AssetRegistry {
   private normalize(record: AssetRecord, scene: THREE.Object3D) {
     const root = new THREE.Group();
     root.name = record.id;
+    // Props never bring their own lights/cameras into the world; optionally keep only named nodes
+    // (e.g. one object out of a multi-object sample scene).
+    const keep = record.runtime?.keepNodes as string[] | undefined;
+    if (keep?.length) {
+      const picked = keep.map((n) => scene.getObjectByName(n)).filter((o): o is THREE.Object3D => !!o);
+      scene.clear();
+      for (const o of picked) {
+        o.removeFromParent();
+        o.position.set(0, o.position.y, 0);
+        scene.add(o);
+      }
+    }
+    if (record.entityType !== 'ENVIRONMENT') {
+      const strip: THREE.Object3D[] = [];
+      scene.traverse((o) => { if ((o as THREE.Light).isLight || (o as THREE.Camera).isCamera) strip.push(o); });
+      strip.forEach((o) => o.removeFromParent());
+    }
     const s = record.scale?.unitsToMetres ?? 1;
     scene.scale.multiplyScalar(s);
     scene.updateMatrixWorld(true);

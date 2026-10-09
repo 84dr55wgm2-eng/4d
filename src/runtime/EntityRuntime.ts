@@ -13,6 +13,7 @@ export class EntityRuntime {
   /** entity types rendered by dedicated systems (the actor) */
   external = new Map<string, THREE.Object3D>();
   onLoadError?: (entity: Entity, err: unknown) => void;
+  onSpawn?: (obj: THREE.Object3D) => void;
 
   constructor(private registry: AssetRegistry) {
     this.group.name = 'entities';
@@ -50,6 +51,7 @@ export class EntityRuntime {
       applyTransform(obj, e);
       this.objects.set(e.id, obj);
       this.group.add(obj);
+      this.onSpawn?.(obj);
     } catch (err) {
       console.error('[EntityRuntime] failed to load', e.assetId, err);
       this.onLoadError?.(e, err);

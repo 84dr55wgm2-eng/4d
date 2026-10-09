@@ -43,6 +43,7 @@ export class Engine {
   /** point the shadow frustum follows (actor / camera focus) */
   shadowFocus = new THREE.Vector3();
   private composer?: EffectComposer;
+  private sky?: Sky;
   private aoPass?: GTAOPass;
   private updaters: ((dt: number) => void)[] = [];
   private clock = new THREE.Timer();
@@ -51,6 +52,11 @@ export class Engine {
   private slowFrames = 0;
   private sunDir = new THREE.Vector3(0.5, 0.6, 0.4).normalize();
   frameCount = 0;
+  /** set by systems that move shadow casters (actor, gizmo, document edits) */
+  shadowsDirty = true;
+  shadowUpdates = 0;
+  /** automation: stop the realtime loop; frames are produced by renderOnce() */
+  paused = false;
 
   constructor(readonly canvas: HTMLCanvasElement) {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: new URLSearchParams(location.search).has('capture') });
@@ -66,6 +72,8 @@ export class Engine {
     this.sun.castShadow = true;
     this.sun.shadow.bias = -0.0004;
     this.sun.shadow.normalBias = 0.03;
+    // Static world: re-render the shadow map only when something that casts has moved.
+    this.sun.shadow.autoUpdate = false;
     this.scene.add(this.sun, this.sun.target);
     this.hemi = new THREE.HemisphereLight(0xbfd4ff, 0x5a4a3a, 0.15);
     this.scene.add(this.hemi);
@@ -84,6 +92,7 @@ export class Engine {
     pmrem.dispose();
     const az = THREE.MathUtils.degToRad(sun.azimuth), el = THREE.MathUtils.degToRad(sun.elevation);
     this.sunDir.set(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
+    this.setSun(sun.azimuth, sun.elevation, sun.intensity);
     // Background: physical atmosphere matching the sun (the HDRI's ground/sea must not show past street ends).
     const sky = new Sky();
     sky.scale.setScalar(4000);
@@ -94,9 +103,21 @@ export class Engine {
     u.mieDirectionalG.value = 0.82;
     u.sunPosition.value.copy(this.sunDir);
     sky.frustumCulled = false;
+    this.sky = sky;
     this.scene.add(sky);
     this.sun.intensity = sun.intensity;
     this.renderer.toneMappingExposure = exposure;
+  }
+
+  setSun(azimuthDeg: number, elevationDeg: number, intensity = this.sun.intensity) {
+    const az = THREE.MathUtils.degToRad(azimuthDeg), el = THREE.MathUtils.degToRad(elevationDeg);
+    this.sunDir.set(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
+    this.sun.intensity = intensity;
+    // warmer and softer as the sun gets lower
+    const warm = THREE.MathUtils.clamp(1 - (elevationDeg - 8) / 50, 0, 1);
+    this.sun.color.setRGB(1, THREE.MathUtils.lerp(0.97, 0.8, warm), THREE.MathUtils.lerp(0.92, 0.62, warm));
+    this.sky?.material.uniforms.sunPosition.value.copy(this.sunDir);
+    this.shadowsDirty = true;
   }
 
   setQuality(q: Quality) {
@@ -109,6 +130,7 @@ export class Engine {
     const b = BUDGETS[level];
     this.renderer.setPixelRatio(b.pixelRatio);
     const s = this.sun.shadow;
+    this.shadowsDirty = true;
     if (s.mapSize.x !== b.shadowMapSize) {
       s.mapSize.set(b.shadowMapSize, b.shadowMapSize);
       s.map?.dispose();
@@ -143,6 +165,8 @@ export class Engine {
     this.composer?.setSize(w, h);
     if (this.camera) {
       this.camera.aspect = w / h;
+      // a lens is a focal length: keep it constant when the film aspect changes
+      if (this.camera.userData.lensMm) this.camera.setFocalLength(this.camera.userData.lensMm);
       this.camera.updateProjectionMatrix();
     }
   }
@@ -155,14 +179,34 @@ export class Engine {
   private frame() {
     this.clock.update();
     const dt = this.clock.getDelta();
+    if (this.paused) return;
     for (const u of this.updaters) u(dt);
+    this.render(dt);
+  }
+
+  /** Simulate without rendering (deterministic automation / tests). */
+  step(seconds: number, dt = 1 / 60) {
+    for (let t = 0; t < seconds - 1e-6; t += dt) for (const u of this.updaters) u(dt);
+  }
+
+  renderOnce() {
+    this.render(1 / 60);
+  }
+
+  private render(dt: number) {
     // shadow frustum follows the focus point, snapped to texels to avoid shimmering
     const b = BUDGETS[this.effective];
     const texel = (b.shadowExtent * 2) / b.shadowMapSize;
     const f = this.shadowFocus;
     const fx = Math.round(f.x / texel) * texel, fz = Math.round(f.z / texel) * texel;
+    if (fx !== this.sun.target.position.x || fz !== this.sun.target.position.z) this.shadowsDirty = true;
     this.sun.target.position.set(fx, f.y, fz);
     this.sun.position.set(fx, f.y, fz).addScaledVector(this.sunDir, 120);
+    if (this.shadowsDirty) {
+      this.sun.shadow.needsUpdate = true;
+      this.shadowsDirty = false;
+      this.shadowUpdates++;
+    }
     this.renderer.info.reset();
     if (this.composer && b.ao) this.composer.render(dt);
     else this.renderer.render(this.scene, this.camera);
