@@ -14,7 +14,9 @@ export type EntityType =
   | 'ACTOR' | 'BUILDING' | 'ROOM' | 'DOOR' | 'CHAIR' | 'FURNITURE' | 'VEHICLE'
   | 'ROAD' | 'PROP' | 'VEGETATION' | 'LIGHT' | 'ENVIRONMENT';
 
-export type Capability = 'selectable' | 'movable' | 'rotatable' | 'scalable' | 'walkable' | 'collidable' | 'directable' | 'sittable';
+export type Capability =
+  | 'selectable' | 'movable' | 'rotatable' | 'scalable' | 'walkable' | 'collidable' | 'directable'
+  | 'sittable' | 'interactable' | 'openable' | 'toggleable';
 
 export interface Entity {
   id: string;
