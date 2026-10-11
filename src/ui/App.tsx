@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { AssetCategory } from '../core/types';
 import type { RemoteAssetResult } from '../assets/AssetRegistry';
+import { compileWorldIntent } from '../world/WorldIntent';
 import type { Studio } from '../runtime/Studio';
 import { LENSES } from '../runtime/CameraDirector';
 import { Icon, type IconName } from './icons';
@@ -85,7 +86,7 @@ function TopIsland({ studio }: { studio: Studio }) {
                 </button>
               ))}
               <div className="pop-title">World Creator</div>
-              <div className="world-note">Search real authored assets from the WEB tab instead of generating placeholder geometry.</div>
+              <WorldBrief studio={studio} />
             </div>
           )}
         </div>
@@ -125,6 +126,73 @@ function TopIsland({ studio }: { studio: Studio }) {
           {menu === 'settings' && <Settings studio={studio} close={() => setMenu(null)} />}
         </div>
       </div>
+    </div>
+  );
+}
+
+function WorldBrief({ studio }: { studio: Studio }) {
+  const [brief, setBrief] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [queries, setQueries] = useState<string[]>([]);
+  const [results, setResults] = useState<RemoteAssetResult[]>([]);
+
+  const discover = async () => {
+    try {
+      const intent = compileWorldIntent(brief);
+      setQueries(intent.queries);
+      setBusy(true);
+      setError('');
+      const batches = await Promise.all(intent.queries.slice(0, 5).map((q) => studio.registry.searchRemote(q, 4).catch(() => [])));
+      const seen = new Set<string>();
+      const merged = batches.flat().filter((r) => !seen.has(r.id) && !!seen.add(r.id)).slice(0, 16);
+      setResults(merged);
+      if (!merged.length) setError('No downloadable 3D candidates found yet. Try a more concrete brief.');
+    } catch (e) {
+      setResults([]);
+      setQueries([]);
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const useAsset = async (r: RemoteAssetResult) => {
+    try {
+      const rec = await studio.registry.registerRemote(r);
+      studio.setMode('edit');
+      studio.set({ placing: rec.id, walkTargeting: false });
+      studio.registry.loadGLTF(rec.id).catch(() => studio.toast(`Could not load ${rec.name} as GLB`));
+      studio.toast(`Tap the world to place ${rec.name}`);
+    } catch (e) {
+      studio.toast(e instanceof Error ? e.message : String(e));
+    }
+  };
+
+  return (
+    <div className="world-brief">
+      <textarea
+        value={brief}
+        onChange={(e) => setBrief(e.target.value)}
+        placeholder="Ex: Lagos 2003 street around a small cybercafé, dense shops, worn concrete, tropical vegetation…"
+        aria-label="Describe the world you want"
+      />
+      <button className="world-discover" onClick={discover} disabled={busy || brief.trim().length < 3}>
+        {busy ? 'Searching real assets…' : 'Find assets for this world'}
+      </button>
+      {queries.length > 0 && <div className="world-queries">{queries.map((q) => <span key={q}>{q}</span>)}</div>}
+      {error && <div className="world-error">{error}</div>}
+      {results.length > 0 && (
+        <div className="world-results">
+          {results.map((r) => (
+            <button key={r.id} className="world-result" onClick={() => useAsset(r)} title={r.url}>
+              <span>{r.title}</span>
+              <small>{r.id} · {r.license?.name ?? 'licence in source'}</small>
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="world-note">Brief → real asset discovery → place. Automatic whole-world composition comes after this pipeline is proven; no placeholder city is generated here.</div>
     </div>
   );
 }
@@ -382,7 +450,7 @@ function ActionDock({ studio }: { studio: Studio }) {
       </div>
     </>;
   } else if (ui.mode === 'edit') {
-    content = <span className="hint">Click an object to select · Right-drag to look · <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> fly · <kbd>Q</kbd><kbd>E</kbd> down/up</span>;
+    content = <span className="hint">Tap an object to select · drag to look · use the on-screen gizmo to move, rotate or scale</span>;
   } else {
     const actorSelected = ui.selection === studio.actorEntityId;
     content = <>
