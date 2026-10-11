@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { uid } from '../core/emitter';
-import type { AssetCategory, CameraShot, Entity, Vec3, WorldState } from '../core/types';
+import type { AssetCategory, CameraShot, Capability, Entity, Vec3, WorldState } from '../core/types';
 import type { CameraMode } from '../runtime/CameraDirector';
 import type { Studio } from '../runtime/Studio';
 
@@ -123,10 +123,16 @@ export function createOps(studio: Studio) {
         if (g !== null) p.y = g;
       }
       const q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(yawDegrees));
+      const caps: Capability[] = ['selectable', 'movable', 'rotatable', 'scalable', 'collidable'];
+      if (rec.entityType === 'LIGHT') caps.push('interactable', 'toggleable');
+      if (rec.entityType === 'DOOR') caps.push('interactable', 'openable');
+      if (rec.entityType === 'CHAIR') caps.push('interactable', 'sittable');
+      const interaction = rec.runtime?.interaction ? structuredClone(rec.runtime.interaction) : undefined;
       const e: Entity = {
         id: uid(rec.entityType.toLowerCase()), type: rec.entityType, name: rec.name, assetId,
         transform: { position: p.toArray() as Vec3, rotation: q.toArray() as Entity['transform']['rotation'], scale: [1, 1, 1] },
-        parentId: null, tags: [...rec.tags], capabilities: ['selectable', 'movable', 'rotatable', 'scalable', 'collidable'],
+        parentId: null, tags: [...rec.tags], capabilities: caps,
+        metadata: interaction ? { interaction } : undefined,
       };
       store().commit(`Place ${rec.name}`, (d) => { d.entities.push(e); });
       studio.select(e.id);
@@ -143,6 +149,14 @@ export function createOps(studio: Studio) {
       return new Promise((resolve) => {
         a.setPath(path.slice(1), opts.run ? a.runSpeed : a.walkSpeed, () => resolve(ok(a.position.toArray() as Vec3)));
       });
+    },
+
+    getInteractions(id: string) {
+      return studio.interactions.actionsFor(id);
+    },
+
+    interact(id: string, action?: string) {
+      return studio.interactions.execute(id, action);
     },
 
     stopActor(): OpResult<undefined> {
