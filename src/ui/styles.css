@@ -175,3 +175,26 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
   .world-name { display: none; }
   .library { width: calc(100vw - 28px); }
 }
+
+
+/* --- touch-first directing + live asset discovery */
+.world-name { border: 0; background: none; color: inherit; cursor: pointer; padding: 5px 4px; border-radius: 12px; }
+.world-name:hover { background: rgba(255,255,255,0.08); }
+.world-pop { min-width: 300px; }
+.world-note { padding: 8px 10px 10px; color: var(--text-dim); line-height: 1.45; }
+.source-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 8px 2px 2px; }
+.source-tabs button { min-height: 32px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .06em; color: var(--text-dim); background: rgba(255,255,255,.06); }
+.source-tabs button.on { color: #111; background: rgba(255,255,255,.92); }
+.lib-status { padding: 18px 10px; color: var(--text-dim); line-height: 1.45; text-align: center; }
+.error-inline { color: #ff9b92; }
+.remote-thumb { background: linear-gradient(145deg, #59677a, #232a34); font-size: 11px; letter-spacing: .06em; }
+.cache.remote { color: var(--accent); }
+
+@media (pointer: coarse) {
+  .btn { min-width: 44px; min-height: 44px; height: 44px; }
+  .seg button, .seg.small button { min-height: 40px; height: 40px; }
+  .asset { min-height: 58px; }
+  .world-name { min-height: 44px; }
+  .dock { padding: 7px 9px; }
+  .dock .hint { white-space: normal; line-height: 1.25; }
+}
