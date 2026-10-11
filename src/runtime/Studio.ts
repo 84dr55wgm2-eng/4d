@@ -14,6 +14,8 @@ import { EntityRuntime, readTransform } from './EntityRuntime';
 import { Input, isTyping } from './Input';
 import { Navigation } from './Navigation';
 import { Thumbnails } from './Thumbnails';
+import { InteractionSystem } from './InteractionSystem';
+import { createToolRegistry } from '../ops/ToolRegistry';
 
 export type AppMode = 'explore' | 'edit' | 'direct';
 export type GizmoMode = 'translate' | 'rotate' | 'scale';
@@ -43,7 +45,6 @@ export interface StudioUI {
 
 type Events = { ui: StudioUI };
 
-const WORLD_URL = 'content/worlds/bistro/world.json';
 const _ray = new THREE.Raycaster();
 const _ndc = new THREE.Vector2();
 const _v = new THREE.Vector3();
@@ -54,6 +55,9 @@ export class Studio extends Emitter<Events> {
   readonly input = new Input();
   readonly cameras: CameraDirector;
   readonly entities: EntityRuntime;
+  readonly interactions = new InteractionSystem(this);
+  readonly ops = createOps(this);
+  readonly tools = createToolRegistry(this);
   store!: WorldStore;
   actor: Actor | null = null;
   actorEntityId: string | null = null;
@@ -67,6 +71,7 @@ export class Studio extends Emitter<Events> {
     canUndo: false, canRedo: false, saveState: 'saved', actorState: 'idle', diagnostics: false, quality: 'auto', placing: null, walkTargeting: false,
   };
   private saveTimer = 0;
+  private actorMarker: THREE.Mesh;
 
   constructor(readonly canvas: HTMLCanvasElement) {
     super();
@@ -78,6 +83,15 @@ export class Studio extends Emitter<Events> {
     this.gizmo = new TransformControls(this.cameras.camera, canvas);
     this.gizmo.setSize(0.85);
     this.engine.scene.add(this.gizmo.getHelper());
+    this.actorMarker = new THREE.Mesh(
+      new THREE.RingGeometry(0.38, 0.44, 48),
+      new THREE.MeshBasicMaterial({ color: 0x0a84ff, transparent: true, opacity: 0.85, depthWrite: false, side: THREE.DoubleSide }),
+    );
+    this.actorMarker.name = '__actor_selection';
+    this.actorMarker.rotation.x = -Math.PI / 2;
+    this.actorMarker.visible = false;
+    this.actorMarker.renderOrder = 20;
+    this.engine.scene.add(this.actorMarker);
     this.gizmo.addEventListener('dragging-changed', (e) => this.onGizmoDrag(e.value as boolean));
     this.gizmo.addEventListener('objectChange', () => (this.engine.shadowsDirty = true));
     this.cameras.on('change', ({ mode, focalLength }) => this.set({ cameraMode: mode, focalLength }));
@@ -175,7 +189,10 @@ export class Studio extends Emitter<Events> {
   }
 
   private async loadWorldDocument(): Promise<WorldDocument> {
-    const res = await fetch(`${import.meta.env.BASE_URL}${WORLD_URL}`, { cache: 'no-cache' });
+    const wanted = new URLSearchParams(location.search).get('world');
+    const entry = this.registry.manifest.worlds.find((w) => w.id === wanted) ?? this.registry.manifest.worlds[0];
+    if (!entry) throw new Error('content manifest has no worlds');
+    const res = await fetch(`${import.meta.env.BASE_URL}${entry.url}`, { cache: 'no-cache' });
     if (!res.ok) throw new Error(`world HTTP ${res.status}`);
     const pkg = (await res.json()) as WorldDocument;
     const saved = await idb.get<WorldDocument>('worlds', pkg.id).catch(() => undefined);
@@ -245,25 +262,15 @@ export class Studio extends Emitter<Events> {
   private update(dt: number) {
     const a = this.actor;
     if (a) {
-      if (this.ui.mode === 'explore' && this.ui.cameraMode === 'follow' && !a.path.length) {
-        const f = this.input.axis(['KeyS', 'ArrowDown'], ['KeyW', 'ArrowUp']);
-        const s = this.input.axis(['KeyD', 'ArrowRight'], ['KeyA', 'ArrowLeft']);
-        if (f || s) {
-          const yaw = this.cameras.followYaw + Math.PI; // camera looks along -dir
-          const dir = _v.set(Math.sin(yaw) * f + Math.sin(yaw + Math.PI / 2) * s, 0, Math.cos(yaw) * f + Math.cos(yaw + Math.PI / 2) * s).normalize();
-          a.desiredDir.copy(dir);
-          const run = this.input.pressed('ShiftLeft') || this.input.pressed('ShiftRight');
-          a.desiredSpeed = run ? a.runSpeed : a.walkSpeed;
-        } else {
-          a.desiredSpeed = 0;
-        }
-      }
+      // Product control is pointer/touch directed. Keyboard locomotion is intentionally not used.
+      if (this.ui.mode === 'explore' && !a.path.length) a.desiredSpeed = 0;
       const before = a.position.x + a.position.z * 7.31 + a.heading * 3.7;
       a.update(dt);
       // an animated actor always changes its shadow; an idle one only breathes
       if (a.state !== 'idle' || Math.abs(before - (a.position.x + a.position.z * 7.31 + a.heading * 3.7)) > 1e-5) this.engine.shadowsDirty = true;
       if (a.state !== this.ui.actorState) this.set({ actorState: a.state });
       this.cameras.followPivot.lerp(_v.copy(a.position).setY(a.position.y + 1.45), 1 - Math.exp(-dt * 10));
+      if (this.actorMarker.visible) this.actorMarker.position.set(a.position.x, a.position.y + 0.025, a.position.z);
       this.engine.shadowFocus.copy(this.ui.cameraMode === 'follow' ? a.position : this.cameras.mode === 'director' ? this.cameras.orbitTarget : a.position);
     }
     this.cameras.update(dt);
@@ -310,6 +317,8 @@ export class Studio extends Emitter<Events> {
     else this.gizmo.detach();
     this.gizmo.setMode(this.ui.gizmo);
     this.cameras.freeLookWithLeft = !id;
+    this.actorMarker.visible = id === this.actorEntityId;
+    if (this.actorMarker.visible && this.actor) this.actorMarker.position.set(this.actor.position.x, this.actor.position.y + 0.025, this.actor.position.z);
     this.set({ selection: id });
   }
 
@@ -376,6 +385,17 @@ export class Studio extends Emitter<Events> {
     location.reload();
   }
 
+  switchWorld(id: string) {
+    const entry = this.registry.manifest.worlds.find((w) => w.id === id);
+    if (!entry) {
+      this.toast(`Unknown world: ${id}`);
+      return;
+    }
+    const u = new URL(location.href);
+    u.searchParams.set('world', id);
+    location.assign(u.toString());
+  }
+
   // ---------------------------------------------------------------- pointer
   private bindPointer() {
     let down: { x: number; y: number; t: number } | null = null;
@@ -418,7 +438,29 @@ export class Studio extends Emitter<Events> {
       this.ops.moveActorTo(p.ground.toArray() as [number, number, number]);
       return;
     }
-    if (this.ui.mode === 'explore') return;
+    if (this.ui.mode === 'explore') {
+      // Touch/click the actor once to direct him. Subsequent taps choose destinations or objects.
+      if (p.entity === this.actorEntityId) {
+        this.select(this.actorEntityId);
+        this.toast('Actor selected · tap the ground or an object');
+        return;
+      }
+      if (this.ui.selection === this.actorEntityId) {
+        if (p.entity && p.entity !== this.actorEntityId && p.entityDistance <= p.groundDistance + 0.05) {
+          this.interactions.execute(p.entity).then((r) => {
+            if (!r.ok) this.toast(r.error);
+            else this.toast(r.action === 'approach' ? 'Reached object' : `Interaction: ${r.action}`);
+          });
+          return;
+        }
+        if (p.ground) {
+          this.ops.moveActorTo(p.ground.toArray() as [number, number, number]).then((r) => {
+            if (!r.ok) this.toast(r.error);
+          });
+        }
+      }
+      return;
+    }
     if (p.entity && p.entityDistance <= p.groundDistance + 0.05) this.select(p.entity);
     else this.select(null);
   }
@@ -445,6 +487,5 @@ export class Studio extends Emitter<Events> {
     });
   }
 
-  // ---------------------------------------------------------------- operations (AI tool layer)
-  readonly ops = createOps(this);
+  // Operations + tool registry are initialized near the other runtime systems.
 }
