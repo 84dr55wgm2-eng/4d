@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import type { AssetCategory, AssetRecord, ContentManifest } from '../core/types';
@@ -23,11 +24,19 @@ export class AssetRegistry {
   readonly cache = new ContentCache();
   private loader: GLTFLoader;
   private loaded = new Map<string, Promise<LoadedAsset>>();
+  /** called whenever an asset finishes loading (thumbnails, diagnostics) */
+  onLoaded?: (asset: LoadedAsset) => void;
 
   constructor(private baseUrl = import.meta.env.BASE_URL) {
     MeshoptDecoder.useWorkers?.(Math.min(4, navigator.hardwareConcurrency || 2));
     const draco = new DRACOLoader().setDecoderPath(`${baseUrl}vendor/draco/`);
     this.loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).setDRACOLoader(draco);
+  }
+
+  /** KTX2 needs the renderer to pick a GPU transcode target. */
+  setRenderer(renderer: THREE.WebGLRenderer) {
+    const ktx2 = new KTX2Loader().setTranscoderPath(`${this.baseUrl}vendor/basis/`).detectSupport(renderer);
+    this.loader.setKTX2Loader(ktx2);
   }
 
   async init() {
@@ -78,7 +87,9 @@ export class AssetRegistry {
         const gltf = await this.loader.parseAsync(buf, url.slice(0, url.lastIndexOf('/') + 1));
         const template = this.normalize(record, gltf.scene);
         const size = new THREE.Box3().setFromObject(template).getSize(new THREE.Vector3());
-        return { record, gltf, template, size };
+        const out = { record, gltf, template, size };
+        this.onLoaded?.(out);
+        return out;
       })();
       p.catch(() => this.loaded.delete(id));
       this.loaded.set(id, p);

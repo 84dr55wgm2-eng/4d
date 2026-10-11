@@ -13,6 +13,7 @@ import { Engine, type Quality } from './Engine';
 import { EntityRuntime, readTransform } from './EntityRuntime';
 import { Input, isTyping } from './Input';
 import { Navigation } from './Navigation';
+import { Thumbnails } from './Thumbnails';
 
 export type AppMode = 'explore' | 'edit' | 'direct';
 export type GizmoMode = 'translate' | 'rotate' | 'scale';
@@ -59,6 +60,7 @@ export class Studio extends Emitter<Events> {
   collision: CollisionWorld | null = null;
   nav: Navigation | null = null;
   environment: THREE.Object3D | null = null;
+  thumbnails!: Thumbnails;
   readonly gizmo: TransformControls;
   ui: StudioUI = {
     phase: 'boot', loading: [], mode: 'explore', cameraMode: 'follow', focalLength: 35, selection: null, gizmo: 'translate',
@@ -98,6 +100,7 @@ export class Studio extends Emitter<Events> {
   async boot() {
     try {
       this.set({ phase: 'loading' });
+      this.registry.setRenderer(this.engine.renderer);
       await this.registry.init();
       const doc = await this.loadWorldDocument();
       this.store = new WorldStore(doc);
@@ -117,6 +120,12 @@ export class Studio extends Emitter<Events> {
       const envRec = this.registry.get(env.assetId);
       const base = import.meta.env.BASE_URL;
       await this.engine.loadEnvironment(`${base}${this.registry.get(env.hdri).url}`, env.sun, env.exposure);
+      this.thumbnails = new Thumbnails(this.engine.renderer, this.engine.scene.environment);
+      await this.thumbnails.preload(this.registry.manifest.assets.map((a) => a.id));
+      this.registry.onLoaded = (a) => {
+        if (a.record.entityType && a.record.entityType !== 'ENVIRONMENT' && !this.thumbnails.get(a.record.id))
+          this.thumbnails.make(a.record.id, a.template, this.registry.version).then(() => this.set({}), (e) => console.warn('[thumbnail]', a.record.id, e));
+      };
 
       const [world, collision, nav, actor] = await Promise.all([
         this.registry.loadGLTF(env.assetId, track(envRec.name)),

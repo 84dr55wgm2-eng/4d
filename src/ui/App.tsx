@@ -195,7 +195,7 @@ function LibraryRail({ studio }: { studio: Studio }) {
                 if (status !== 'cached') studio.registry.loadGLTF(a.id).catch(() => studio.toast(`Could not download ${a.name}`));
               }}
             >
-              <span className={`thumb cat-${a.category.toLowerCase()}`}>{a.thumbnail ? <img src={a.thumbnail} alt="" /> : a.name.slice(0, 1)}</span>
+              <span className={`thumb cat-${a.category.toLowerCase()}`}>{(() => { const t = a.thumbnail ?? studio.thumbnails.get(a.id); return t ? <img src={t} alt="" /> : a.name.slice(0, 1); })()}</span>
               <span className="asset-text">
                 <span className="asset-name">{a.name}</span>
                 <span className="asset-src">{a.source}</span>

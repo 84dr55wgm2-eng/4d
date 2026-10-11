@@ -91,7 +91,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 /* --- library */
 .rail-pill { position: fixed; left: 14px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 10px; border-radius: 22px; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; transition: transform 0.3s var(--spring); }
 .rail-pill:hover { transform: translateY(-50%) scale(1.04); }
-.library { position: fixed; left: 14px; top: 76px; bottom: 96px; width: 300px; border-radius: var(--r-panel); display: flex; flex-direction: column; padding: 10px; animation: slide-l 0.35s var(--spring); }
+.library { position: fixed; left: 14px; top: 76px; max-height: calc(100vh - 172px); width: 300px; border-radius: var(--r-panel); display: flex; flex-direction: column; padding: 10px; animation: slide-l 0.35s var(--spring); }
 @keyframes slide-l { from { opacity: 0; transform: translateX(-16px) scale(0.98); } to { opacity: 1; transform: none; } }
 .lib-head { display: flex; gap: 6px; align-items: center; }
 .search { flex: 1; display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border-radius: 999px; background: rgba(0,0,0,0.25); color: var(--text-dim); }
