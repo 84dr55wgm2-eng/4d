@@ -94,9 +94,33 @@ export class ContentCache extends Emitter<CacheEvents> {
     }
 
     this.setStatus(url, 'downloading', 0, 0);
+    const split = Object.entries(this.parts).find(([path]) => url.endsWith(path));
+    const buf = split ? await this.fetchParts(url, split[1], onProgress) : await this.fetchWhole(url, onProgress);
+    this.stats.misses++;
+    this.stats.bytesFromNetwork += buf.byteLength;
+    this.persist(root, key, url, version, buf);
+    return buf;
+  }
+
+  /** Hosts with a per-file size cap get big files as `<file>.part0..N` (see tools/package_artifact.mjs). */
+  parts: Record<string, { count: number; bytes: number }> = {};
+
+  private async fetchParts(url: string, spec: { count: number; bytes: number }, onProgress?: (loaded: number, total: number) => void) {
+    const out = new Uint8Array(spec.bytes);
+    let o = 0;
+    for (let i = 0; i < spec.count; i++) {
+      const part = await this.fetchWhole(`${url}.part${i}`, (l) => onProgress?.(o + l, spec.bytes), url);
+      out.set(new Uint8Array(part), o);
+      o += part.byteLength;
+    }
+    if (o !== spec.bytes) throw new Error(`incomplete parts for ${url}: ${o}/${spec.bytes}`);
+    return out.buffer;
+  }
+
+  private async fetchWhole(url: string, onProgress?: (loaded: number, total: number) => void, statusUrl = url): Promise<ArrayBuffer> {
     const res = await fetch(url);
     if (!res.ok) {
-      this.setStatus(url, 'error');
+      this.setStatus(statusUrl, 'error');
       throw new Error(`HTTP ${res.status} for ${url}`);
     }
     const total = Number(res.headers.get('content-length')) || 0;
@@ -111,7 +135,7 @@ export class ContentCache extends Emitter<CacheEvents> {
         chunks.push(value);
         loaded += value.byteLength;
         onProgress(loaded, total);
-        this.emit('status', { url, status: 'downloading', loaded, total });
+        this.emit('status', { url: statusUrl, status: 'downloading', loaded, total });
       }
       const out = new Uint8Array(loaded);
       let o = 0;
@@ -120,9 +144,10 @@ export class ContentCache extends Emitter<CacheEvents> {
     } else {
       buf = await res.arrayBuffer();
     }
-    this.stats.misses++;
-    this.stats.bytesFromNetwork += buf.byteLength;
+    return buf;
+  }
 
+  private persist(root: FileSystemDirectoryHandle | null, key: string, url: string, version: string, buf: ArrayBuffer) {
     if (root) {
       // Persist in the background; a failed write never breaks loading, but it is reported honestly.
       (async () => {
@@ -141,7 +166,6 @@ export class ContentCache extends Emitter<CacheEvents> {
     } else {
       this.setStatus(url, 'remote');
     }
-    return buf;
   }
 
   async usage() {

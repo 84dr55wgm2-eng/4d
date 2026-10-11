@@ -16,6 +16,7 @@ const page = await ctx.newPage();
 page.on('console', (m) => { if (['error', 'warning'].includes(m.type()) && !/GPU stall|swiftshader|Automatic fallback/i.test(m.text())) console.log(`[${m.type()}]`, m.text().slice(0, 240)); });
 page.on('requestfailed', (r) => console.log('[reqfail]', r.url().slice(0, 160), r.failure()?.errorText));
 page.on('response', (r) => { if (r.status() >= 400) console.log('[http]', r.status(), r.url().slice(0, 160)); });
+page.on('request', (r) => { const u = r.url(); if (!/^(https?:\/\/127\.0\.0\.1|data:|blob:)/.test(u)) console.log('[external]', u.slice(0, 140)); });
 page.on('pageerror', (e) => console.log('[pageerror]', e.message));
 const t0 = Date.now();
 const log = (...a) => console.log(`[${((Date.now() - t0) / 1000).toFixed(0)}s]`, ...a);

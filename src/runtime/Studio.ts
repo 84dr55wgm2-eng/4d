@@ -130,7 +130,8 @@ export class Studio extends Emitter<Events> {
       const [world, collision, nav, actor] = await Promise.all([
         this.registry.loadGLTF(env.assetId, track(envRec.name)),
         env.collision ? CollisionWorld.load((u) => this.registry.cache.fetch(u, this.registry.version, track('Collision')), `${base}${env.collision}`) : null,
-        env.navmesh ? fetch(`${base}${env.navmesh}`).then((r) => r.arrayBuffer()).then((b) => Navigation.load(b)) : null,
+        // navigation is optional: without it, directed walking reports an error instead of breaking the world
+        env.navmesh ? this.registry.cache.fetch(`${base}${env.navmesh}`, this.registry.version).then((b) => Navigation.load(b)).catch((e) => { console.warn('[nav] unavailable', e); return null; }) : null,
         this.loadActor(doc, track),
       ]);
       this.collision = collision;

@@ -43,6 +43,9 @@ export class AssetRegistry {
     const res = await fetch(`${this.baseUrl}content/manifest.json`, { cache: 'no-cache' });
     if (!res.ok) throw new Error(`manifest HTTP ${res.status}`);
     this.manifest = await res.json();
+    // optional: split-file index written by tools/package_artifact.mjs for hosts with a per-file size cap
+    const parts = await fetch(`${this.baseUrl}content/parts.json`).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
+    this.cache.parts = parts;
     await this.cache.refreshStatuses(this.manifest.assets.map((a) => this.resolveUrl(a)), this.manifest.version);
   }
 
