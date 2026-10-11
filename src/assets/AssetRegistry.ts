@@ -4,8 +4,21 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import type { AssetCategory, AssetRecord, ContentManifest } from '../core/types';
+import type { AssetCategory, AssetRecord, ContentManifest, EntityType } from '../core/types';
 import { ContentCache } from '../storage/ContentCache';
+import { idb } from '../storage/idb';
+
+export interface RemoteAssetResult {
+  id: string;
+  title: string;
+  type: string;
+  url: string;
+  downloadable?: boolean;
+  score?: number;
+  tags?: string[];
+  thumbnail?: string;
+  license?: { name?: string; attributionRequired?: boolean; commercialUse?: boolean };
+}
 
 export interface LoadedAsset {
   record: AssetRecord;
@@ -43,6 +56,12 @@ export class AssetRegistry {
     const res = await fetch(`${this.baseUrl}content/manifest.json`, { cache: 'no-cache' });
     if (!res.ok) throw new Error(`manifest HTTP ${res.status}`);
     this.manifest = await res.json();
+    // User-discovered assets survive reloads without changing the checked-in manifest.
+    const external = await idb.get<AssetRecord[]>('settings', 'external-assets').catch(() => undefined);
+    if (external?.length) {
+      const known = new Set(this.manifest.assets.map((a) => a.id));
+      for (const a of external) if (!known.has(a.id)) this.manifest.assets.push(a);
+    }
     // optional: split-file index written by tools/package_artifact.mjs for hosts with a per-file size cap
     const parts = await fetch(`${this.baseUrl}content/parts.json`).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
     this.cache.parts = parts;
@@ -73,6 +92,55 @@ export class AssetRegistry {
 
   status(id: string) {
     return this.cache.status(this.resolveUrl(this.get(id)));
+  }
+
+  /**
+   * Live multi-source discovery through 3d-asset-server.
+   * Search stays separate from placement; a selected result is promoted into the normal registry.
+   */
+  async searchRemote(query: string, limit = 18): Promise<RemoteAssetResult[]> {
+    const q = query.trim();
+    if (q.length < 2) return [];
+    const u = new URL('https://3d.shep.bot/v1/search');
+    u.searchParams.set('q', q);
+    u.searchParams.set('type', 'model');
+    u.searchParams.set('free', 'true');
+    u.searchParams.set('downloadable', 'true');
+    u.searchParams.set('limit', String(Math.max(1, Math.min(30, limit))));
+    const res = await fetch(u, { headers: { Accept: 'application/json' } });
+    if (!res.ok) throw new Error(`asset search HTTP ${res.status}`);
+    const data = await res.json() as { results?: RemoteAssetResult[] };
+    return (data.results ?? []).filter((r) => r.downloadable !== false);
+  }
+
+  /** Register a remote result as a normal AssetRecord so cache/load/place use one pipeline. */
+  async registerRemote(r: RemoteAssetResult): Promise<AssetRecord> {
+    const id = `remote.${safeId(r.id)}`;
+    const existing = this.manifest.assets.find((a) => a.id === id || a.sourceUrl === r.url);
+    if (existing) return existing;
+    const entityType = inferEntityType(r.title, r.tags);
+    const provider = r.id.includes(':') ? r.id.split(':', 1)[0] : '3d-asset-server';
+    const record: AssetRecord = {
+      id,
+      name: r.title,
+      category: categoryFor(entityType),
+      source: `3D Asset Server · ${provider}`,
+      sourceUrl: r.url,
+      url: `https://3d.shep.bot/v1/assets/${encodeURIComponent(r.id)}/download?format=glb&resolution=1k`,
+      format: 'glb',
+      license: {
+        id: r.license?.name || 'See source',
+        attribution: r.license?.attributionRequired ? 'Attribution required — see source asset page' : undefined,
+        verified: !!r.license?.name,
+        notes: 'Discovered through 3d-asset-server; verify the selected asset before commercial publishing.',
+      },
+      tags: [...new Set([...(r.tags ?? []), ...r.title.toLowerCase().split(/[^a-z0-9]+/).filter((x) => x.length > 2)])],
+      entityType,
+      runtime: { remoteAssetId: r.id, interaction: entityType === 'LIGHT' ? { toggleable: true, enabled: true } : undefined },
+    };
+    this.manifest.assets.push(record);
+    await idb.put('settings', 'external-assets', this.manifest.assets.filter((a) => a.id.startsWith('remote.')));
+    return record;
   }
 
   async fetchBytes(id: string, onProgress?: (l: number, t: number) => void) {
@@ -152,4 +220,29 @@ export class AssetRegistry {
     asset.template.traverse((o) => { if ((o as THREE.SkinnedMesh).isSkinnedMesh) skinned = true; });
     return skinned ? cloneSkinned(asset.template) : asset.template.clone(true);
   }
+}
+
+
+function safeId(v: string) {
+  return v.toLowerCase().replace(/[^a-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 120);
+}
+
+function inferEntityType(title: string, tags: string[] = []): EntityType {
+  const s = `${title} ${tags.join(' ')}`.toLowerCase();
+  if (/\b(building|house|shop|store|cafe|restaurant|apartment|office|garage|warehouse|architecture)\b/.test(s)) return 'BUILDING';
+  if (/\b(chair|seat|stool)\b/.test(s)) return 'CHAIR';
+  if (/\b(table|desk|sofa|couch|bed|cabinet|shelf|furniture)\b/.test(s)) return 'FURNITURE';
+  if (/\b(car|truck|bus|bike|bicycle|vehicle|van|taxi)\b/.test(s)) return 'VEHICLE';
+  if (/\b(tree|plant|bush|flower|vegetation|palm)\b/.test(s)) return 'VEGETATION';
+  if (/\b(lamp|lantern|light)\b/.test(s)) return 'LIGHT';
+  if (/\b(door|gate)\b/.test(s)) return 'DOOR';
+  return 'PROP';
+}
+
+function categoryFor(type: EntityType): AssetCategory {
+  if (type === 'BUILDING' || type === 'DOOR') return 'ARCHITECTURE';
+  if (type === 'CHAIR' || type === 'FURNITURE') return 'FURNITURE';
+  if (type === 'VEHICLE') return 'VEHICLES';
+  if (type === 'VEGETATION') return 'VEGETATION';
+  return 'PROPS';
 }
