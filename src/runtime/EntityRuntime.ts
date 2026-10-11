@@ -31,7 +31,7 @@ export class EntityRuntime {
       const ext = this.external.get(e.id);
       if (ext) {
         this.objects.set(e.id, ext);
-        ext.userData.entityId = e.id;
+        ext.traverse((o) => (o.userData.entityId = e.id));
         continue;
       }
       const obj = this.objects.get(e.id);
