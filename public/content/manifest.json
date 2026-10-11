@@ -13,7 +13,7 @@
    "bytes": 71467344,
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "Amazon Lumberyard Bistro, \u00a9 2017 Amazon Lumberyard, CC-BY 4.0",
+    "attribution": "Amazon Lumberyard Bistro, © 2017 Amazon Lumberyard, CC-BY 4.0",
     "verified": true,
     "notes": "Prepared by tools/prepare (spec/gloss->metal/rough, BC7->WebP 1024, meshopt, instancing)"
    },
@@ -89,7 +89,7 @@
   },
   {
    "id": "actor.rpm-civilian",
-   "name": "Civilian \u2014 Bearded Man",
+   "name": "Civilian — Bearded Man",
    "category": "CHARACTERS",
    "source": "Ready Player Me avatar (three.js examples)",
    "sourceUrl": "https://github.com/mrdoob/three.js/tree/dev/examples/models/gltf",
@@ -142,7 +142,7 @@
   },
   {
    "id": "anim.rpm.idle",
-   "name": "Motion \u2014 Standing Idle",
+   "name": "Motion — Standing Idle",
    "category": "ANIMATIONS",
    "source": "Ready Player Me Animation Library",
    "sourceUrl": "https://github.com/readyplayerme/animation-library",
@@ -162,7 +162,7 @@
   },
   {
    "id": "anim.rpm.walk",
-   "name": "Motion \u2014 Walk",
+   "name": "Motion — Walk",
    "category": "ANIMATIONS",
    "source": "Ready Player Me Animation Library",
    "sourceUrl": "https://github.com/readyplayerme/animation-library",
@@ -181,7 +181,7 @@
   },
   {
    "id": "anim.rpm.jog",
-   "name": "Motion \u2014 Jog Run",
+   "name": "Motion — Jog Run",
    "category": "ANIMATIONS",
    "source": "Ready Player Me Animation Library",
    "sourceUrl": "https://github.com/readyplayerme/animation-library",
@@ -201,7 +201,7 @@
   },
   {
    "id": "anim.rpm.run",
-   "name": "Motion \u2014 Sprint Run",
+   "name": "Motion — Sprint Run",
    "category": "ANIMATIONS",
    "source": "Ready Player Me Animation Library",
    "sourceUrl": "https://github.com/readyplayerme/animation-library",
@@ -295,8 +295,17 @@
     "light",
     "street"
    ],
-   "entityType": "PROP",
-   "bytes": 9564264
+   "entityType": "LIGHT",
+   "bytes": 9564264,
+   "runtime": {
+    "interaction": {
+     "toggleable": true,
+     "enabled": true,
+     "color": "#ffd7a3",
+     "intensity": 28,
+     "distance": 7
+    }
+   }
   },
   {
    "id": "khr.potofcoals",
@@ -331,7 +340,7 @@
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "\u00a9 2021 Wayfair",
+    "attribution": "© 2021 Wayfair",
     "verified": true
    },
    "scale": {
@@ -379,7 +388,7 @@
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "\u00a9 2021 Wayfair",
+    "attribution": "© 2021 Wayfair",
     "verified": true
    },
    "scale": {
@@ -403,7 +412,7 @@
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "\u00a9 2023 Wayfair",
+    "attribution": "© 2023 Wayfair",
     "verified": true
    },
    "scale": {
@@ -432,7 +441,7 @@
    },
    "scale": {
     "unitsToMetres": 1,
-    "targetHeight": 2.0
+    "targetHeight": 2
    },
    "tags": [
     "fridge",
@@ -451,7 +460,7 @@
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "\u00a9 2024 Darmstadt Graphics Group",
+    "attribution": "© 2024 Darmstadt Graphics Group",
     "verified": true
    },
    "scale": {
