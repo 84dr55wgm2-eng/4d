@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { AssetCategory } from '../core/types';
+import type { RemoteAssetResult } from '../assets/AssetRegistry';
 import type { Studio } from '../runtime/Studio';
 import { LENSES } from '../runtime/CameraDirector';
 import { Icon, type IconName } from './icons';
@@ -64,15 +65,29 @@ function Btn({ icon, label, onClick, active, disabled, text }: { icon?: IconName
 function TopIsland({ studio }: { studio: Studio }) {
   const ui = useStudioUI(studio);
   useDocVersion(studio);
-  const [menu, setMenu] = useState<'camera' | 'settings' | null>(null);
+  const [menu, setMenu] = useState<'world' | 'camera' | 'settings' | null>(null);
   const shots = studio.store.doc.shots;
   const camLabel = ui.cameraMode === 'follow' ? 'Follow' : ui.cameraMode === 'free' ? 'Free' : 'Director';
   return (
     <div className="top">
       <div className="glass island" role="toolbar" aria-label="Studio">
-        <div className="world-name">
-          <span className={`dot ${ui.saveState}`} title={ui.saveState === 'error' ? `Save failed: ${ui.saveError}` : ui.saveState === 'saved' ? 'All changes saved in this browser' : 'Saving…'} />
-          {studio.store.doc.name}
+        <div className="menu-anchor">
+          <button className="world-name" onClick={() => setMenu(menu === 'world' ? null : 'world')} title="Worlds">
+            <span className={`dot ${ui.saveState}`} title={ui.saveState === 'error' ? `Save failed: ${ui.saveError}` : ui.saveState === 'saved' ? 'All changes saved in this browser' : 'Saving…'} />
+            {studio.store.doc.name}
+          </button>
+          {menu === 'world' && (
+            <div className="glass popover world-pop" onMouseLeave={() => setMenu(null)}>
+              <div className="pop-title">World packages</div>
+              {studio.registry.manifest.worlds.map((w) => (
+                <button key={w.id} className={`row ${w.id === studio.store.doc.id ? 'on' : ''}`} onClick={() => studio.switchWorld(w.id)}>
+                  {w.name}{w.id === studio.store.doc.id && <Icon name="check" size={16} />}
+                </button>
+              ))}
+              <div className="pop-title">World Creator</div>
+              <div className="world-note">Search real authored assets from the WEB tab instead of generating placeholder geometry.</div>
+            </div>
+          )}
         </div>
         <div className="seg" role="tablist" aria-label="Mode">
           {(['explore', 'edit', 'direct'] as const).map((m, i) => (
@@ -154,9 +169,27 @@ function LibraryRail({ studio }: { studio: Studio }) {
   const [open, setOpen] = useState(false);
   const [cat, setCat] = useState<AssetCategory | undefined>();
   const [q, setQ] = useState('');
+  const [source, setSource] = useState<'project' | 'web'>('project');
+  const [remote, setRemote] = useState<RemoteAssetResult[]>([]);
+  const [remoteBusy, setRemoteBusy] = useState(false);
+  const [remoteError, setRemoteError] = useState('');
   const [, tick] = useState(0);
   useEffect(() => studio.registry.cache.on('status', () => tick((x) => x + 1)), [studio]);
   const items = useMemo(() => studio.registry.find(q, cat).filter((a) => !['ANIMATIONS', 'ENVIRONMENT'].includes(a.category)), [studio, q, cat]);
+  useEffect(() => {
+    if (source !== 'web') return;
+    const query = q.trim();
+    if (query.length < 2) { setRemote([]); setRemoteError(''); return; }
+    const t = setTimeout(() => {
+      setRemoteBusy(true);
+      setRemoteError('');
+      studio.registry.searchRemote(query)
+        .then(setRemote)
+        .catch((e) => { setRemote([]); setRemoteError(e instanceof Error ? e.message : String(e)); })
+        .finally(() => setRemoteBusy(false));
+    }, 350);
+    return () => clearTimeout(t);
+  }, [studio, source, q]);
   if (!open)
     return (
       <button className="glass rail-pill" onClick={() => setOpen(true)} title="Asset library" aria-label="Open asset library">
@@ -173,16 +206,20 @@ function LibraryRail({ studio }: { studio: Studio }) {
         </div>
         <Btn icon="close" label="Close library" onClick={() => setOpen(false)} />
       </div>
-      <div className="chips">
+      <div className="source-tabs">
+        <button className={source === 'project' ? 'on' : ''} onClick={() => setSource('project')}>PROJECT</button>
+        <button className={source === 'web' ? 'on' : ''} onClick={() => { setSource('web'); setCat(undefined); }}>WEB</button>
+      </div>
+      {source === 'project' && <div className="chips">
         <button className={!cat ? 'on' : ''} onClick={() => setCat(undefined)}>All</button>
         {CATS.map((c) => (
           <button key={c.id} className={cat === c.id ? 'on' : ''} onClick={() => setCat(cat === c.id ? undefined : c.id)}>{c.label}</button>
         ))}
-      </div>
+      </div>}
       <div className="lib-list">
-        {items.map((a) => {
+        {source === 'project' && items.map((a) => {
           const status = studio.registry.status(a.id);
-          const placeable = !!a.entityType && !['CHARACTERS', 'ARCHITECTURE'].includes(a.category);
+          const placeable = !!a.entityType && !['CHARACTERS', 'ENVIRONMENT', 'ANIMATIONS'].includes(a.category);
           return (
             <button
               key={a.id}
@@ -206,6 +243,33 @@ function LibraryRail({ studio }: { studio: Studio }) {
             </button>
           );
         })}
+        {source === 'web' && remoteBusy && <div className="lib-status">Searching 3D sources…</div>}
+        {source === 'web' && remoteError && <div className="lib-status error-inline">Web search failed: {remoteError}</div>}
+        {source === 'web' && !remoteBusy && q.trim().length < 2 && <div className="lib-status">Search real buildings, props, furniture, vehicles or vegetation.</div>}
+        {source === 'web' && remote.map((r) => (
+          <button
+            key={r.id}
+            className="asset"
+            title={`Import and place ${r.title}`}
+            onClick={async () => {
+              try {
+                const rec = await studio.registry.registerRemote(r);
+                if (ui.mode === 'explore') studio.setMode('edit');
+                studio.set({ placing: rec.id, walkTargeting: false });
+                studio.registry.loadGLTF(rec.id).catch(() => studio.toast(`Could not load ${rec.name} as GLB`));
+              } catch (e) {
+                studio.toast(e instanceof Error ? e.message : String(e));
+              }
+            }}
+          >
+            <span className="thumb remote-thumb">{r.thumbnail ? <img src={r.thumbnail} alt="" /> : '3D'}</span>
+            <span className="asset-text">
+              <span className="asset-name">{r.title}</span>
+              <span className="asset-src">{r.id} · {r.license?.name ?? 'licence in source'}</span>
+            </span>
+            <span className="cache remote" title="Import from web"><Icon name="cloud" size={15} /></span>
+          </button>
+        ))}
       </div>
     </aside>
   );
@@ -320,9 +384,11 @@ function ActionDock({ studio }: { studio: Studio }) {
   } else if (ui.mode === 'edit') {
     content = <span className="hint">Click an object to select · Right-drag to look · <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> fly · <kbd>Q</kbd><kbd>E</kbd> down/up</span>;
   } else {
+    const actorSelected = ui.selection === studio.actorEntityId;
     content = <>
       <span className={`state-pill s-${ui.actorState}`}>{ui.actorState.toUpperCase()}</span>
-      <span className="hint"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> walk · <kbd>Shift</kbd> run · drag to orbit · scroll to zoom</span>
+      <span className="hint">{actorSelected ? 'Actor selected · tap the ground to move · tap an object to interact' : 'Tap the actor to direct him · drag to orbit · pinch/scroll to zoom'}</span>
+      {actorSelected && <Btn text="Done" label="Stop directing actor" onClick={() => studio.select(null)} />}
     </>;
   }
   return <div className="dock-wrap"><div className="glass dock">{content}</div></div>;
