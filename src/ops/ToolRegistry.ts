@@ -1,3 +1,4 @@
+import { planWorld } from '../world/WorldCreator';
 import { compileWorldIntent } from '../world/WorldIntent';
 import type { Studio } from '../runtime/Studio';
 
@@ -27,6 +28,10 @@ export class StudioToolRegistry {
           get_state: { description: 'Read the serializable world/editor state.', run: () => ops.getState() },
           set_state: { description: 'Change environment state such as time of day.', run: (a) => ops.setWorldState(a ?? {}) },
           compile_brief: { description: 'Turn a natural-language world brief into structured asset-search intent.', run: (a) => compileWorldIntent(String(a?.brief ?? '')) },
+          plan: { description: 'Prepare an editable composition plan from a brief using the authored kit.', run: (a) => planWorld(String(a?.brief ?? ''), studio.registry.manifest.assets) },
+          create: { description: 'Validate assets/navigation, compose and persist a new world, then open it.', run: (a) => studio.createWorld(a.plan) },
+          list: { description: 'List bundled and user-created worlds.', run: () => studio.worlds },
+          open: { description: 'Save the current world and open a known world.', run: (a) => studio.switchWorld(String(a.id)) },
           save: { description: 'Persist the current WorldDocument in the browser.', run: () => ops.save() },
         },
       },

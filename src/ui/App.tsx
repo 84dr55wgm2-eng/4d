@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { AssetCategory } from '../core/types';
 import type { RemoteAssetResult } from '../assets/AssetRegistry';
-import { compileWorldIntent } from '../world/WorldIntent';
+import { planWorld, type WorldPlan } from '../world/WorldCreator';
 import type { Studio } from '../runtime/Studio';
 import { LENSES } from '../runtime/CameraDirector';
 import { Icon, type IconName } from './icons';
@@ -38,7 +38,7 @@ function Loading({ studio }: { studio: Studio }) {
           <div className="error">Could not open the world: {ui.error}</div>
         ) : (
           <>
-            <div className="loading-title">Opening Paris Bistro Street</div>
+            <div className="loading-title">Ouverture du monde…</div>
             {ui.loading.map((l) => (
               <div className="load-row" key={l.label}>
                 <span>{l.label}</span>
@@ -78,18 +78,19 @@ function TopIsland({ studio }: { studio: Studio }) {
             {studio.store.doc.name}
           </button>
           {menu === 'world' && (
-            <div className="glass popover world-pop" onMouseLeave={() => setMenu(null)}>
+            <div className="glass popover world-pop">
               <div className="pop-title">World packages</div>
-              {studio.registry.manifest.worlds.map((w) => (
+              {studio.worlds.map((w) => (
                 <button key={w.id} className={`row ${w.id === studio.store.doc.id ? 'on' : ''}`} onClick={() => studio.switchWorld(w.id)}>
                   {w.name}{w.id === studio.store.doc.id && <Icon name="check" size={16} />}
                 </button>
               ))}
-              <div className="pop-title">World Creator</div>
+              <div className="pop-title">Nouveau monde</div>
               <WorldBrief studio={studio} />
             </div>
           )}
         </div>
+        <Btn icon="plus" label="Créer un nouveau monde" onClick={() => setMenu(menu === 'world' ? null : 'world')} />
         <div className="seg" role="tablist" aria-label="Mode">
           {(['explore', 'edit', 'direct'] as const).map((m, i) => (
             <button key={m} role="tab" aria-selected={ui.mode === m} className={ui.mode === m ? 'on' : ''} onClick={() => studio.setMode(m)} title={`${m[0].toUpperCase() + m.slice(1)} (${i + 1})`}>
@@ -100,7 +101,7 @@ function TopIsland({ studio }: { studio: Studio }) {
         <div className="menu-anchor">
           <Btn icon="camera" text={`${camLabel} · ${ui.focalLength}mm`} label="Camera" onClick={() => setMenu(menu === 'camera' ? null : 'camera')} active={menu === 'camera'} />
           {menu === 'camera' && (
-            <div className="glass popover" onMouseLeave={() => setMenu(null)}>
+            <div className="glass popover">
               <div className="pop-title">Camera</div>
               {(['follow', 'free', 'director'] as const).map((m) => (
                 <button key={m} className={`row ${ui.cameraMode === m ? 'on' : ''}`} onClick={() => { studio.setCameraMode(m); setMenu(null); }}>
@@ -131,70 +132,33 @@ function TopIsland({ studio }: { studio: Studio }) {
 }
 
 function WorldBrief({ studio }: { studio: Studio }) {
-  const [brief, setBrief] = useState('');
+  const [brief, setBrief] = useState('Une cour arborée avec quatre immeubles, des chaises et des lumières, au coucher du soleil');
+  const [plan, setPlan] = useState<WorldPlan | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const [queries, setQueries] = useState<string[]>([]);
-  const [results, setResults] = useState<RemoteAssetResult[]>([]);
-
-  const discover = async () => {
-    try {
-      const intent = compileWorldIntent(brief);
-      setQueries(intent.queries);
-      setBusy(true);
-      setError('');
-      const batches = await Promise.all(intent.queries.slice(0, 5).map((q) => studio.registry.searchRemote(q, 4).catch(() => [])));
-      const seen = new Set<string>();
-      const merged = batches.flat().filter((r) => !seen.has(r.id) && !!seen.add(r.id)).slice(0, 16);
-      setResults(merged);
-      if (!merged.length) setError('No downloadable 3D candidates found yet. Try a more concrete brief.');
-    } catch (e) {
-      setResults([]);
-      setQueries([]);
-      setError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const useAsset = async (r: RemoteAssetResult) => {
-    try {
-      const rec = await studio.registry.registerRemote(r);
-      studio.setMode('edit');
-      studio.set({ placing: rec.id, walkTargeting: false });
-      studio.registry.loadGLTF(rec.id).catch(() => studio.toast(`Could not load ${rec.name} as GLB`));
-      studio.toast(`Tap the world to place ${rec.name}`);
-    } catch (e) {
-      studio.toast(e instanceof Error ? e.message : String(e));
-    }
-  };
-
-  return (
-    <div className="world-brief">
-      <textarea
-        value={brief}
-        onChange={(e) => setBrief(e.target.value)}
-        placeholder="Ex: Lagos 2003 street around a small cybercafé, dense shops, worn concrete, tropical vegetation…"
-        aria-label="Describe the world you want"
-      />
-      <button className="world-discover" onClick={discover} disabled={busy || brief.trim().length < 3}>
-        {busy ? 'Searching real assets…' : 'Find assets for this world'}
-      </button>
-      {queries.length > 0 && <div className="world-queries">{queries.map((q) => <span key={q}>{q}</span>)}</div>}
-      {error && <div className="world-error">{error}</div>}
-      {results.length > 0 && (
-        <div className="world-results">
-          {results.map((r) => (
-            <button key={r.id} className="world-result" onClick={() => useAsset(r)} title={r.url}>
-              <span>{r.title}</span>
-              <small>{r.id} · {r.license?.name ?? 'licence in source'}</small>
-            </button>
-          ))}
-        </div>
-      )}
-      <div className="world-note">Brief → real asset discovery → place. Automatic whole-world composition comes after this pipeline is proven; no placeholder city is generated here.</div>
-    </div>
-  );
+  const patch = (p: Partial<WorldPlan>) => setPlan((old) => old ? { ...old, ...p } : old);
+  return <div className="world-brief">
+    <textarea value={brief} onChange={(e) => { setBrief(e.target.value); setPlan(null); }} aria-label="Décrire le nouveau monde" />
+    <button className="world-discover" disabled={busy || brief.trim().length < 3} onClick={() => {
+      try { setPlan(planWorld(brief, studio.registry.manifest.assets)); setError(''); } catch (e) { setError(String(e)); }
+    }}>Préparer le plan</button>
+    {plan && <div className="world-plan">
+      <label>Nom<input value={plan.name} onChange={(e) => patch({ name: e.target.value })} /></label>
+      <label>Disposition<select value={plan.layout} onChange={(e) => patch({ layout: e.target.value as WorldPlan['layout'] })}><option value="street">Rue</option><option value="courtyard">Cour / place</option></select></label>
+      <label>Taille (m)<input type="number" min="60" max="140" value={plan.size} onChange={(e) => patch({ size: Number(e.target.value) })} /></label>
+      <label>Bâtiments<input type="number" min="2" max={plan.layout === 'courtyard' ? 4 : 8} value={plan.count} onChange={(e) => patch({ count: Number(e.target.value) })} /></label>
+      <label>Ambiance<select value={plan.lighting} onChange={(e) => patch({ lighting: e.target.value as WorldPlan['lighting'] })}><option value="day">Jour</option><option value="golden">Coucher du soleil</option><option value="overcast">Couvert</option></select></label>
+      <label><input type="checkbox" checked={plan.vegetation} onChange={(e) => patch({ vegetation: e.target.checked })} /> Arbres</label>
+      <div className="world-note">Kit urbain européen · bâtiments détaillés, sol pavé, chaise, lanterne et objet à prendre. Enveloppes extérieures.</div>
+      <div className="kit-options">{studio.registry.manifest.assets.filter((a) => a.entityType === 'BUILDING' && a.bounds).map((a) => <label key={a.id}><input type="checkbox" checked={plan.buildingAssets.includes(a.id)} onChange={(e) => patch({ buildingAssets: e.target.checked ? [...plan.buildingAssets, a.id] : plan.buildingAssets.filter((id) => id !== a.id) })} />{a.name}</label>)}</div>
+      {plan.missing.map((m) => <div className="world-error" key={m}>{m}</div>)}
+      <button className="world-discover" disabled={busy || !plan.buildingAssets.length} onClick={async () => {
+        setBusy(true); setError('');
+        try { await studio.createWorld(plan); } catch (e) { setError(e instanceof Error ? e.message : String(e)); setBusy(false); }
+      }}>{busy ? 'Composition et navigation…' : 'Créer et ouvrir ce monde'}</button>
+    </div>}
+    {error && <div className="world-error" role="alert">{error}</div>}
+  </div>;
 }
 
 function Settings({ studio, close }: { studio: Studio; close: () => void }) {
@@ -248,15 +212,16 @@ function LibraryRail({ studio }: { studio: Studio }) {
     if (source !== 'web') return;
     const query = q.trim();
     if (query.length < 2) { setRemote([]); setRemoteError(''); return; }
+    let live = true;
     const t = setTimeout(() => {
       setRemoteBusy(true);
       setRemoteError('');
       studio.registry.searchRemote(query)
-        .then(setRemote)
-        .catch((e) => { setRemote([]); setRemoteError(e instanceof Error ? e.message : String(e)); })
-        .finally(() => setRemoteBusy(false));
+        .then((items) => { if (live) setRemote(items); })
+        .catch((e) => { if (live) { setRemote([]); setRemoteError(e instanceof Error ? e.message : String(e)); } })
+        .finally(() => { if (live) setRemoteBusy(false); });
     }, 350);
-    return () => clearTimeout(t);
+    return () => { live = false; clearTimeout(t); };
   }, [studio, source, q]);
   if (!open)
     return (
@@ -359,7 +324,7 @@ function Inspector({ studio }: { studio: Studio }) {
   const ui = useStudioUI(studio);
   useDocVersion(studio);
   const e = ui.selection ? studio.store.entity(ui.selection) : null;
-  if (!e) return null;
+  if (!e || ui.mode === 'explore') return null;
   const rec = e.assetId ? studio.registry.get(e.assetId) : null;
   const [x, y, z] = e.transform.position;
   const q = e.transform.rotation;
@@ -405,6 +370,11 @@ function ActionDock({ studio }: { studio: Studio }) {
   useDocVersion(studio);
   const sel = ui.selection ? studio.store.entity(ui.selection) : null;
   const [track, setTrack] = useState(studio.cameras.trackTarget);
+  const actorId = studio.actorEntityId;
+  const contextId = ui.interactionTarget ?? studio.store.doc.entities.find((e) => {
+    const inter = e.metadata?.interaction as { occupiedBy?: string; heldBy?: string } | undefined;
+    return inter?.occupiedBy === actorId || inter?.heldBy === actorId;
+  })?.id ?? null;
 
   let content: React.ReactNode;
   if (ui.placing) {
@@ -421,7 +391,7 @@ function ActionDock({ studio }: { studio: Studio }) {
     content = <>
       <span className="dock-label">{sel.name}</span>
       <div className="seg small">
-        {([['translate', 'move', 'Move (W)'], ['rotate', 'rotate', 'Rotate (R)'], ['scale', 'scale', 'Scale (S)']] as const).map(([m, ic, l]) => (
+        {([['translate', 'move', 'Move'], ['rotate', 'rotate', 'Rotate'], ['scale', 'scale', 'Scale']] as const).map(([m, ic, l]) => (
           <button key={m} className={ui.gizmo === m ? 'on' : ''} onClick={() => studio.setGizmo(m)} title={l} aria-label={l} disabled={m === 'scale' && !sel.capabilities.includes('scalable')}><Icon name={ic} /></button>
         ))}
       </div>
@@ -455,7 +425,9 @@ function ActionDock({ studio }: { studio: Studio }) {
     const actorSelected = ui.selection === studio.actorEntityId;
     content = <>
       <span className={`state-pill s-${ui.actorState}`}>{ui.actorState.toUpperCase()}</span>
-      <span className="hint">{actorSelected ? 'Actor selected · tap the ground to move · tap an object to interact' : 'Tap the actor to direct him · drag to orbit · pinch/scroll to zoom'}</span>
+      <span className="hint">{actorSelected ? 'Actor selected · tap the ground to move · tap an object to interact' : 'Touche le personnage puis une destination · caméra automatique'}</span>
+      {contextId && <span className="context-actions">{studio.interactions.actionsFor(contextId).map((action) => <Btn key={action.id} text={action.label} label={action.label} onClick={async () => { const r = await studio.interactions.execute(contextId, action.id); if (!r.ok) studio.toast(r.error); else studio.toast(action.label); }} />)}</span>}
+      {actorSelected && <Btn text="Stop" label="Arrêter le personnage" onClick={() => studio.ops.stopActor()} />}
       {actorSelected && <Btn text="Done" label="Stop directing actor" onClick={() => studio.select(null)} />}
     </>;
   }

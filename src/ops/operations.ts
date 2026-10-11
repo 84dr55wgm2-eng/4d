@@ -56,7 +56,7 @@ export function createOps(studio: Studio) {
       }
       if (id === studio.actorEntityId && studio.actor) studio.actor.place(p);
       const out = p.toArray() as Vec3;
-      store().commit(`Move ${e.name}`, (d) => { d.entities.find((x) => x.id === id)!.transform.position = out; });
+      if (!store().commit(`Move ${e.name}`, (d) => { d.entities.find((x) => x.id === id)!.transform.position = out; })) return fail('Déplacement invalide');
       return ok(out);
     },
 
@@ -67,7 +67,7 @@ export function createOps(studio: Studio) {
       const yaw = (opts.relative ? cur : 0) + THREE.MathUtils.degToRad(yawDegrees);
       const q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
       if (id === studio.actorEntityId && studio.actor) studio.actor.place(studio.actor.position.clone(), yaw);
-      store().commit(`Rotate ${e.name}`, (d) => { d.entities.find((x) => x.id === id)!.transform.rotation = q.toArray() as Entity['transform']['rotation']; });
+      if (!store().commit(`Rotate ${e.name}`, (d) => { d.entities.find((x) => x.id === id)!.transform.rotation = q.toArray() as Entity['transform']['rotation']; })) return fail('Rotation invalide');
       return ok(THREE.MathUtils.radToDeg(yaw));
     },
 
@@ -76,7 +76,7 @@ export function createOps(studio: Studio) {
       if (typeof e === 'string') return fail(e);
       if (!e.capabilities.includes('scalable')) return fail(`${e.name} is not scalable`);
       if (!(scale > 0.05 && scale < 20)) return fail('scale out of range (0.05..20)');
-      store().commit(`Scale ${e.name}`, (d) => { d.entities.find((x) => x.id === id)!.transform.scale = [scale, scale, scale]; });
+      if (!store().commit(`Scale ${e.name}`, (d) => { d.entities.find((x) => x.id === id)!.transform.scale = [scale, scale, scale]; })) return fail('Échelle invalide');
       return ok(scale);
     },
 
@@ -89,7 +89,7 @@ export function createOps(studio: Studio) {
       copy.name = `${e.name} copy`;
       copy.locked = false;
       copy.transform.position = [e.transform.position[0] + 0.8, e.transform.position[1], e.transform.position[2] + 0.8];
-      store().commit(`Duplicate ${e.name}`, (d) => { d.entities.push(copy); });
+      if (!store().commit(`Duplicate ${e.name}`, (d) => { d.entities.push(copy); })) return fail('Position de la copie invalide');
       studio.select(copy.id);
       return ok(copy.id);
     },
@@ -126,7 +126,8 @@ export function createOps(studio: Studio) {
       const caps: Capability[] = ['selectable', 'movable', 'rotatable', 'scalable', 'collidable'];
       if (rec.entityType === 'LIGHT') caps.push('interactable', 'toggleable');
       if (rec.entityType === 'DOOR') caps.push('interactable', 'openable');
-      if (rec.entityType === 'CHAIR') caps.push('interactable', 'sittable');
+      if (rec.entityType === 'CHAIR' && rec.runtime?.interaction) caps.push('interactable', 'sittable');
+      if ((rec.runtime?.interaction as { pickable?: boolean } | undefined)?.pickable) caps.push('interactable', 'pickable');
       const interaction = rec.runtime?.interaction ? structuredClone(rec.runtime.interaction) : undefined;
       const e: Entity = {
         id: uid(rec.entityType.toLowerCase()), type: rec.entityType, name: rec.name, assetId,
@@ -134,7 +135,7 @@ export function createOps(studio: Studio) {
         parentId: null, tags: [...rec.tags], capabilities: caps,
         metadata: interaction ? { interaction } : undefined,
       };
-      store().commit(`Place ${rec.name}`, (d) => { d.entities.push(e); });
+      if (!store().commit(`Place ${rec.name}`, (d) => { d.entities.push(e); })) return fail('Emplacement invalide');
       studio.select(e.id);
       return ok(e.id);
     },
@@ -144,10 +145,24 @@ export function createOps(studio: Studio) {
       const a = studio.actor;
       if (!a) return Promise.resolve(fail('no actor'));
       if (!studio.nav) return Promise.resolve(fail('no navigation mesh loaded'));
+      if (a.seated) return Promise.resolve(fail('Lève-toi avant de marcher'));
+      if (!target.every(Number.isFinite)) return Promise.resolve(fail('invalid destination'));
       const path = studio.nav.path(a.position, new THREE.Vector3(...target));
       if (!path) return Promise.resolve(fail('no walkable path to target'));
+      a.cancelPath();
+      const points = path.filter((p, i) => i > 0 || p.distanceTo(a.position) > 0.15);
+      if (!points.length) return Promise.resolve(ok(a.position.toArray() as Vec3));
       return new Promise((resolve) => {
-        a.setPath(path.slice(1), opts.run ? a.runSpeed : a.walkSpeed, () => resolve(ok(a.position.toArray() as Vec3)));
+        let elapsed = 0, stalled = 0;
+        let last = a.position.clone();
+        const off = studio.engine.onUpdate((dt) => {
+          elapsed += dt;
+          stalled = a.position.distanceTo(last) < 0.001 ? stalled + dt : 0;
+          last.copy(a.position);
+          if (elapsed > 120 || stalled > 8) a.cancelPath();
+        });
+        a.setPath(points, opts.run ? a.runSpeed : a.walkSpeed, () => { off(); resolve(ok(a.position.toArray() as Vec3)); });
+        a.onCancel = () => { off(); resolve(fail('Movement interrupted or destination blocked')); };
       });
     },
 
@@ -161,8 +176,7 @@ export function createOps(studio: Studio) {
 
     stopActor(): OpResult<undefined> {
       if (!studio.actor) return fail('no actor');
-      studio.actor.path = [];
-      studio.actor.desiredSpeed = 0;
+      studio.actor.cancelPath();
       return ok(undefined);
     },
 
@@ -170,8 +184,7 @@ export function createOps(studio: Studio) {
       const a = studio.actor;
       if (!a) return fail('no actor');
       const heading = typeof target === 'number' ? THREE.MathUtils.degToRad(target) : Math.atan2(target[0] - a.position.x, target[2] - a.position.z);
-      a.path = [];
-      a.desiredSpeed = 0;
+      a.cancelPath();
       a.targetHeading = heading;
       return ok(THREE.MathUtils.radToDeg(heading));
     },

@@ -139,6 +139,10 @@ export class AssetRegistry {
       runtime: { remoteAssetId: r.id, interaction: entityType === 'LIGHT' ? { toggleable: true, enabled: true } : undefined },
     };
     this.manifest.assets.push(record);
+    try { const loaded = await this.loadGLTF(id); record.bounds = loaded.size.toArray() as AssetRecord['bounds']; } catch (e) {
+      this.manifest.assets = this.manifest.assets.filter((a) => a.id !== id);
+      throw new Error(`Import impossible pour ${r.title}: ${e instanceof Error ? e.message : String(e)}`);
+    }
     await idb.put('settings', 'external-assets', this.manifest.assets.filter((a) => a.id.startsWith('remote.')));
     return record;
   }
@@ -153,6 +157,26 @@ export class AssetRegistry {
     if (!p) {
       p = (async () => {
         const record = this.get(id);
+        const sourceId = record.runtime?.sourceAssetId as string | undefined;
+        if (sourceId) {
+          const source = await this.loadGLTF(sourceId, onProgress);
+          const wanted = new Set(record.runtime?.sourceNodes as number[]);
+          const scene = new THREE.Group();
+          source.template.updateMatrixWorld(true);
+          source.gltf.scene.traverse((obj) => {
+            const assoc = source.gltf.parser.associations.get(obj) as { nodes?: number } | undefined;
+            if (assoc?.nodes === undefined || !wanted.has(assoc.nodes)) return;
+            const copy = obj.clone(true);
+            obj.matrixWorld.decompose(copy.position, copy.quaternion, copy.scale);
+            scene.add(copy);
+          });
+          if (!scene.children.length) throw new Error(`No authored nodes for ${id}`);
+          const template = this.normalize(record, scene);
+          const size = new THREE.Box3().setFromObject(template).getSize(new THREE.Vector3());
+          const out = { record, gltf: source.gltf, template, size };
+          this.onLoaded?.(out);
+          return out;
+        }
         const url = this.resolveUrl(record);
         const buf = await this.cache.fetch(url, this.version, onProgress);
         const gltf = await this.loader.parseAsync(buf, url.slice(0, url.lastIndexOf('/') + 1));
@@ -218,7 +242,13 @@ export class AssetRegistry {
   instantiate(asset: LoadedAsset): THREE.Object3D {
     let skinned = false;
     asset.template.traverse((o) => { if ((o as THREE.SkinnedMesh).isSkinnedMesh) skinned = true; });
-    return skinned ? cloneSkinned(asset.template) : asset.template.clone(true);
+    const copy = skinned ? cloneSkinned(asset.template) : asset.template.clone(true);
+    // Stateful props must own their material; switching one lamp cannot switch all its clones.
+    copy.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (m.isMesh) m.material = Array.isArray(m.material) ? m.material.map((x) => x.clone()) : m.material.clone();
+    });
+    return copy;
   }
 }
 

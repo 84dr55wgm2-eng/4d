@@ -21,7 +21,7 @@ export interface ActorClips {
   run: LocomotionClip;
 }
 
-export type ActorState = 'idle' | 'walk' | 'run' | 'turn' | 'stop';
+export type ActorState = 'idle' | 'walk' | 'run' | 'turn' | 'stop' | 'sit';
 
 const UP = new THREE.Vector3(0, 1, 0);
 const _v = new THREE.Vector3();
@@ -51,6 +51,8 @@ export class Actor {
   private walk: THREE.AnimationAction;
   private run: THREE.AnimationAction;
   private phase = 0;
+  seated = false;
+  private seatBones: { bone: THREE.Bone; rotation: THREE.Quaternion }[] = [];
 
   /** world-space heading (radians, 0 = +Z) */
   heading = 0;
@@ -63,6 +65,7 @@ export class Actor {
   targetHeading: number | null = null;
   path: THREE.Vector3[] = [];
   onArrive?: () => void;
+  onCancel?: () => void;
   radius = 0.28;
   height = 1.8;
   walkSpeed: number;
@@ -89,6 +92,8 @@ export class Actor {
   get position() { return this.root.position; }
 
   place(p: THREE.Vector3, heading = this.heading) {
+    this.stand();
+    this.cancelPath();
     this.root.position.copy(p);
     this.heading = heading;
     this.speed = 0;
@@ -98,14 +103,63 @@ export class Actor {
   }
 
   setPath(points: THREE.Vector3[], speed: number, onArrive?: () => void) {
+    this.cancelPath();
     this.path = points.slice();
     this.desiredSpeed = speed;
     this.targetHeading = null;
     this.onArrive = onArrive;
   }
 
+  sit(anchor: THREE.Vector3, heading: number) {
+    this.stand(); this.cancelPath();
+    this.speed = 0; this.targetHeading = null;
+    this.idle.setEffectiveWeight(1); this.walk.setEffectiveWeight(0); this.run.setEffectiveWeight(0);
+    this.mixer.update(0);
+    this.root.updateMatrixWorld(true);
+    const hips = this.root.getObjectByName('Hips');
+    const hipOffset = hips ? hips.getWorldPosition(new THREE.Vector3()).y - this.position.y : 0.95;
+    this.position.copy(anchor); this.position.y += 0.10 - hipOffset;
+    this.heading = heading; this.root.rotation.y = heading;
+    this.root.updateMatrixWorld(true);
+    const aim = (name: string, childName: string, desired: THREE.Vector3) => {
+      const bone = this.root.getObjectByName(name) as THREE.Bone | undefined;
+      const child = this.root.getObjectByName(childName);
+      if (!bone || !child) return;
+      this.seatBones.push({ bone, rotation: bone.quaternion.clone() });
+      const from = child.getWorldPosition(new THREE.Vector3()).sub(bone.getWorldPosition(new THREE.Vector3())).normalize();
+      const world = bone.getWorldQuaternion(new THREE.Quaternion());
+      world.premultiply(new THREE.Quaternion().setFromUnitVectors(from, desired));
+      const parent = bone.parent!.getWorldQuaternion(new THREE.Quaternion()).invert();
+      bone.quaternion.copy(parent.multiply(world));
+      this.root.updateMatrixWorld(true);
+    };
+    const forward = new THREE.Vector3(Math.sin(heading), -0.12, Math.cos(heading)).normalize();
+    for (const side of ['Left', 'Right']) {
+      aim(`${side}UpLeg`, `${side}Leg`, forward);
+      aim(`${side}Leg`, `${side}Foot`, new THREE.Vector3(0, -1, 0));
+    }
+    this.seated = true; this.state = 'sit';
+  }
+
+  stand() {
+    if (!this.seated) return;
+    for (const { bone, rotation } of this.seatBones) bone.quaternion.copy(rotation);
+    this.seatBones = []; this.seated = false; this.state = 'idle';
+  }
+
+  cancelPath() {
+    const cancel = this.onCancel;
+    this.onCancel = undefined;
+    this.onArrive = undefined;
+    this.path = [];
+    this.desiredSpeed = 0;
+    this.desiredDir.set(0, 0, 0);
+    cancel?.();
+  }
+
   update(dt: number) {
     dt = Math.min(dt, 1 / 20);
+    if (this.seated) { this.state = 'sit'; return; }
 
     // --- path following (directed movement)
     if (this.path.length) {
@@ -118,8 +172,10 @@ export class Actor {
         if (!this.path.length) {
           this.desiredSpeed = 0;
           this.desiredDir.set(0, 0, 0);
-          this.onArrive?.();
+          const arrive = this.onArrive;
           this.onArrive = undefined;
+          this.onCancel = undefined;
+          arrive?.();
         }
       } else {
         this.desiredDir.copy(_v.multiplyScalar(1 / d));

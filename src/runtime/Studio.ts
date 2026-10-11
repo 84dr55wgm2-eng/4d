@@ -15,6 +15,8 @@ import { Input, isTyping } from './Input';
 import { Navigation } from './Navigation';
 import { Thumbnails } from './Thumbnails';
 import { InteractionSystem } from './InteractionSystem';
+import { composeWorld, refreshSpatialData, type WorldPlan } from '../world/WorldCreator';
+import { worldGeometry } from '../world/WorldGeometry';
 import { createToolRegistry } from '../ops/ToolRegistry';
 
 export type AppMode = 'explore' | 'edit' | 'direct';
@@ -40,6 +42,7 @@ export interface StudioUI {
   quality: Quality;
   placing: string | null;
   walkTargeting: boolean;
+  interactionTarget?: string | null;
   toast?: { text: string; at: number };
 }
 
@@ -71,12 +74,16 @@ export class Studio extends Emitter<Events> {
     canUndo: false, canRedo: false, saveState: 'saved', actorState: 'idle', diagnostics: false, quality: 'auto', placing: null, walkTargeting: false,
   };
   private saveTimer = 0;
+  worlds: { id: string; name: string }[] = [];
+  private geometryTimer = 0;
+  private geometryGeneration = 0;
+  private geometrySignature = '';
   private actorMarker: THREE.Mesh;
 
   constructor(readonly canvas: HTMLCanvasElement) {
     super();
     this.engine = new Engine(canvas);
-    this.cameras = new CameraDirector(canvas, this.input);
+    this.cameras = new CameraDirector(canvas);
     this.engine.setCamera(this.cameras.camera);
     this.entities = new EntityRuntime(this.registry);
     this.engine.scene.add(this.entities.group);
@@ -116,8 +123,24 @@ export class Studio extends Emitter<Events> {
       this.set({ phase: 'loading' });
       this.registry.setRenderer(this.engine.renderer);
       await this.registry.init();
+      const localWorlds = await idb.all<WorldDocument>('worlds');
+      this.worlds = [...this.registry.manifest.worlds.map(({id, name}) => ({id, name})), ...localWorlds.filter((d) => d.composition).map(({id, name}) => ({id, name}))];
       const doc = await this.loadWorldDocument();
+      for (const e of doc.entities) {
+        const rec = e.assetId ? this.registry.manifest.assets.find((a) => a.id === e.assetId) : undefined;
+        const defaults = rec?.runtime?.interaction as Record<string, unknown> | undefined;
+        if (!defaults) continue;
+        const metadata = (e.metadata ??= {});
+        metadata.interaction = { ...structuredClone(defaults), ...(metadata.interaction as Record<string, unknown> ?? {}) };
+        const add = (...caps: typeof e.capabilities) => { e.capabilities = [...new Set([...e.capabilities, ...caps])]; };
+        if (e.type === 'LIGHT') add('interactable', 'toggleable');
+        if (e.type === 'CHAIR' && defaults.seat) add('interactable', 'sittable');
+        if (defaults.pickable) add('interactable', 'pickable');
+      }
       this.store = new WorldStore(doc);
+      this.store.prepare = (d) => { if (d.composition) { worldGeometry(d, this.registry.manifest.assets).dispose(); refreshSpatialData(d, this.registry.manifest.assets); } };
+      this.store.onReject = (message) => this.toast(message);
+      this.geometrySignature = JSON.stringify(doc.entities.filter((e) => e.type === 'BUILDING' || e.type === 'ROAD').map((e) => [e.id, e.transform]));
       this.store.on('change', ({ source }) => this.onDocChange(source));
 
       const track = (label: string) => {
@@ -131,7 +154,8 @@ export class Studio extends Emitter<Events> {
       };
 
       const env = doc.environment;
-      const envRec = this.registry.get(env.assetId);
+      const envRec = env.assetId ? this.registry.get(env.assetId) : null;
+      const composedGeometry = doc.composition ? worldGeometry(doc, this.registry.manifest.assets) : null;
       const base = import.meta.env.BASE_URL;
       await this.engine.loadEnvironment(`${base}${this.registry.get(env.hdri).url}`, env.sun, env.exposure);
       this.thumbnails = new Thumbnails(this.engine.renderer, this.engine.scene.environment);
@@ -142,17 +166,17 @@ export class Studio extends Emitter<Events> {
       };
 
       const [world, collision, nav, actor] = await Promise.all([
-        this.registry.loadGLTF(env.assetId, track(envRec.name)),
-        env.collision ? CollisionWorld.load((u) => this.registry.cache.fetch(u, this.registry.version, track('Collision')), `${base}${env.collision}`) : null,
+        env.assetId ? this.registry.loadGLTF(env.assetId, track(envRec!.name)) : null,
+        composedGeometry ? Promise.resolve(new CollisionWorld(composedGeometry)) : env.collision ? CollisionWorld.load((u) => this.registry.cache.fetch(u, this.registry.version, track('Collision')), `${base}${env.collision}`) : null,
         // navigation is optional: without it, directed walking reports an error instead of breaking the world
-        env.navmesh ? this.registry.cache.fetch(`${base}${env.navmesh}`, this.registry.version).then((b) => Navigation.load(b)).catch((e) => { console.warn('[nav] unavailable', e); return null; }) : null,
+        composedGeometry ? Navigation.build(worldGeometry(doc, this.registry.manifest.assets, true)) : env.navmesh ? this.registry.cache.fetch(`${base}${env.navmesh}`, this.registry.version).then((b) => Navigation.load(b)).catch((e) => { console.warn('[nav] unavailable', e); return null; }) : null,
         this.loadActor(doc, track),
       ]);
       this.collision = collision;
       this.nav = nav;
       this.cameras.collision = collision;
-      this.environment = world.template;
-      world.template.traverse((o) => {
+      this.environment = world?.template ?? null;
+      world?.template.traverse((o) => {
         o.matrixAutoUpdate = false;
         o.updateMatrix();
         const m = o as THREE.Mesh;
@@ -161,8 +185,7 @@ export class Studio extends Emitter<Events> {
           m.receiveShadow = true;
         }
       });
-      world.template.updateMatrixWorld(true);
-      this.engine.scene.add(world.template);
+      if (world) { world.template.updateMatrixWorld(true); this.engine.scene.add(world.template); }
       if (collision) this.engine.scene.add(collision.debugMesh);
       if (nav) this.engine.scene.add(nav.debugObject());
       if (actor) {
@@ -176,6 +199,7 @@ export class Studio extends Emitter<Events> {
       this.entities.onSpawn = () => (this.engine.shadowsDirty = true);
       this.entities.sync(this.store.doc);
       this.placeActorFromDoc();
+      this.interactions.restoreSeat();
       this.resetFollowCamera();
       this.engine.onUpdate((dt) => this.update(dt));
       this.engine.setQuality(this.ui.quality);
@@ -190,6 +214,10 @@ export class Studio extends Emitter<Events> {
 
   private async loadWorldDocument(): Promise<WorldDocument> {
     const wanted = new URLSearchParams(location.search).get('world');
+    if (wanted) {
+      const saved = await idb.get<WorldDocument>('worlds', wanted);
+      if (saved?.composition && saved.format === 'cws-world') return saved;
+    }
     const entry = this.registry.manifest.worlds.find((w) => w.id === wanted) ?? this.registry.manifest.worlds[0];
     if (!entry) throw new Error('content manifest has no worlds');
     const res = await fetch(`${import.meta.env.BASE_URL}${entry.url}`, { cache: 'no-cache' });
@@ -250,6 +278,7 @@ export class Studio extends Emitter<Events> {
 
   resetFollowCamera() {
     if (!this.actor) return;
+    this.cameras.followHeading = this.actor.heading;
     this.cameras.followYaw = this.actor.heading + Math.PI;
     this.cameras.followPivot.copy(this.actor.position).y += 1.45;
     this.cameras.setPose(
@@ -266,6 +295,7 @@ export class Studio extends Emitter<Events> {
       if (this.ui.mode === 'explore' && !a.path.length) a.desiredSpeed = 0;
       const before = a.position.x + a.position.z * 7.31 + a.heading * 3.7;
       a.update(dt);
+      this.cameras.followHeading = a.heading;
       // an animated actor always changes its shadow; an idle one only breathes
       if (a.state !== 'idle' || Math.abs(before - (a.position.x + a.position.z * 7.31 + a.heading * 3.7)) > 1e-5) this.engine.shadowsDirty = true;
       if (a.state !== this.ui.actorState) this.set({ actorState: a.state });
@@ -273,6 +303,7 @@ export class Studio extends Emitter<Events> {
       if (this.actorMarker.visible) this.actorMarker.position.set(a.position.x, a.position.y + 0.025, a.position.z);
       this.engine.shadowFocus.copy(this.ui.cameraMode === 'follow' ? a.position : this.cameras.mode === 'director' ? this.cameras.orbitTarget : a.position);
     }
+    this.interactions.update();
     this.cameras.update(dt);
   }
 
@@ -305,6 +336,7 @@ export class Studio extends Emitter<Events> {
   }
 
   private cancelInteractions() {
+    this.actor?.cancelPath();
     this.set({ placing: null, walkTargeting: false });
   }
 
@@ -316,7 +348,6 @@ export class Studio extends Emitter<Events> {
     if (obj && ent && !ent.locked && this.ui.mode !== 'explore') this.gizmo.attach(obj);
     else this.gizmo.detach();
     this.gizmo.setMode(this.ui.gizmo);
-    this.cameras.freeLookWithLeft = !id;
     this.actorMarker.visible = id === this.actorEntityId;
     if (this.actorMarker.visible && this.actor) this.actorMarker.position.set(this.actor.position.x, this.actor.position.y + 0.025, this.actor.position.z);
     this.set({ selection: id });
@@ -338,17 +369,41 @@ export class Studio extends Emitter<Events> {
       obj.scale.set(1, 1, 1);
     }
     const t = readTransform(obj);
-    this.store.commit(`Transform ${this.store.entity(id)?.name}`, (doc) => {
+    const committed = this.store.commit(`Transform ${this.store.entity(id)?.name}`, (doc) => {
       const e = doc.entities.find((x) => x.id === id);
       if (!e) return false;
       e.transform = t;
     });
+    if (!committed) this.entities.sync(this.store.doc);
   }
 
   private onDocChange(source: string) {
     this.entities.sync(this.store.doc);
+    const signature = JSON.stringify(this.store.doc.entities.filter((e) => e.type === 'BUILDING' || e.type === 'ROAD').map((e) => [e.id, e.transform]));
+    if (this.store.doc.composition && signature !== this.geometrySignature) {
+      this.geometrySignature = signature;
+      const generation = ++this.geometryGeneration;
+      clearTimeout(this.geometryTimer);
+      this.geometryTimer = window.setTimeout(async () => {
+        try {
+          this.actor?.cancelPath();
+          const geometry = worldGeometry(this.store.doc, this.registry.manifest.assets);
+          const navGeometry = worldGeometry(this.store.doc, this.registry.manifest.assets, true);
+          const nav = await Navigation.build(navGeometry); navGeometry.dispose();
+          if (generation !== this.geometryGeneration) { nav.dispose(); geometry.dispose(); return; }
+          const old = this.collision;
+          this.collision = new CollisionWorld(geometry);
+          old?.debugMesh.removeFromParent(); old?.geometry.dispose();
+          this.nav?.dispose(); this.nav = nav;
+          this.cameras.collision = this.collision;
+          if (this.actor) this.actor.collision = this.collision;
+          this.engine.scene.add(this.collision.debugMesh, nav.debugObject());
+        } catch (e) { this.toast(`Navigation: ${e instanceof Error ? e.message : String(e)}`); }
+      }, 250);
+    }
     this.engine.shadowsDirty = true;
-    if (source === 'undo' || source === 'redo' || source === 'load') this.placeActorFromDoc();
+    if (source === 'undo' || source === 'redo' || source === 'load') { this.placeActorFromDoc(); this.interactions.restoreSeat(); }
+    else if (this.actor?.seated) this.interactions.restoreSeat();
     if (this.ui.selection && !this.store.entity(this.ui.selection)) this.select(null);
     else if (this.ui.selection) this.select(this.ui.selection);
     this.set({ canUndo: this.store.canUndo, canRedo: this.store.canRedo, undoLabel: this.store.undoLabel, redoLabel: this.store.redoLabel, saveState: 'unsaved' });
@@ -369,6 +424,7 @@ export class Studio extends Emitter<Events> {
     try {
       const doc = this.store.snapshot();
       this.syncActorIntoDoc(doc);
+      refreshSpatialData(doc, this.registry.manifest.assets);
       await idb.put('worlds', doc.id, doc);
       const back = await idb.get<WorldDocument>('worlds', doc.id);
       if (!back || back.entities.length !== doc.entities.length) throw new Error('read-back mismatch');
@@ -385,12 +441,34 @@ export class Studio extends Emitter<Events> {
     location.reload();
   }
 
-  switchWorld(id: string) {
-    const entry = this.registry.manifest.worlds.find((w) => w.id === id);
+  async createWorld(plan: WorldPlan) {
+    const baseline = this.store.snapshot();
+    const doc = composeWorld(plan, baseline, this.registry.manifest.assets);
+    refreshSpatialData(doc, this.registry.manifest.assets);
+    // Assets and navigation must be usable before persisting a new package or leaving the current one.
+    await Promise.all(doc.composition!.dependencies.filter((id) => this.registry.get(id).format === 'glb').map((id) => this.registry.loadGLTF(id)));
+    refreshSpatialData(doc, this.registry.manifest.assets);
+    const geometry = worldGeometry(doc, this.registry.manifest.assets);
+    const navGeometry = worldGeometry(doc, this.registry.manifest.assets, true);
+    const nav = await Navigation.build(navGeometry); navGeometry.dispose();
+    if (!nav.closest(new THREE.Vector3(...doc.spawn.position))) throw new Error('Point de départ non accessible');
+    nav.dispose(); geometry.dispose();
+    if (!await this.save()) throw new Error('Le monde actuel ne peut pas être sauvegardé');
+    await idb.put('worlds', doc.id, doc);
+    const back = await idb.get<WorldDocument>('worlds', doc.id);
+    if (!back || back.entities.length !== doc.entities.length) throw new Error('Échec de sauvegarde du nouveau monde');
+    this.worlds.push({ id: doc.id, name: doc.name });
+    await this.switchWorld(doc.id);
+    return doc.id;
+  }
+
+  async switchWorld(id: string) {
+    const entry = this.worlds.find((w) => w.id === id);
     if (!entry) {
       this.toast(`Unknown world: ${id}`);
       return;
     }
+    if (!await this.save()) { this.toast('Save failed; the current world stays open'); return; }
     const u = new URL(location.href);
     u.searchParams.set('world', id);
     location.assign(u.toString());
@@ -398,14 +476,22 @@ export class Studio extends Emitter<Events> {
 
   // ---------------------------------------------------------------- pointer
   private bindPointer() {
-    let down: { x: number; y: number; t: number } | null = null;
-    this.canvas.addEventListener('pointerdown', (e) => (down = { x: e.clientX, y: e.clientY, t: performance.now() }));
-    this.canvas.addEventListener('pointerup', (e) => {
-      if (!down || e.button !== 0) return;
-      const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
+    const pointers = new Set<number>();
+    let down: { id: number; x: number; y: number; moved: boolean } | null = null;
+    this.canvas.addEventListener('pointerdown', (e) => {
+      pointers.add(e.pointerId);
+      if (pointers.size !== 1 || e.button !== 0) { down = null; return; }
+      down = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
+    });
+    this.canvas.addEventListener('pointermove', (e) => {
+      if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) down.moved = true;
+    });
+    this.canvas.addEventListener('pointercancel', (e) => { pointers.delete(e.pointerId); down = null; });
+    window.addEventListener('pointerup', (e) => {
+      const tap = down && down.id === e.pointerId && !down.moved && pointers.size === 1;
+      pointers.delete(e.pointerId);
       down = null;
-      if (moved > 5 || this.gizmo.dragging) return;
-      this.onClick(e.clientX, e.clientY);
+      if (tap && e.target === this.canvas && !this.gizmo.dragging) this.onClick(e.clientX, e.clientY);
     });
   }
 
@@ -414,13 +500,35 @@ export class Studio extends Emitter<Events> {
     _ndc.set(((x - r.left) / r.width) * 2 - 1, -((y - r.top) / r.height) * 2 + 1);
     _ray.setFromCamera(_ndc, this.cameras.camera);
     const hits = _ray.intersectObjects(this.entities.pickables(), true);
-    const ent = hits.find((h) => h.object.userData.entityId)?.object.userData.entityId as string | undefined;
+    const entityHit = hits.find((h) => { const id = h.object.userData.entityId; return id && this.store.entity(id)?.capabilities.includes('selectable'); });
+    let ent = entityHit?.object.userData.entityId as string | undefined;
     let ground: THREE.Vector3 | null = null;
     if (this.collision) {
       const hit = this.collision.bvh.raycastFirst(_ray.ray, THREE.DoubleSide, 0, 400);
       if (hit) ground = hit.point.clone();
     }
-    const entDist = hits[0]?.distance ?? Infinity;
+    let entDist = entityHit?.distance ?? Infinity;
+    if (!ent) {
+      // Thin authored objects need a forgiving finger-sized screen target, while walls still occlude them.
+      for (const e of this.store.doc.entities) {
+        if (!e.capabilities.includes('interactable')) continue;
+        const obj = this.entities.objects.get(e.id);
+        if (!obj) continue;
+        const box = new THREE.Box3().setFromObject(obj), center = box.getCenter(new THREE.Vector3());
+        const projected = center.clone().project(this.cameras.camera);
+        if (projected.z < -1 || projected.z > 1) continue;
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        for (const cx of [box.min.x, box.max.x]) for (const cy of [box.min.y, box.max.y]) for (const cz of [box.min.z, box.max.z]) {
+          const p = new THREE.Vector3(cx, cy, cz).project(this.cameras.camera);
+          const sx = r.left + (p.x + 1) * r.width / 2, sy = r.top + (1 - p.y) * r.height / 2;
+          minX = Math.min(minX, sx); maxX = Math.max(maxX, sx); minY = Math.min(minY, sy); maxY = Math.max(maxY, sy);
+        }
+        const distance = center.distanceTo(_ray.ray.origin);
+        if (x >= minX - 12 && x <= maxX + 12 && y >= minY - 12 && y <= maxY + 12 && distance < entDist && (!ground || distance < ground.distanceTo(_ray.ray.origin) + 0.05)) {
+          ent = e.id; entDist = distance;
+        }
+      }
+    }
     return { entity: ent ?? null, entityDistance: entDist, ground, groundDistance: ground ? ground.distanceTo(_ray.ray.origin) : Infinity };
   }
 
@@ -442,18 +550,18 @@ export class Studio extends Emitter<Events> {
       // Touch/click the actor once to direct him. Subsequent taps choose destinations or objects.
       if (p.entity === this.actorEntityId) {
         this.select(this.actorEntityId);
+        this.set({ interactionTarget: null });
         this.toast('Actor selected · tap the ground or an object');
         return;
       }
       if (this.ui.selection === this.actorEntityId) {
         if (p.entity && p.entity !== this.actorEntityId && p.entityDistance <= p.groundDistance + 0.05) {
-          this.interactions.execute(p.entity).then((r) => {
-            if (!r.ok) this.toast(r.error);
-            else this.toast(r.action === 'approach' ? 'Reached object' : `Interaction: ${r.action}`);
-          });
+          this.set({ interactionTarget: p.entity });
+          if (!this.interactions.actionsFor(p.entity).length) this.toast('Cet objet ne possède pas encore d’action');
           return;
         }
         if (p.ground) {
+          this.set({ interactionTarget: null });
           this.ops.moveActorTo(p.ground.toArray() as [number, number, number]).then((r) => {
             if (!r.ok) this.toast(r.error);
           });

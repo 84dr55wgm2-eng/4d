@@ -10,6 +10,7 @@ export class EntityRuntime {
   readonly group = new THREE.Group();
   readonly objects = new Map<string, THREE.Object3D>();
   private pending = new Set<string>();
+  private doc!: WorldDocument;
   /** entity types rendered by dedicated systems (the actor) */
   external = new Map<string, THREE.Object3D>();
   onLoadError?: (entity: Entity, err: unknown) => void;
@@ -20,6 +21,7 @@ export class EntityRuntime {
   }
 
   sync(doc: WorldDocument) {
+    this.doc = doc;
     const live = new Set(doc.entities.map((e) => e.id));
     for (const [id, obj] of this.objects) {
       if (!live.has(id)) {
@@ -38,15 +40,38 @@ export class EntityRuntime {
       if (obj) {
         applyTransform(obj, e);
         applySemanticState(obj, e);
-      } else if (e.assetId && !this.pending.has(e.id)) this.spawn(e);
+      } else if ((e.assetId || e.metadata?.surface) && !this.pending.has(e.id)) this.spawn(e);
     }
   }
 
   private async spawn(e: Entity) {
     this.pending.add(e.id);
     try {
-      const asset = await this.registry.loadGLTF(e.assetId!);
-      const obj = this.registry.instantiate(asset);
+      let obj: THREE.Object3D;
+      if (e.metadata?.surface) {
+        const cfg = e.metadata.surface as { width: number; depth: number; material: string };
+        const source = await this.registry.loadGLTF('env.bistro');
+        let material: THREE.Material | undefined;
+        source.template.traverse((o) => {
+          const m = o as THREE.Mesh;
+          if (!m.isMesh) return;
+          for (const mat of Array.isArray(m.material) ? m.material : [m.material]) if (mat.name.includes(cfg.material)) material = mat;
+        });
+        if (!material) throw new Error('Authored pavement material missing');
+        const g = new THREE.PlaneGeometry(cfg.width, cfg.depth);
+        g.rotateX(-Math.PI / 2);
+        const uv = g.getAttribute('uv');
+        for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * cfg.width / 2, uv.getY(i) * cfg.depth / 2);
+        obj = new THREE.Mesh(g, material.clone());
+        (obj as THREE.Mesh).receiveShadow = true;
+      } else {
+        const asset = await this.registry.loadGLTF(e.assetId!);
+        obj = this.registry.instantiate(asset);
+      }
+      // An async asset load must not resurrect an entity deleted while it was downloading.
+      const current = this.doc.entities.find((x) => x.id === e.id);
+      if (!current) return;
+      e = current;
       obj.name = e.name;
       obj.userData.entityId = e.id;
       obj.traverse((o) => (o.userData.entityId = e.id));

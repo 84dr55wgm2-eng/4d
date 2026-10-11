@@ -270,7 +270,10 @@
    "runtime": {
     "keepNodes": [
      "Cone Normal"
-    ]
+    ],
+    "interaction": {
+     "pickable": true
+    }
    }
   },
   {
@@ -299,11 +302,9 @@
    "bytes": 9564264,
    "runtime": {
     "interaction": {
-     "toggleable": true,
      "enabled": true,
-     "color": "#ffd7a3",
-     "intensity": 28,
-     "distance": 7
+     "intensity": 20,
+     "distance": 6
     }
    }
   },
@@ -352,7 +353,22 @@
     "seat"
    ],
    "entityType": "CHAIR",
-   "bytes": 2028924
+   "bytes": 2028924,
+   "runtime": {
+    "interaction": {
+     "seat": [
+      0,
+      0.47,
+      0
+     ],
+     "approach": [
+      0,
+      0,
+      1
+     ],
+     "facing": 0
+    }
+   }
   },
   {
    "id": "khr.sheenchair",
@@ -376,7 +392,22 @@
     "seat"
    ],
    "entityType": "CHAIR",
-   "bytes": 4125648
+   "bytes": 4125648,
+   "runtime": {
+    "interaction": {
+     "seat": [
+      0,
+      0.47,
+      0
+     ],
+     "approach": [
+      0,
+      0,
+      1
+     ],
+     "facing": 0
+    }
+   }
   },
   {
    "id": "khr.glamvelvetsofa",
@@ -548,6 +579,167 @@
    ],
    "entityType": "VEHICLE",
    "bytes": 3395040
+  },
+  {
+   "id": "kit.shop",
+   "name": "Maison de briques",
+   "category": "ARCHITECTURE",
+   "source": "Amazon Lumberyard Bistro — kit authored",
+   "sourceUrl": "https://developer.nvidia.com/orca/amazon-lumberyard-bistro",
+   "url": "content/worlds/bistro/bistro.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC-BY-4.0",
+    "attribution": "Amazon Lumberyard Bistro, © 2017 Amazon Lumberyard, CC-BY 4.0",
+    "verified": true,
+    "notes": "Prepared by tools/prepare (spec/gloss->metal/rough, BC7->WebP 1024, meshopt, instancing)"
+   },
+   "entityType": "BUILDING",
+   "bounds": [
+    16.55,
+    14.57,
+    12.44
+   ],
+   "tags": [
+    "shop",
+    "kit",
+    "authored",
+    "urban"
+   ],
+   "runtime": {
+    "sourceAssetId": "env.bistro",
+    "sourceNodes": [
+     71,
+     72,
+     73,
+     74,
+     75,
+     76,
+     77,
+     78,
+     79,
+     80
+    ]
+   }
+  },
+  {
+   "id": "kit.house",
+   "name": "Immeuble résidentiel",
+   "category": "ARCHITECTURE",
+   "source": "Amazon Lumberyard Bistro — kit authored",
+   "sourceUrl": "https://developer.nvidia.com/orca/amazon-lumberyard-bistro",
+   "url": "content/worlds/bistro/bistro.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC-BY-4.0",
+    "attribution": "Amazon Lumberyard Bistro, © 2017 Amazon Lumberyard, CC-BY 4.0",
+    "verified": true,
+    "notes": "Prepared by tools/prepare (spec/gloss->metal/rough, BC7->WebP 1024, meshopt, instancing)"
+   },
+   "entityType": "BUILDING",
+   "bounds": [
+    26.01,
+    21.45,
+    32.09
+   ],
+   "tags": [
+    "house",
+    "kit",
+    "authored",
+    "urban"
+   ],
+   "runtime": {
+    "sourceAssetId": "env.bistro",
+    "sourceNodes": [
+     28,
+     29,
+     30,
+     31,
+     32,
+     33,
+     34,
+     35,
+     36,
+     37
+    ]
+   }
+  },
+  {
+   "id": "kit.building",
+   "name": "Immeuble à auvents",
+   "category": "ARCHITECTURE",
+   "source": "Amazon Lumberyard Bistro — kit authored",
+   "sourceUrl": "https://developer.nvidia.com/orca/amazon-lumberyard-bistro",
+   "url": "content/worlds/bistro/bistro.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC-BY-4.0",
+    "attribution": "Amazon Lumberyard Bistro, © 2017 Amazon Lumberyard, CC-BY 4.0",
+    "verified": true,
+    "notes": "Prepared by tools/prepare (spec/gloss->metal/rough, BC7->WebP 1024, meshopt, instancing)"
+   },
+   "entityType": "BUILDING",
+   "bounds": [
+    20.33,
+    21.5,
+    25.59
+   ],
+   "tags": [
+    "building",
+    "kit",
+    "authored",
+    "urban"
+   ],
+   "runtime": {
+    "sourceAssetId": "env.bistro",
+    "sourceNodes": [
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17
+    ]
+   }
+  },
+  {
+   "id": "kit.tree",
+   "name": "Arbre feuillu",
+   "category": "VEGETATION",
+   "source": "Amazon Lumberyard Bistro — kit authored",
+   "sourceUrl": "https://developer.nvidia.com/orca/amazon-lumberyard-bistro",
+   "url": "content/worlds/bistro/bistro.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC-BY-4.0",
+    "attribution": "Amazon Lumberyard Bistro, © 2017 Amazon Lumberyard, CC-BY 4.0",
+    "verified": true,
+    "notes": "Prepared by tools/prepare (spec/gloss->metal/rough, BC7->WebP 1024, meshopt, instancing)"
+   },
+   "entityType": "VEGETATION",
+   "bounds": [
+    9.2,
+    10.08,
+    12.38
+   ],
+   "tags": [
+    "tree",
+    "kit",
+    "authored",
+    "urban"
+   ],
+   "runtime": {
+    "sourceAssetId": "env.bistro",
+    "sourceNodes": [
+     178,
+     179,
+     180,
+     181
+    ]
+   }
   }
  ],
  "worlds": [

@@ -28,20 +28,26 @@ export class CollisionWorld {
   readonly bvh: MeshBVH;
   readonly debugMesh: THREE.Mesh;
 
-  constructor(readonly meta: CollisionMeta, binary: ArrayBuffer) {
-    const L = meta.layout;
-    const positions = new Float32Array(binary, L.position.byteOffset, L.position.byteLength / 4);
-    const IndexType = L.index.type === 'Uint16Array' ? Uint16Array : Uint32Array;
-    const index = new IndexType(binary, L.index.byteOffset, L.index.byteLength / IndexType.BYTES_PER_ELEMENT);
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    g.setIndex(new THREE.BufferAttribute(index, 1));
-    g.boundingBox = new THREE.Box3(new THREE.Vector3().fromArray(meta.bounds.min), new THREE.Vector3().fromArray(meta.bounds.max));
-    g.boundsTree = MeshBVH.deserialize(
-      { version: 1, roots: L.roots.map((r) => binary.slice(r.byteOffset, r.byteOffset + r.byteLength)), index, indirectBuffer: null } as never,
-      g,
-      { setIndex: false },
-    );
+  constructor(meta: CollisionMeta | THREE.BufferGeometry, binary?: ArrayBuffer) {
+    let g: THREE.BufferGeometry;
+    if (meta instanceof THREE.BufferGeometry) {
+      g = meta;
+      g.computeBoundingBox();
+      g.boundsTree = new MeshBVH(g);
+    } else {
+      const L = meta.layout;
+      const positions = new Float32Array(binary!, L.position.byteOffset, L.position.byteLength / 4);
+      const IndexType = L.index.type === 'Uint16Array' ? Uint16Array : Uint32Array;
+      const index = new IndexType(binary!, L.index.byteOffset, L.index.byteLength / IndexType.BYTES_PER_ELEMENT);
+      g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      g.setIndex(new THREE.BufferAttribute(index, 1));
+      g.boundingBox = new THREE.Box3(new THREE.Vector3().fromArray(meta.bounds.min), new THREE.Vector3().fromArray(meta.bounds.max));
+      g.boundsTree = MeshBVH.deserialize(
+        { version: 1, roots: L.roots.map((r) => binary!.slice(r.byteOffset, r.byteOffset + r.byteLength)), index, indirectBuffer: null } as never,
+        g, { setIndex: false },
+      );
+    }
     this.geometry = g;
     this.bvh = g.boundsTree as unknown as MeshBVH;
     this.debugMesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0xff3b30, wireframe: true, transparent: true, opacity: 0.25, depthTest: false }));

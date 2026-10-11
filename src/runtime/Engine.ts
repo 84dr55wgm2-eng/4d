@@ -38,7 +38,7 @@ export class Engine {
   readonly hemi: THREE.HemisphereLight;
   camera!: THREE.PerspectiveCamera;
   quality: Quality = 'auto';
-  effective: Exclude<Quality, 'auto'> = 'high';
+  effective: Exclude<Quality, 'auto'> = matchMedia('(pointer: coarse)').matches ? 'balanced' : 'high';
   stats: FrameStats = { fps: 0, frameMs: 0, calls: 0, triangles: 0, geometries: 0, textures: 0 };
   /** point the shadow frustum follows (actor / camera focus) */
   shadowFocus = new THREE.Vector3();
@@ -81,6 +81,7 @@ export class Engine {
 
   onUpdate(fn: (dt: number) => void) {
     this.updaters.push(fn);
+    return () => { this.updaters = this.updaters.filter((u) => u !== fn); };
   }
 
   async loadEnvironment(hdrUrl: string, sun: { azimuth: number; elevation: number; intensity: number }, exposure: number) {

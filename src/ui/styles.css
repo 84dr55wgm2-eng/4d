@@ -172,7 +172,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
   :root { --glass-bg: rgba(16, 17, 20, 0.82); --glass-bg-strong: rgba(16, 17, 20, 0.92); --text-dim: rgba(255,255,255,0.85); }
 }
 @media (max-width: 720px) {
-  .world-name { display: none; }
+  .world-name { display: block; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .library { width: calc(100vw - 28px); }
 }
 
@@ -218,3 +218,30 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .world-result small { color: var(--text-dim); font-size: 10.5px; }
 .world-error { padding: 8px 9px; border-radius: 10px; background: rgba(255,69,58,.12); color: #ff9b92; line-height: 1.35; }
 .world-pop { width: min(430px, calc(100vw - 28px)); max-height: min(76vh, 680px); overflow-y: auto; }
+.world-pop { max-height: min(80dvh, 760px); overflow-y: auto; overscroll-behavior: contain; }
+.world-plan { display: grid; gap: 8px; margin-top: 12px; }
+.world-plan > label { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; }
+.world-plan input:not([type=checkbox]), .world-plan select { width: 60%; min-width: 0; color: inherit; background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.16); border-radius: 8px; padding: 7px; }
+.world-plan select option { background: #222; }
+.kit-options { display: grid; gap: 6px; font-size: 12px; }
+.context-actions { display: flex; gap: 6px; }
+@media (max-width: 700px) { .context-actions { flex-wrap: wrap; } .world-pop { max-width: calc(100vw - 24px); } }
+
+@media (max-width: 720px) {
+  .island { max-width: calc(100vw - 16px); flex-wrap: wrap; justify-content: center; }
+  .top { top: max(8px, env(safe-area-inset-top)); }
+  .world-name { max-width: 84px; font-size: 11px; }
+  .world-pop { position: fixed; left: 10px; top: 100px; width: calc(100vw - 20px); min-width: 0; max-height: calc(100dvh - 120px); }
+  .dock { flex-wrap: wrap; justify-content: center; max-width: calc(100vw - 20px); }
+  .dock .hint { white-space: normal; text-align: center; }
+}
+.top { z-index: 20; }
+.dock-wrap { z-index: 10; }
+@media (max-width: 720px) {
+  .island { gap: 4px; padding: 5px 8px; border-radius: 24px; }
+  .world-name { max-width: 68px; margin-right: 0; }
+  .seg button { padding-left: 10px; padding-right: 10px; }
+  .world-pop { top: 110px; max-height: calc(100dvh - 140px); }
+}
+
+.world-pop { background: rgba(24, 27, 32, .94); }

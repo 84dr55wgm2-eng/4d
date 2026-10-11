@@ -16,6 +16,8 @@ export class WorldStore extends Emitter<StoreEvents> {
   private undoStack: { label: string; doc: WorldDocument }[] = [];
   private redoStack: { label: string; doc: WorldDocument }[] = [];
   dirty = false;
+  prepare?: (doc: WorldDocument) => void;
+  onReject?: (message: string) => void;
 
   constructor(doc: WorldDocument) {
     super();
@@ -42,7 +44,13 @@ export class WorldStore extends Emitter<StoreEvents> {
   commit(label: string, mutate: (doc: WorldDocument) => void | false): boolean {
     const before = clone(this._doc);
     const draft = clone(this._doc);
-    if (mutate(draft) === false) return false;
+    try {
+      if (mutate(draft) === false) return false;
+      this.prepare?.(draft);
+    } catch (e) {
+      this.onReject?.(e instanceof Error ? e.message : String(e));
+      return false;
+    }
     this.undoStack.push({ label, doc: before });
     if (this.undoStack.length > 200) this.undoStack.shift();
     this.redoStack = [];

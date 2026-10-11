@@ -16,7 +16,7 @@ export type EntityType =
 
 export type Capability =
   | 'selectable' | 'movable' | 'rotatable' | 'scalable' | 'walkable' | 'collidable' | 'directable'
-  | 'sittable' | 'interactable' | 'openable' | 'toggleable';
+  | 'sittable' | 'interactable' | 'openable' | 'toggleable' | 'pickable';
 
 export interface Entity {
   id: string;
@@ -63,12 +63,20 @@ export interface WorldDocument {
   id: string;
   name: string;
   environment: {
-    assetId: string;
+    assetId?: string;
     collision?: string;
     navmesh?: string;
     hdri: string;
     sun: { azimuth: number; elevation: number; intensity: number };
     exposure: number;
+  };
+  composition?: {
+    brief: string;
+    layout: 'street' | 'courtyard';
+    size: number;
+    cells: { id: string; bounds: [number, number, number, number]; entities: string[]; dependencies: string[] }[];
+    dependencies: string[];
+    missing: string[];
   };
   spawn: { position: Vec3; heading: number };
   zones: Zone[];

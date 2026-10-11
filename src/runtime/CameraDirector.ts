@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Emitter } from '../core/emitter';
 import type { CameraShot } from '../core/types';
 import type { CollisionWorld } from './CollisionWorld';
-import type { Input } from './Input';
+import { angleDiff } from './Actor';
 
 export type CameraMode = 'follow' | 'free' | 'director';
 export const LENSES = [24, 35, 50, 85] as const;
@@ -13,7 +13,6 @@ type Events = { change: { mode: CameraMode; focalLength: number } };
 const _v = new THREE.Vector3();
 const _w = new THREE.Vector3();
 const _dir = new THREE.Vector3();
-const _e = new THREE.Euler(0, 0, 0, 'YXZ');
 
 /**
  * EXPLORE (follow) / FREE / DIRECT cameras on one PerspectiveCamera.
@@ -25,19 +24,17 @@ export class CameraDirector extends Emitter<Events> {
   /** world point the follow camera orbits (updated from the actor every frame) */
   followPivot = new THREE.Vector3();
   followYaw = Math.PI; // behind the actor
+  followHeading = 0;
   followPitch = 0.12;
   followDistance = 3.4;
   /** director: point of interest provider (e.g. the actor's head) */
   lookAtProvider: (() => THREE.Vector3 | null) | null = null;
 
   private orbit: OrbitControls;
-  private freeYaw = 0;
-  private freePitch = 0;
-  private dragging: { button: number; x: number; y: number } | null = null;
   private transition: { from: THREE.Vector3; fromT: THREE.Vector3; to: THREE.Vector3; toT: THREE.Vector3; fromF: number; toF: number; t: number; dur: number } | null = null;
   collision: CollisionWorld | null = null;
 
-  constructor(private dom: HTMLElement, private input: Input) {
+  constructor(dom: HTMLElement) {
     super();
     this.camera = new THREE.PerspectiveCamera(50, 1, 0.05, 1500);
     this.camera.filmGauge = 36;
@@ -50,35 +47,26 @@ export class CameraDirector extends Emitter<Events> {
     this.orbit.enabled = false;
     this.orbit.maxPolarAngle = Math.PI * 0.97;
 
-    dom.addEventListener('pointerdown', (e) => {
-      if (this.mode === 'director') return;
-      this.dragging = { button: e.button, x: e.clientX, y: e.clientY };
+    const touches = new Map<number, THREE.Vector2>();
+    let pinch = 0;
+    dom.addEventListener('pointerdown', (e) => { touches.set(e.pointerId, new THREE.Vector2(e.clientX, e.clientY)); pinch = 0; });
+    dom.addEventListener('pointermove', (e) => {
+      if (!touches.has(e.pointerId)) return;
+      touches.set(e.pointerId, new THREE.Vector2(e.clientX, e.clientY));
+      if (this.mode !== 'follow' || touches.size !== 2) return;
+      const [a, b] = [...touches.values()];
+      const distance = a.distanceTo(b);
+      if (pinch > 0 && distance > 0) this.followDistance = THREE.MathUtils.clamp(this.followDistance * pinch / distance, 1.4, 9);
+      pinch = distance;
     });
-    window.addEventListener('pointerup', () => (this.dragging = null));
-    window.addEventListener('pointermove', (e) => {
-      if (!this.dragging || this.mode === 'director') return;
-      const dx = e.clientX - this.dragging.x, dy = e.clientY - this.dragging.y;
-      this.dragging.x = e.clientX;
-      this.dragging.y = e.clientY;
-      // free camera: look with right/middle drag, or left drag when nothing is being edited
-      if (this.mode === 'follow') {
-        this.followYaw -= dx * 0.005;
-        this.followPitch = THREE.MathUtils.clamp(this.followPitch + dy * 0.004, -0.5, 1.2);
-      } else if (this.mode === 'free' && (this.dragging.button !== 0 || this.freeLookWithLeft)) {
-        this.freeYaw -= dx * 0.0035;
-        this.freePitch = THREE.MathUtils.clamp(this.freePitch - dy * 0.0035, -1.5, 1.5);
-      }
-    });
+    const release = (e: PointerEvent) => { touches.delete(e.pointerId); pinch = 0; };
+    window.addEventListener('pointerup', release);
+    dom.addEventListener('pointercancel', release);
     dom.addEventListener('wheel', (e) => {
       if (this.mode === 'follow') this.followDistance = THREE.MathUtils.clamp(this.followDistance * (1 + Math.sign(e.deltaY) * 0.1), 1.4, 9);
-      else if (this.mode === 'free') this.freeSpeed = THREE.MathUtils.clamp(this.freeSpeed * (e.deltaY > 0 ? 0.85 : 1.18), 0.5, 40);
     }, { passive: true });
     dom.addEventListener('contextmenu', (e) => e.preventDefault());
   }
-
-  freeSpeed = 4;
-  /** set by the editor: when a gizmo or selection owns left-drag, free-look uses right-drag only */
-  freeLookWithLeft = true;
 
   get focalLength() { return Math.round(this.camera.userData.lensMm ?? this.camera.getFocalLength()); }
 
@@ -91,16 +79,10 @@ export class CameraDirector extends Emitter<Events> {
 
   setMode(mode: CameraMode) {
     if (mode === this.mode) return;
-    const prev = this.mode;
     this.mode = mode;
     this.transition = null;
-    this.orbit.enabled = mode === 'director';
-    if (mode === 'free' || (mode === 'director' && prev !== 'director')) {
-      _e.setFromQuaternion(this.camera.quaternion);
-      this.freeYaw = _e.y;
-      this.freePitch = _e.x;
-    }
-    if (mode === 'director') {
+    this.orbit.enabled = mode !== 'follow';
+    if (mode !== 'follow') {
       // orbit around what we are looking at (actor if near the view centre, else 8 m ahead)
       const p = this.lookAtProvider?.();
       this.camera.getWorldDirection(_dir);
@@ -143,10 +125,7 @@ export class CameraDirector extends Emitter<Events> {
   setPose(position: THREE.Vector3, target: THREE.Vector3) {
     this.camera.position.copy(position);
     this.camera.lookAt(target);
-    if (this.mode === 'director') { this.orbit.target.copy(target); this.orbit.update(); }
-    _e.setFromQuaternion(this.camera.quaternion);
-    this.freeYaw = _e.y;
-    this.freePitch = _e.x;
+    if (this.mode !== 'follow') { this.orbit.target.copy(target); this.orbit.update(); }
   }
 
   resize(w: number, h: number) {
@@ -156,11 +135,12 @@ export class CameraDirector extends Emitter<Events> {
 
   update(dt: number) {
     if (this.mode === 'follow') this.updateFollow(dt);
-    else if (this.mode === 'free') this.updateFree(dt);
+    else if (this.mode === 'free') this.orbit.update(dt);
     else this.updateDirector(dt);
   }
 
   private updateFollow(dt: number) {
+    this.followYaw += angleDiff(this.followHeading + Math.PI, this.followYaw) * (1 - Math.exp(-Math.min(dt, 0.1) * 5));
     const pivot = _w.copy(this.followPivot);
     // right-shoulder framing
     const right = _dir.set(Math.cos(this.followYaw), 0, -Math.sin(this.followYaw));
@@ -173,17 +153,6 @@ export class CameraDirector extends Emitter<Events> {
     const k = 1 - Math.exp(-dt * 14);
     this.camera.position.lerp(desired, k);
     this.camera.lookAt(pivot);
-  }
-
-  private updateFree(dt: number) {
-    const i = this.input;
-    const fwd = i.axis(['KeyS'], ['KeyW']), side = i.axis(['KeyA'], ['KeyD']), up = i.axis(['KeyQ'], ['KeyE']);
-    const boost = i.pressed('ShiftLeft') || i.pressed('ShiftRight') ? 3 : 1;
-    _e.set(this.freePitch, this.freeYaw, 0);
-    this.camera.quaternion.setFromEuler(_e);
-    _v.set(side, 0, -fwd).applyQuaternion(this.camera.quaternion);
-    _v.y += up;
-    if (_v.lengthSq() > 0) this.camera.position.addScaledVector(_v.normalize(), this.freeSpeed * boost * dt);
   }
 
   private updateDirector(dt: number) {
@@ -216,6 +185,6 @@ export class CameraDirector extends Emitter<Events> {
   get orbitTarget() { return this.orbit.target; }
 
   setOrbitEnabled(on: boolean) {
-    this.orbit.enabled = on && this.mode === 'director';
+    this.orbit.enabled = on && this.mode !== 'follow';
   }
 }
