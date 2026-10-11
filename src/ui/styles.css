@@ -198,3 +198,23 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
   .dock { padding: 7px 9px; }
   .dock .hint { white-space: normal; line-height: 1.25; }
 }
+
+.world-brief { display: grid; gap: 8px; padding: 4px 8px 8px; }
+.world-brief textarea {
+  width: 100%; min-height: 84px; resize: vertical; border: 0; outline: none; border-radius: 14px;
+  padding: 10px 11px; background: rgba(0,0,0,.28); color: var(--text); font: inherit; line-height: 1.4;
+}
+.world-discover {
+  min-height: 38px; border-radius: 999px; padding: 0 14px; font-weight: 650;
+  background: rgba(255,255,255,.92); color: #111;
+}
+.world-discover:disabled { opacity: .38; }
+.world-queries { display: flex; flex-wrap: wrap; gap: 4px; }
+.world-queries span { padding: 4px 7px; border-radius: 999px; background: rgba(255,255,255,.08); color: var(--text-dim); font-size: 10.5px; }
+.world-results { display: grid; gap: 4px; max-height: 260px; overflow-y: auto; }
+.world-result { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 8px 9px; border-radius: 11px; text-align: left; background: rgba(255,255,255,.055); }
+.world-result:hover { background: rgba(255,255,255,.11); }
+.world-result span { font-weight: 600; }
+.world-result small { color: var(--text-dim); font-size: 10.5px; }
+.world-error { padding: 8px 9px; border-radius: 10px; background: rgba(255,69,58,.12); color: #ff9b92; line-height: 1.35; }
+.world-pop { width: min(430px, calc(100vw - 28px)); max-height: min(76vh, 680px); overflow-y: auto; }
