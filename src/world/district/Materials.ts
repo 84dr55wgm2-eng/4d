@@ -17,6 +17,8 @@ export interface MaterialDef {
   emissive?: [number, number, number];
   emissiveIntensity?: number;
   side?: THREE.Side;
+  /** approximate indirect (floor-bounced) light on surfaces no direct light reaches, e.g. interior ceilings */
+  bounce?: number;
 }
 
 export class MaterialLibrary {
@@ -64,6 +66,7 @@ export class MaterialLibrary {
       std.aoMap = arm; std.roughnessMap = arm; std.metalnessMap = arm;
       std.aoMapIntensity = 0.8;
     }
+    if (d.bounce && std.map) { std.emissiveMap = std.map; std.emissive = std.color.clone().multiplyScalar(d.bounce); }
     if (d.emissive) { std.emissive = new THREE.Color(...d.emissive); std.emissiveIntensity = d.emissiveIntensity ?? 1; }
     std.name = key;
     this.cache.set(key, std);
