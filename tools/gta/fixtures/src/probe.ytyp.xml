@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CMapTypes>
+ <name>probe</name>
+ <archetypes>
+  <Item type="CBaseArchetypeDef">
+   <lodDist value="200" />
+   <flags value="0" />
+   <specialAttribute value="0" />
+   <bbMin x="-1" y="-1" z="0" />
+   <bbMax x="1" y="1" z="2" />
+   <bsCentre x="0" y="0" z="1" />
+   <bsRadius value="1.8" />
+   <hdTextureDist value="50" />
+   <name>fx_probe</name>
+   <textureDictionary>fx_probe</textureDictionary>
+   <clipDictionary />
+   <drawableDictionary />
+   <physicsDictionary />
+   <assetType>ASSET_TYPE_DRAWABLE</assetType>
+   <assetName>fx_probe</assetName>
+  </Item>
+  <Item type="CMloArchetypeDef">
+   <lodDist value="100" />
+   <flags value="0" />
+   <bbMin x="-5" y="-5" z="0" />
+   <bbMax x="5" y="5" z="3" />
+   <bsCentre x="0" y="0" z="1.5" />
+   <bsRadius value="7" />
+   <name>fx_probe_int</name>
+   <textureDictionary />
+   <assetType>ASSET_TYPE_ASSETLESS</assetType>
+   <assetName>fx_probe_int</assetName>
+   <mloFlags value="0" />
+   <entities>
+    <Item type="CEntityDef">
+     <archetypeName>fx_probe</archetypeName>
+     <position x="1" y="0" z="0" />
+     <rotation x="0" y="0" z="0" w="1" />
+     <scaleXY value="1" />
+     <scaleZ value="1" />
+     <parentIndex value="-1" />
+     <lodDist value="50" />
+     <lodLevel>LODTYPES_DEPTH_ORPHANHD</lodLevel>
+    </Item>
+   </entities>
+   <rooms>
+    <Item>
+     <name>limbo</name>
+     <bbMin x="0" y="0" z="0" />
+     <bbMax x="0" y="0" z="0" />
+     <portalCount value="1" />
+     <attachedObjects />
+    </Item>
+    <Item>
+     <name>main</name>
+     <bbMin x="-5" y="-5" z="0" />
+     <bbMax x="5" y="5" z="3" />
+     <portalCount value="1" />
+     <attachedObjects>0</attachedObjects>
+    </Item>
+   </rooms>
+   <portals>
+    <Item>
+     <roomFrom value="1" />
+     <roomTo value="0" />
+     <flags value="0" />
+     <corners>
+      <Item x="-0.6" y="-5" z="0" />
+      <Item x="0.6" y="-5" z="0" />
+      <Item x="0.6" y="-5" z="2.2" />
+      <Item x="-0.6" y="-5" z="2.2" />
+     </corners>
+     <attachedObjects />
+    </Item>
+   </portals>
+   <entitySets />
+   <timeCycleModifiers />
+  </Item>
+ </archetypes>
+</CMapTypes>

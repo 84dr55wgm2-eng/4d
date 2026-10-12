@@ -1,0 +1,4 @@
+{
+ "fx_car": { "tags": ["voiture", "berline"], "note": "fixture annotation (not measured)" },
+ "fx_chair": { "tags": ["chaise"] }, "fx_crt": { "tags": ["ordinateur", "écran cathodique"] }
+}

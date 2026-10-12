@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>cw-extract</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- pinned by ../fetch-codewalker.sh -->
+    <ProjectReference Include="../vendor/CodeWalker/CodeWalker.Core/CodeWalker.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CMapData>
+ <name>probe</name>
+ <parent />
+ <flags value="0" />
+ <contentFlags value="1" />
+ <entities>
+  <Item type="CEntityDef">
+   <archetypeName>fx_probe</archetypeName>
+   <flags value="1572864" />
+   <guid value="0" />
+   <position x="1" y="2" z="3" />
+   <rotation x="0" y="0" z="0.7071068" w="0.7071068" />
+   <scaleXY value="1" />
+   <scaleZ value="1" />
+   <parentIndex value="-1" />
+   <lodDist value="100" />
+   <childLodDist value="0" />
+   <lodLevel>LODTYPES_DEPTH_HD</lodLevel>
+   <numChildren value="0" />
+   <priorityLevel>PRI_REQUIRED</priorityLevel>
+  </Item>
+ </entities>
+</CMapData>
