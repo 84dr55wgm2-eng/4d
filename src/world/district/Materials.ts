@@ -28,19 +28,17 @@ export class MaterialLibrary {
   constructor(private base: string, private defs: Record<string, MaterialDef>, private anisotropy = 8) {}
 
   private tex(id: string, map: 'diff' | 'nor' | 'arm', tile: number, srgb: boolean) {
-    const key = `${id}/${map}`;
+    const key = `${id}/${map}/${tile}`;
     let t = this.textures.get(key);
     if (!t) {
       t = this.loader.load(`${this.base}content/lagos/materials/${id}/${map}.webp`, undefined, undefined, () => this.missing.add(id));
       t.wrapS = t.wrapT = THREE.RepeatWrapping;
       t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
       t.anisotropy = this.anisotropy;
+      t.repeat.set(1 / tile, 1 / tile);
       this.textures.set(key, t);
     }
-    const c = t.clone();
-    c.repeat.set(1 / tile, 1 / tile);
-    c.needsUpdate = true;
-    return c;
+    return t;
   }
 
   /** `name` is a key of defs; `tint` multiplies the base colour (paint variants share textures). */

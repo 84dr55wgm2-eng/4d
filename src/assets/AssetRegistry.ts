@@ -302,6 +302,18 @@ export class AssetRegistry {
         scene.add(o);
       }
     }
+    // kit files (Poly Haven modular sets): keep one assembled preset, preserving relative placement
+    const prefix = record.runtime?.keepPrefix as string | undefined;
+    if (prefix) {
+      scene.updateMatrixWorld(true);
+      const picked: THREE.Object3D[] = [];
+      scene.traverse((o) => { if (o.name.startsWith(prefix) && !picked.some((p) => o.parent && isDescendant(o, p))) picked.push(o); });
+      if (!picked.length) throw new Error(`${record.name}: aucun élément « ${prefix} » dans le fichier`);
+      const matrices = picked.map((o) => o.matrixWorld.clone());
+      scene.clear();
+      picked.forEach((o, i) => { o.removeFromParent(); matrices[i].decompose(o.position, o.quaternion, o.scale); scene.add(o); });
+      scene.position.set(0, 0, 0); scene.quaternion.identity(); scene.scale.set(1, 1, 1);
+    }
     if (record.entityType !== 'ENVIRONMENT') {
       const strip: THREE.Object3D[] = [];
       scene.traverse((o) => { if ((o as THREE.Light).isLight || (o as THREE.Camera).isCamera) strip.push(o); });
@@ -369,4 +381,9 @@ function categoryFor(type: EntityType): AssetCategory {
   if (type === 'VEHICLE') return 'VEHICLES';
   if (type === 'VEGETATION') return 'VEGETATION';
   return 'PROPS';
+}
+
+function isDescendant(o: THREE.Object3D, ancestor: THREE.Object3D) {
+  for (let p = o.parent; p; p = p.parent) if (p === ancestor) return true;
+  return false;
 }

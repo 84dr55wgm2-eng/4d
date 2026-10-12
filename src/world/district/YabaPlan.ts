@@ -50,7 +50,7 @@ export function yabaPlan(): DistrictPlan {
     id: 'b.cafe', name: 'Immeuble du cybercafé', front: [-6.6, 0.15, -FRONT_Z], yaw: 0, width: 12, depth: 11, floors: 2, floorHeight: 3.4,
     style: { wall: 'plaster', trim: 'concrete', paint: PAINT.cream, base: [0.33, 0.36, 0.42], roof: 'parapet', balcony: true, louvres: true, bars: true },
     openings: [
-      op('door', 'front', -3.9, 1.05, 2.2, 0),
+      op('door', 'front', -3.9, 1.25, 2.25, 0),
       op('window', 'front', -0.6, 2.4, 1.45, 0, 0.95),
       op('window', 'front', 3.2, 2.4, 1.45, 0, 0.95),
       op('window', 'front', -3.6, 1.5, 1.35, 1, 0.95), op('window', 'front', 0, 1.5, 1.35, 1, 0.95), op('window', 'front', 3.6, 1.5, 1.35, 1, 0.95),

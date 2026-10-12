@@ -64,7 +64,7 @@ export class DistrictRuntime {
       return g.toNonIndexed();
     });
     const withBoxes = (base: THREE.BufferGeometry) => {
-      const merged = mergeGeometries([base.clone(), ...boxes.map((b) => b.clone())], false)!;
+      const merged = mergeGeometries([base.index ? base.toNonIndexed() : base.clone(), ...boxes.map((b) => b.clone())], false)!;
       merged.setIndex(new THREE.BufferAttribute(new Uint32Array(merged.getAttribute('position').count).map((_, i) => i), 1));
       return merged;
     };

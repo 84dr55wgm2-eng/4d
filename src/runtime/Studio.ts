@@ -420,7 +420,8 @@ export class Studio extends Emitter<Events> {
     await this.entities.ready();
     this.district.sync(this.store.doc);
     const { collide, navigate } = this.district.geometry(this.store.doc, this.entities.objects);
-    const nav = await Navigation.build(navigate);
+    // human clearance: 0.3 m radius on a 15 cm grid, so 1.2 m doorways stay passable
+    const nav = await Navigation.build(navigate, { cs: 0.15, radius: 0.3 });
     navigate.dispose();
     const old = this.collision;
     this.collision = new CollisionWorld(collide);

@@ -1,0 +1,4972 @@
+{
+ "format": "cws-world",
+ "version": 3,
+ "id": "yaba",
+ "name": "Yaba, Lagos — 2003",
+ "environment": {
+  "hdri": "hdri.pedestrian-overpass",
+  "sun": {
+   "azimuth": 150,
+   "elevation": 58,
+   "intensity": 3.5
+  },
+  "exposure": 0.92
+ },
+ "district": {
+  "brief": {
+   "place": "Yaba, Lagos",
+   "era": "2003",
+   "mood": "fin de matinée, rue commerçante animée",
+   "text": "Rue commerçante de Yaba (Lagos) vers 2003, avec un cybercafé accessible."
+  },
+  "street": {
+   "length": 76,
+   "carriageway": 7,
+   "sidewalk": 3.2,
+   "drain": true
+  },
+  "buildings": [
+   {
+    "id": "b.s1",
+    "name": "Immeuble Adeyemi",
+    "front": [
+     -30,
+     0.15,
+     -7.4
+    ],
+    "yaw": 0,
+    "width": 9,
+    "depth": 10,
+    "floors": 2,
+    "floorHeight": 3.2,
+    "style": {
+     "wall": "plaster",
+     "trim": "concrete",
+     "paint": [
+      0.86,
+      0.66,
+      0.38
+     ],
+     "roof": "parapet",
+     "balcony": true,
+     "louvres": true,
+     "bars": true
+    },
+    "openings": [
+     {
+      "id": "op0",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": -2,
+      "width": 3,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op1",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": 2.2,
+      "width": 2.6,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op2",
+      "kind": "window",
+      "wall": "front",
+      "offset": -2.25,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op3",
+      "kind": "window",
+      "wall": "front",
+      "offset": 2.25,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op4",
+      "kind": "window",
+      "wall": "left",
+      "offset": -2.5,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op5",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     }
+    ],
+    "rooms": [],
+    "signs": [
+     {
+      "text": "MAMA BISI PROVISIONS",
+      "sub": "Beverages • Provisions • Toiletries",
+      "colors": [
+       "#f3e2a6",
+       "#8b1a12"
+      ],
+      "level": 0,
+      "kind": "board"
+     }
+    ]
+   },
+   {
+    "id": "b.s2",
+    "name": "Immeuble Okafor",
+    "front": [
+     -19.6,
+     0.15,
+     -7.4
+    ],
+    "yaw": 0,
+    "width": 10.5,
+    "depth": 11,
+    "floors": 3,
+    "floorHeight": 3.2,
+    "style": {
+     "wall": "plaster",
+     "trim": "concrete",
+     "paint": [
+      0.62,
+      0.78,
+      0.88
+     ],
+     "roof": "parapet",
+     "balcony": true,
+     "louvres": true,
+     "bars": true
+    },
+    "openings": [
+     {
+      "id": "op6",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": -2.6,
+      "width": 3.2,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op7",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": 2.4,
+      "width": 3,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op8",
+      "kind": "window",
+      "wall": "front",
+      "offset": -3.5,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op9",
+      "kind": "window",
+      "wall": "front",
+      "offset": 0,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op10",
+      "kind": "window",
+      "wall": "front",
+      "offset": 3.5,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op11",
+      "kind": "window",
+      "wall": "left",
+      "offset": -3,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op12",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op13",
+      "kind": "window",
+      "wall": "front",
+      "offset": -3.5,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op14",
+      "kind": "window",
+      "wall": "front",
+      "offset": 0,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op15",
+      "kind": "window",
+      "wall": "front",
+      "offset": 3.5,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op16",
+      "kind": "window",
+      "wall": "left",
+      "offset": -3,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 2,
+      "sill": 1
+     },
+     {
+      "id": "op17",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 2,
+      "sill": 1
+     }
+    ],
+    "rooms": [],
+    "signs": [
+     {
+      "text": "GLORY GSM CENTRE",
+      "sub": "Phones • Recharge Cards • Accessories",
+      "colors": [
+       "#14427a",
+       "#ffd23f"
+      ],
+      "level": 0,
+      "kind": "board"
+     }
+    ]
+   },
+   {
+    "id": "b.cafe",
+    "name": "Immeuble du cybercafé",
+    "front": [
+     -6.6,
+     0.15,
+     -7.4
+    ],
+    "yaw": 0,
+    "width": 12,
+    "depth": 11,
+    "floors": 2,
+    "floorHeight": 3.4,
+    "style": {
+     "wall": "plaster",
+     "trim": "concrete",
+     "paint": [
+      0.93,
+      0.87,
+      0.72
+     ],
+     "base": [
+      0.33,
+      0.36,
+      0.42
+     ],
+     "roof": "parapet",
+     "balcony": true,
+     "louvres": true,
+     "bars": true
+    },
+    "openings": [
+     {
+      "id": "op18",
+      "kind": "door",
+      "wall": "front",
+      "offset": -3.9,
+      "width": 1.25,
+      "height": 2.25,
+      "level": 0
+     },
+     {
+      "id": "op19",
+      "kind": "window",
+      "wall": "front",
+      "offset": -0.6,
+      "width": 2.4,
+      "height": 1.45,
+      "level": 0,
+      "sill": 0.95
+     },
+     {
+      "id": "op20",
+      "kind": "window",
+      "wall": "front",
+      "offset": 3.2,
+      "width": 2.4,
+      "height": 1.45,
+      "level": 0,
+      "sill": 0.95
+     },
+     {
+      "id": "op21",
+      "kind": "window",
+      "wall": "front",
+      "offset": -3.6,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op22",
+      "kind": "window",
+      "wall": "front",
+      "offset": 0,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op23",
+      "kind": "window",
+      "wall": "front",
+      "offset": 3.6,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op24",
+      "kind": "window",
+      "wall": "left",
+      "offset": -6.5,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op25",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     }
+    ],
+    "rooms": [
+     {
+      "id": "room.cafe",
+      "name": "Cybercafé",
+      "kind": "cybercafe",
+      "level": 0,
+      "rect": [
+       -5.75,
+       -10.75,
+       5.75,
+       -0.25
+      ]
+     }
+    ],
+    "signs": [
+     {
+      "text": "NETLINK CYBER CAFÉ",
+      "sub": "Browsing ₦150/hr • Printing • Scanning • E-mail",
+      "colors": [
+       "#0d3b66",
+       "#f4f1de"
+      ],
+      "level": 0,
+      "kind": "board"
+     },
+     {
+      "text": "CYBER",
+      "sub": "OPEN 24HRS",
+      "colors": [
+       "#e63946",
+       "#ffffff"
+      ],
+      "level": 0,
+      "kind": "blade"
+     }
+    ]
+   },
+   {
+    "id": "b.s4",
+    "name": "Immeuble Bello",
+    "front": [
+     5.8,
+     0.15,
+     -7.4
+    ],
+    "yaw": 0,
+    "width": 8.6,
+    "depth": 10,
+    "floors": 2,
+    "floorHeight": 3.2,
+    "style": {
+     "wall": "plaster",
+     "trim": "concrete",
+     "paint": [
+      0.68,
+      0.84,
+      0.72
+     ],
+     "roof": "parapet",
+     "balcony": true,
+     "louvres": true,
+     "bars": true
+    },
+    "openings": [
+     {
+      "id": "op26",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": 0,
+      "width": 3.6,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op27",
+      "kind": "window",
+      "wall": "front",
+      "offset": -2.15,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op28",
+      "kind": "window",
+      "wall": "front",
+      "offset": 2.1499999999999995,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op29",
+      "kind": "window",
+      "wall": "left",
+      "offset": -2.5,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op30",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     }
+    ],
+    "rooms": [],
+    "signs": [
+     {
+      "text": "DIVINE FAVOUR CHEMIST",
+      "sub": "Patent Medicine Store",
+      "colors": [
+       "#ffffff",
+       "#1b7a3a"
+      ],
+      "level": 0,
+      "kind": "board"
+     }
+    ]
+   },
+   {
+    "id": "b.s5",
+    "name": "Immeuble Eze",
+    "front": [
+     15.6,
+     0.15,
+     -7.4
+    ],
+    "yaw": 0,
+    "width": 10,
+    "depth": 10,
+    "floors": 3,
+    "floorHeight": 3.2,
+    "style": {
+     "wall": "plaster",
+     "trim": "concrete",
+     "paint": [
+      0.9,
+      0.7,
+      0.68
+     ],
+     "roof": "parapet",
+     "balcony": true,
+     "louvres": true,
+     "bars": true
+    },
+    "openings": [
+     {
+      "id": "op31",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": -2.5,
+      "width": 3,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op32",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": 2.4,
+      "width": 3,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op33",
+      "kind": "window",
+      "wall": "front",
+      "offset": -3.333333333333333,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op34",
+      "kind": "window",
+      "wall": "front",
+      "offset": 0,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op35",
+      "kind": "window",
+      "wall": "front",
+      "offset": 3.333333333333334,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op36",
+      "kind": "window",
+      "wall": "left",
+      "offset": -2.5,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op37",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op38",
+      "kind": "window",
+      "wall": "front",
+      "offset": -3.333333333333333,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op39",
+      "kind": "window",
+      "wall": "front",
+      "offset": 0,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op40",
+      "kind": "window",
+      "wall": "front",
+      "offset": 3.333333333333334,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op41",
+      "kind": "window",
+      "wall": "left",
+      "offset": -2.5,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 2,
+      "sill": 1
+     },
+     {
+      "id": "op42",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 2,
+      "sill": 1
+     }
+    ],
+    "rooms": [],
+    "signs": [
+     {
+      "text": "BLESSED HANDS BUSINESS CENTRE",
+      "sub": "Typing • Photocopy • Lamination • Binding",
+      "colors": [
+       "#fff4d6",
+       "#202060"
+      ],
+      "level": 0,
+      "kind": "board"
+     }
+    ]
+   },
+   {
+    "id": "b.s6",
+    "name": "Immeuble Lawal",
+    "front": [
+     26,
+     0.15,
+     -7.4
+    ],
+    "yaw": 0,
+    "width": 9.4,
+    "depth": 9,
+    "floors": 2,
+    "floorHeight": 3.2,
+    "style": {
+     "wall": "plaster",
+     "trim": "concrete",
+     "paint": [
+      0.94,
+      0.86,
+      0.5
+     ],
+     "roof": "parapet",
+     "balcony": true,
+     "louvres": true,
+     "bars": true
+    },
+    "openings": [
+     {
+      "id": "op43",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": -1.8,
+      "width": 2.8,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op44",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": 2.3,
+      "width": 2.4,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op45",
+      "kind": "window",
+      "wall": "front",
+      "offset": -2.35,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op46",
+      "kind": "window",
+      "wall": "front",
+      "offset": 2.3500000000000005,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op47",
+      "kind": "window",
+      "wall": "left",
+      "offset": -2,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op48",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     }
+    ],
+    "rooms": [],
+    "signs": [
+     {
+      "text": "ADE & SONS ELECTRICALS",
+      "sub": "Wiring • Bulbs • Stabilizers",
+      "colors": [
+       "#1d1d1d",
+       "#ffcc00"
+      ],
+      "level": 0,
+      "kind": "board"
+     }
+    ]
+   },
+   {
+    "id": "b.n1",
+    "name": "Immeuble Ogun",
+    "front": [
+     -28.5,
+     0.15,
+     7.4
+    ],
+    "yaw": 180,
+    "width": 12,
+    "depth": 10,
+    "floors": 3,
+    "floorHeight": 3.2,
+    "style": {
+     "wall": "plaster",
+     "trim": "concrete",
+     "paint": [
+      0.92,
+      0.91,
+      0.87
+     ],
+     "roof": "parapet",
+     "balcony": true,
+     "louvres": true,
+     "bars": true
+    },
+    "openings": [
+     {
+      "id": "op49",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": -3,
+      "width": 3.4,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op50",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": 2.6,
+      "width": 3.4,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op51",
+      "kind": "window",
+      "wall": "front",
+      "offset": -4,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op52",
+      "kind": "window",
+      "wall": "front",
+      "offset": 0,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op53",
+      "kind": "window",
+      "wall": "front",
+      "offset": 4,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op54",
+      "kind": "window",
+      "wall": "left",
+      "offset": -2.5,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op55",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op56",
+      "kind": "window",
+      "wall": "front",
+      "offset": -4,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op57",
+      "kind": "window",
+      "wall": "front",
+      "offset": 0,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op58",
+      "kind": "window",
+      "wall": "front",
+      "offset": 4,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op59",
+      "kind": "window",
+      "wall": "left",
+      "offset": -2.5,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 2,
+      "sill": 1
+     },
+     {
+      "id": "op60",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 2,
+      "sill": 1
+     }
+    ],
+    "rooms": [],
+    "signs": [
+     {
+      "text": "KINGSWAY FASHION HOUSE",
+      "sub": "Tailoring • Aso-Ebi • Alterations",
+      "colors": [
+       "#5a189a",
+       "#fde68a"
+      ],
+      "level": 0,
+      "kind": "board"
+     }
+    ]
+   },
+   {
+    "id": "b.n2",
+    "name": "Immeuble Adebayo",
+    "front": [
+     -16.4,
+     0.15,
+     7.4
+    ],
+    "yaw": 180,
+    "width": 10,
+    "depth": 10,
+    "floors": 2,
+    "floorHeight": 3.2,
+    "style": {
+     "wall": "plaster",
+     "trim": "concrete",
+     "paint": [
+      0.5,
+      0.7,
+      0.52
+     ],
+     "roof": "parapet",
+     "balcony": true,
+     "louvres": true,
+     "bars": true
+    },
+    "openings": [
+     {
+      "id": "op61",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": 0,
+      "width": 3.8,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op62",
+      "kind": "window",
+      "wall": "front",
+      "offset": -3.333333333333333,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op63",
+      "kind": "window",
+      "wall": "front",
+      "offset": 0,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op64",
+      "kind": "window",
+      "wall": "front",
+      "offset": 3.333333333333334,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op65",
+      "kind": "window",
+      "wall": "left",
+      "offset": -2.5,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op66",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     }
+    ],
+    "rooms": [],
+    "signs": [
+     {
+      "text": "TUNDE BARBING SALOON",
+      "sub": "Unisex • Low cut • Shaving",
+      "colors": [
+       "#f8f9fa",
+       "#c1121f"
+      ],
+      "level": 0,
+      "kind": "board"
+     }
+    ]
+   },
+   {
+    "id": "b.n3",
+    "name": "Immeuble Nwosu",
+    "front": [
+     -5.2,
+     0.15,
+     7.4
+    ],
+    "yaw": 180,
+    "width": 10.5,
+    "depth": 11,
+    "floors": 3,
+    "floorHeight": 3.2,
+    "style": {
+     "wall": "plaster",
+     "trim": "concrete",
+     "paint": [
+      0.8,
+      0.72,
+      0.58
+     ],
+     "roof": "parapet",
+     "balcony": true,
+     "louvres": true,
+     "bars": true
+    },
+    "openings": [
+     {
+      "id": "op67",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": -2.6,
+      "width": 3,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op68",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": 2.5,
+      "width": 3,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op69",
+      "kind": "window",
+      "wall": "front",
+      "offset": -3.5,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op70",
+      "kind": "window",
+      "wall": "front",
+      "offset": 0,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op71",
+      "kind": "window",
+      "wall": "front",
+      "offset": 3.5,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op72",
+      "kind": "window",
+      "wall": "left",
+      "offset": -3,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op73",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op74",
+      "kind": "window",
+      "wall": "front",
+      "offset": -3.5,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op75",
+      "kind": "window",
+      "wall": "front",
+      "offset": 0,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op76",
+      "kind": "window",
+      "wall": "front",
+      "offset": 3.5,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op77",
+      "kind": "window",
+      "wall": "left",
+      "offset": -3,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 2,
+      "sill": 1
+     },
+     {
+      "id": "op78",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 2,
+      "sill": 1
+     }
+    ],
+    "rooms": [],
+    "signs": [
+     {
+      "text": "UNITY PHOTO STUDIO",
+      "sub": "Passport Photos in 10 Minutes",
+      "colors": [
+       "#003049",
+       "#fcbf49"
+      ],
+      "level": 0,
+      "kind": "board"
+     }
+    ]
+   },
+   {
+    "id": "b.n4",
+    "name": "Immeuble Bakare",
+    "front": [
+     6.4,
+     0.15,
+     7.4
+    ],
+    "yaw": 180,
+    "width": 10,
+    "depth": 10,
+    "floors": 2,
+    "floorHeight": 3.2,
+    "style": {
+     "wall": "plaster",
+     "trim": "concrete",
+     "paint": [
+      0.86,
+      0.66,
+      0.38
+     ],
+     "roof": "parapet",
+     "balcony": true,
+     "louvres": true,
+     "bars": true
+    },
+    "openings": [
+     {
+      "id": "op79",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": -2.4,
+      "width": 3,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op80",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": 2.4,
+      "width": 2.8,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op81",
+      "kind": "window",
+      "wall": "front",
+      "offset": -3.333333333333333,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op82",
+      "kind": "window",
+      "wall": "front",
+      "offset": 0,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op83",
+      "kind": "window",
+      "wall": "front",
+      "offset": 3.333333333333334,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op84",
+      "kind": "window",
+      "wall": "left",
+      "offset": -2.5,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op85",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     }
+    ],
+    "rooms": [],
+    "signs": [
+     {
+      "text": "MAMA PUT CANTEEN",
+      "sub": "Jollof • Moi-moi • Chilled Drinks",
+      "colors": [
+       "#f77f00",
+       "#ffffff"
+      ],
+      "level": 0,
+      "kind": "board"
+     }
+    ]
+   },
+   {
+    "id": "b.n5",
+    "name": "Immeuble Ibe",
+    "front": [
+     17.6,
+     0.15,
+     7.4
+    ],
+    "yaw": 180,
+    "width": 10.5,
+    "depth": 10,
+    "floors": 3,
+    "floorHeight": 3.2,
+    "style": {
+     "wall": "plaster",
+     "trim": "concrete",
+     "paint": [
+      0.62,
+      0.78,
+      0.88
+     ],
+     "roof": "parapet",
+     "balcony": true,
+     "louvres": true,
+     "bars": true
+    },
+    "openings": [
+     {
+      "id": "op86",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": 0,
+      "width": 4,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op87",
+      "kind": "window",
+      "wall": "front",
+      "offset": -3.5,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op88",
+      "kind": "window",
+      "wall": "front",
+      "offset": 0,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op89",
+      "kind": "window",
+      "wall": "front",
+      "offset": 3.5,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op90",
+      "kind": "window",
+      "wall": "left",
+      "offset": -2.5,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op91",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op92",
+      "kind": "window",
+      "wall": "front",
+      "offset": -3.5,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op93",
+      "kind": "window",
+      "wall": "front",
+      "offset": 0,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op94",
+      "kind": "window",
+      "wall": "front",
+      "offset": 3.5,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op95",
+      "kind": "window",
+      "wall": "left",
+      "offset": -2.5,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 2,
+      "sill": 1
+     },
+     {
+      "id": "op96",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 2,
+      "sill": 1
+     }
+    ],
+    "rooms": [],
+    "signs": [
+     {
+      "text": "YABA BOOKS & STATIONERY",
+      "sub": "JAMB • WAEC • Textbooks",
+      "colors": [
+       "#fefae0",
+       "#283618"
+      ],
+      "level": 0,
+      "kind": "board"
+     }
+    ]
+   },
+   {
+    "id": "b.n6",
+    "name": "Immeuble Danjuma",
+    "front": [
+     28.4,
+     0.15,
+     7.4
+    ],
+    "yaw": 180,
+    "width": 9.6,
+    "depth": 9,
+    "floors": 2,
+    "floorHeight": 3.2,
+    "style": {
+     "wall": "plaster",
+     "trim": "concrete",
+     "paint": [
+      0.93,
+      0.87,
+      0.72
+     ],
+     "roof": "parapet",
+     "balcony": true,
+     "louvres": true,
+     "bars": true
+    },
+    "openings": [
+     {
+      "id": "op97",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": -2,
+      "width": 2.8,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op98",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": 2.2,
+      "width": 2.6,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op99",
+      "kind": "window",
+      "wall": "front",
+      "offset": -2.4,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op100",
+      "kind": "window",
+      "wall": "front",
+      "offset": 2.3999999999999995,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op101",
+      "kind": "window",
+      "wall": "left",
+      "offset": -2,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op102",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     }
+    ],
+    "rooms": [],
+    "signs": []
+   },
+   {
+    "id": "b.e",
+    "name": "Immeuble du carrefour",
+    "front": [
+     42,
+     0.15,
+     0
+    ],
+    "yaw": -90,
+    "width": 26,
+    "depth": 9,
+    "floors": 3,
+    "floorHeight": 3.2,
+    "style": {
+     "wall": "plaster",
+     "trim": "concrete",
+     "paint": [
+      0.68,
+      0.84,
+      0.72
+     ],
+     "roof": "parapet",
+     "balcony": true,
+     "louvres": true,
+     "bars": true
+    },
+    "openings": [
+     {
+      "id": "op103",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": -7,
+      "width": 3.4,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op104",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": 0,
+      "width": 3.4,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op105",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": 7,
+      "width": 3.4,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op106",
+      "kind": "window",
+      "wall": "front",
+      "offset": -11.375,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op107",
+      "kind": "window",
+      "wall": "front",
+      "offset": -8.125,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op108",
+      "kind": "window",
+      "wall": "front",
+      "offset": -4.875,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op109",
+      "kind": "window",
+      "wall": "front",
+      "offset": -1.625,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op110",
+      "kind": "window",
+      "wall": "front",
+      "offset": 1.625,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op111",
+      "kind": "window",
+      "wall": "front",
+      "offset": 4.875,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op112",
+      "kind": "window",
+      "wall": "front",
+      "offset": 8.125,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op113",
+      "kind": "window",
+      "wall": "front",
+      "offset": 11.375,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op114",
+      "kind": "window",
+      "wall": "left",
+      "offset": -2,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op115",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op116",
+      "kind": "window",
+      "wall": "front",
+      "offset": -11.375,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op117",
+      "kind": "window",
+      "wall": "front",
+      "offset": -8.125,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op118",
+      "kind": "window",
+      "wall": "front",
+      "offset": -4.875,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op119",
+      "kind": "window",
+      "wall": "front",
+      "offset": -1.625,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op120",
+      "kind": "window",
+      "wall": "front",
+      "offset": 1.625,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op121",
+      "kind": "window",
+      "wall": "front",
+      "offset": 4.875,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op122",
+      "kind": "window",
+      "wall": "front",
+      "offset": 8.125,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op123",
+      "kind": "window",
+      "wall": "front",
+      "offset": 11.375,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 2,
+      "sill": 0.95
+     },
+     {
+      "id": "op124",
+      "kind": "window",
+      "wall": "left",
+      "offset": -2,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 2,
+      "sill": 1
+     },
+     {
+      "id": "op125",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 2,
+      "sill": 1
+     }
+    ],
+    "rooms": [],
+    "signs": [
+     {
+      "text": "ADUNNI PLAZA",
+      "sub": "Shops • Offices to Let",
+      "colors": [
+       "#264653",
+       "#e9c46a"
+      ],
+      "level": 1,
+      "kind": "painted"
+     }
+    ]
+   },
+   {
+    "id": "b.w",
+    "name": "Immeuble ouest",
+    "front": [
+     -42,
+     0.15,
+     0
+    ],
+    "yaw": 90,
+    "width": 26,
+    "depth": 9,
+    "floors": 2,
+    "floorHeight": 3.2,
+    "style": {
+     "wall": "plaster",
+     "trim": "concrete",
+     "paint": [
+      0.9,
+      0.7,
+      0.68
+     ],
+     "roof": "parapet",
+     "balcony": true,
+     "louvres": true,
+     "bars": true
+    },
+    "openings": [
+     {
+      "id": "op126",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": -6,
+      "width": 3.4,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op127",
+      "kind": "shopfront",
+      "wall": "front",
+      "offset": 6,
+      "width": 3.4,
+      "height": 2.6,
+      "level": 0
+     },
+     {
+      "id": "op128",
+      "kind": "window",
+      "wall": "front",
+      "offset": -11.375,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op129",
+      "kind": "window",
+      "wall": "front",
+      "offset": -8.125,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op130",
+      "kind": "window",
+      "wall": "front",
+      "offset": -4.875,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op131",
+      "kind": "window",
+      "wall": "front",
+      "offset": -1.625,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op132",
+      "kind": "window",
+      "wall": "front",
+      "offset": 1.625,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op133",
+      "kind": "window",
+      "wall": "front",
+      "offset": 4.875,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op134",
+      "kind": "window",
+      "wall": "front",
+      "offset": 8.125,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op135",
+      "kind": "window",
+      "wall": "front",
+      "offset": 11.375,
+      "width": 1.5,
+      "height": 1.35,
+      "level": 1,
+      "sill": 0.95
+     },
+     {
+      "id": "op136",
+      "kind": "window",
+      "wall": "left",
+      "offset": -2,
+      "width": 1.2,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     },
+     {
+      "id": "op137",
+      "kind": "window",
+      "wall": "back",
+      "offset": 0,
+      "width": 1.4,
+      "height": 1.2,
+      "level": 1,
+      "sill": 1
+     }
+    ],
+    "rooms": [],
+    "signs": [
+     {
+      "text": "GOD’S TIME IS THE BEST VENTURES",
+      "colors": [
+       "#fff",
+       "#7b2cbf"
+      ],
+      "level": 1,
+      "kind": "painted"
+     }
+    ]
+   }
+  ],
+  "requires": [
+   "actor.rpm-civilian",
+   "lagos.counter",
+   "lagos.tv",
+   "lagos.chair",
+   "lagos.radio",
+   "lagos.clock",
+   "lagos.fan",
+   "lagos.chalkboard",
+   "lagos.desk",
+   "lagos.crt",
+   "lagos.generator",
+   "lagos.jerrycan",
+   "lagos.crate",
+   "lagos.bench",
+   "lagos.stool",
+   "lagos.barrel",
+   "lagos.tyre",
+   "lagos.trashcan",
+   "lagos.trashbag",
+   "lagos.box",
+   "lagos.planter",
+   "lagos.powerbox",
+   "lagos.peugeot504",
+   "lagos.corolla",
+   "lagos.covered_car",
+   "lagos.pole",
+   "lagos.pole_transformer",
+   "lagos.aircon"
+  ],
+  "missing": [],
+  "poles": [
+   [
+    -33,
+    0.08,
+    6.6
+   ],
+   [
+    -16.5,
+    0.08,
+    6.6
+   ],
+   [
+    0,
+    0.08,
+    6.6
+   ],
+   [
+    16.5,
+    0.08,
+    6.6
+   ],
+   [
+    33,
+    0.08,
+    6.6
+   ]
+  ]
+ },
+ "relations": [
+  {
+   "kind": "connects",
+   "from": "door.cafe",
+   "to": "room.cafe",
+   "data": {
+    "other": "zone.street"
+   }
+  },
+  {
+   "kind": "in",
+   "from": "light.cafe",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "cafe.counter",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.1.desk",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "onSurface",
+   "from": "ws.1.crt",
+   "to": "ws.1.desk"
+  },
+  {
+   "kind": "seatFor",
+   "from": "ws.1.chair",
+   "to": "ws.1.desk",
+   "data": {
+    "useYaw": -90
+   }
+  },
+  {
+   "kind": "faces",
+   "from": "ws.1.chair",
+   "to": "ws.1.crt"
+  },
+  {
+   "kind": "in",
+   "from": "ws.2.desk",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "onSurface",
+   "from": "ws.2.crt",
+   "to": "ws.2.desk"
+  },
+  {
+   "kind": "seatFor",
+   "from": "ws.2.chair",
+   "to": "ws.2.desk",
+   "data": {
+    "useYaw": -90
+   }
+  },
+  {
+   "kind": "faces",
+   "from": "ws.2.chair",
+   "to": "ws.2.crt"
+  },
+  {
+   "kind": "in",
+   "from": "ws.3.desk",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "onSurface",
+   "from": "ws.3.crt",
+   "to": "ws.3.desk"
+  },
+  {
+   "kind": "seatFor",
+   "from": "ws.3.chair",
+   "to": "ws.3.desk",
+   "data": {
+    "useYaw": -90
+   }
+  },
+  {
+   "kind": "faces",
+   "from": "ws.3.chair",
+   "to": "ws.3.crt"
+  },
+  {
+   "kind": "in",
+   "from": "ws.4.desk",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "onSurface",
+   "from": "ws.4.crt",
+   "to": "ws.4.desk"
+  },
+  {
+   "kind": "seatFor",
+   "from": "ws.4.chair",
+   "to": "ws.4.desk",
+   "data": {
+    "useYaw": 90
+   }
+  },
+  {
+   "kind": "faces",
+   "from": "ws.4.chair",
+   "to": "ws.4.crt"
+  },
+  {
+   "kind": "in",
+   "from": "ws.5.desk",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "onSurface",
+   "from": "ws.5.crt",
+   "to": "ws.5.desk"
+  },
+  {
+   "kind": "seatFor",
+   "from": "ws.5.chair",
+   "to": "ws.5.desk",
+   "data": {
+    "useYaw": 90
+   }
+  },
+  {
+   "kind": "faces",
+   "from": "ws.5.chair",
+   "to": "ws.5.crt"
+  },
+  {
+   "kind": "in",
+   "from": "ws.6.desk",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "onSurface",
+   "from": "ws.6.crt",
+   "to": "ws.6.desk"
+  },
+  {
+   "kind": "seatFor",
+   "from": "ws.6.chair",
+   "to": "ws.6.desk",
+   "data": {
+    "useYaw": 90
+   }
+  },
+  {
+   "kind": "faces",
+   "from": "ws.6.chair",
+   "to": "ws.6.crt"
+  },
+  {
+   "kind": "in",
+   "from": "door.cafe",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "cafe.tv",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "cafe.attendant_chair",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "cafe.radio",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "cafe.clock",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "cafe.fan1",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "cafe.fan2",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "cafe.board",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "ws.1.crt",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.1.chair",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.2.crt",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.2.chair",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.3.crt",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.3.chair",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.4.crt",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.4.chair",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.5.crt",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.5.chair",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.6.crt",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.6.chair",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "st.gen1",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.can1",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.crates",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.crates2",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.bench1",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.stool1",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.chair_out",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.barrel",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.tyres",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.trash",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.trashbag",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.box",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.planter",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.powerbox",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "veh.504",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "veh.corolla",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "veh.covered",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "pole.0",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "pole.1",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "pole.2",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "pole.3",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "pole.4",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "ac.b.s1",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "ac.b.s2",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "ac.b.cafe",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "ac.b.s4",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "ac.b.s5",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "ac.b.s6",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "ac.b.n1",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "ac.b.n2",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "ac.b.n3",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "ac.b.n4",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "ac.b.n5",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "ac.b.n6",
+   "to": "zone.street"
+  }
+ ],
+ "sequences": [],
+ "spawn": {
+  "position": [
+   -22,
+   0.31,
+   -5.4
+  ],
+  "heading": 1.5707963267948966
+ },
+ "zones": [
+  {
+   "id": "zone.street",
+   "name": "Rue commerçante",
+   "kind": "street",
+   "bounds": [
+    -38,
+    -7.4,
+    38,
+    7.4
+   ],
+   "tags": [
+    "walkable",
+    "street"
+   ]
+  },
+  {
+   "id": "room.cafe",
+   "name": "Cybercafé",
+   "kind": "interior",
+   "bounds": [
+    -12.4,
+    -18.4,
+    -0.8,
+    -7.4
+   ],
+   "tags": [
+    "interior",
+    "cybercafe"
+   ]
+  }
+ ],
+ "entities": [
+  {
+   "id": "actor.hero",
+   "type": "ACTOR",
+   "name": "Hero — Civilian",
+   "assetId": "actor.rpm-civilian",
+   "transform": {
+    "position": [
+     -22,
+     0.31,
+     -5.4
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "parentId": null,
+   "tags": [
+    "hero",
+    "human"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "directable",
+    "collidable"
+   ]
+  },
+  {
+   "id": "door.cafe",
+   "name": "Porte du cybercafé",
+   "type": "DOOR",
+   "transform": {
+    "position": [
+     -11.105,
+     0.3,
+     -7.54
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "door",
+    "cybercafe",
+    "entrance"
+   ],
+   "capabilities": [
+    "selectable",
+    "interactable",
+    "openable"
+   ],
+   "metadata": {
+    "procedural": {
+     "kind": "door",
+     "width": 1.21,
+     "height": 2.21
+    },
+    "interaction": {
+     "hinge": [
+      0,
+      0,
+      0
+     ],
+     "approach": [
+      0.625,
+      0,
+      1
+     ],
+     "state": "closed",
+     "closedYaw": 0,
+     "openYaw": 92
+    }
+   }
+  },
+  {
+   "id": "light.cafe",
+   "name": "Néons du cybercafé",
+   "type": "LIGHT",
+   "transform": {
+    "position": [
+     -6.6,
+     3.28,
+     -12.9
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "light",
+    "fluorescent",
+    "cybercafe"
+   ],
+   "capabilities": [
+    "selectable",
+    "interactable",
+    "toggleable"
+   ],
+   "metadata": {
+    "procedural": {
+     "kind": "light_bank",
+     "fixtures": [
+      [
+       -3.85,
+       0,
+       -3.4499999999999993
+      ],
+      [
+       -3.85,
+       0,
+       -0.4499999999999993
+      ],
+      [
+       -3.85,
+       0,
+       2.5500000000000007
+      ],
+      [
+       -0.6499999999999999,
+       0,
+       -3.4499999999999993
+      ],
+      [
+       -0.6499999999999999,
+       0,
+       -0.4499999999999993
+      ],
+      [
+       -0.6499999999999999,
+       0,
+       2.5500000000000007
+      ],
+      [
+       2.5500000000000003,
+       0,
+       -3.4499999999999993
+      ],
+      [
+       2.5500000000000003,
+       0,
+       -0.4499999999999993
+      ],
+      [
+       2.5500000000000003,
+       0,
+       2.5500000000000007
+      ]
+     ],
+     "yaw": 90
+    },
+    "interaction": {
+     "enabled": true,
+     "color": "#eef6ff",
+     "intensity": 26,
+     "distance": 16,
+     "approach": [
+      -2.8,
+      -2.92,
+      4.6
+     ]
+    }
+   }
+  },
+  {
+   "id": "cafe.counter",
+   "name": "Comptoir",
+   "type": "FURNITURE",
+   "assetId": "lagos.counter",
+   "transform": {
+    "position": [
+     -2.4499999999999993,
+     0.36,
+     -10.05
+    ],
+    "rotation": [
+     0,
+     -0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "desk",
+    "counter",
+    "cybercafe"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "cafe.tv",
+   "name": "Télévision",
+   "type": "PROP",
+   "assetId": "lagos.tv",
+   "transform": {
+    "position": [
+     -2.25,
+     1.15,
+     -10.55
+    ],
+    "rotation": [
+     0,
+     -0.8660254037844386,
+     0,
+     0.5000000000000001
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "tv",
+    "crt",
+    "electronics"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "cafe.attendant_chair",
+   "name": "Chaise du gérant",
+   "type": "CHAIR",
+   "assetId": "lagos.chair",
+   "transform": {
+    "position": [
+     -1.4499999999999993,
+     0.36,
+     -10.05
+    ],
+    "rotation": [
+     0,
+     -0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "chair",
+    "plastic",
+    "lagos",
+    "cybercafe"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "interactable",
+    "sittable"
+   ],
+   "metadata": {
+    "interaction": {
+     "seat": [
+      0,
+      0.43,
+      -0.02
+     ],
+     "approach": [
+      0.62,
+      0,
+      -0.25
+     ],
+     "facing": 0,
+     "occupiedBy": null
+    }
+   }
+  },
+  {
+   "id": "cafe.radio",
+   "name": "Radio-cassette",
+   "type": "PROP",
+   "assetId": "lagos.radio",
+   "transform": {
+    "position": [
+     -2.7499999999999996,
+     1.15,
+     -9.850000000000001
+    ],
+    "rotation": [
+     0,
+     -0.573576436351046,
+     0,
+     0.8191520442889918
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "radio",
+    "cassette",
+    "2003"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "interactable",
+    "pickable"
+   ],
+   "metadata": {
+    "interaction": {
+     "pickable": true,
+     "heldBy": null
+    }
+   }
+  },
+  {
+   "id": "cafe.clock",
+   "name": "Horloge",
+   "type": "PROP",
+   "assetId": "lagos.clock",
+   "transform": {
+    "position": [
+     -6.6,
+     2.55,
+     -18.09
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "clock"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "cafe.fan1",
+   "name": "Ventilateur 1",
+   "type": "PROP",
+   "assetId": "lagos.fan",
+   "transform": {
+    "position": [
+     -8.8,
+     2.73,
+     -14.4
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "fan",
+    "ceiling"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "cafe.fan2",
+   "name": "Ventilateur 2",
+   "type": "PROP",
+   "assetId": "lagos.fan",
+   "transform": {
+    "position": [
+     -4.3999999999999995,
+     2.73,
+     -11.4
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "fan",
+    "ceiling"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "cafe.board",
+   "name": "Ardoise « Browsing ₦150/hr »",
+   "type": "PROP",
+   "assetId": "lagos.chalkboard",
+   "transform": {
+    "position": [
+     -8.8,
+     0.07999999999999999,
+     -6.15
+    ],
+    "rotation": [
+     0,
+     0.984807753012208,
+     0,
+     0.17364817766693041
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "sign",
+    "chalkboard"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "ws.1.desk",
+   "name": "Table du poste 1",
+   "type": "FURNITURE",
+   "assetId": "lagos.desk",
+   "transform": {
+    "position": [
+     -12.07,
+     0.36,
+     -16.75
+    ],
+    "rotation": [
+     0,
+     -0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1.4
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "desk",
+    "surface"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {
+    "workstation": "1",
+    "worksurface": {
+     "height": 0.75
+    }
+   }
+  },
+  {
+   "id": "ws.1.crt",
+   "name": "Ordinateur 1",
+   "type": "PROP",
+   "assetId": "lagos.crt",
+   "transform": {
+    "position": [
+     -12.09,
+     1.1099999999999999,
+     -16.75
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "computer",
+    "crt"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable"
+   ],
+   "metadata": {
+    "workstation": "1"
+   }
+  },
+  {
+   "id": "ws.1.chair",
+   "name": "Chaise 1",
+   "type": "CHAIR",
+   "assetId": "lagos.chair",
+   "transform": {
+    "position": [
+     -11.219999999999999,
+     0.36,
+     -16.75
+    ],
+    "rotation": [
+     0,
+     -0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "chair"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "interactable",
+    "sittable"
+   ],
+   "metadata": {
+    "workstation": "1",
+    "interaction": {
+     "seat": [
+      0,
+      0.43,
+      -0.02
+     ],
+     "approach": [
+      0.62,
+      0,
+      -0.25
+     ],
+     "facing": 0,
+     "occupiedBy": null
+    }
+   }
+  },
+  {
+   "id": "ws.2.desk",
+   "name": "Table du poste 2",
+   "type": "FURNITURE",
+   "assetId": "lagos.desk",
+   "transform": {
+    "position": [
+     -12.07,
+     0.36,
+     -15.15
+    ],
+    "rotation": [
+     0,
+     -0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1.4
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "desk",
+    "surface"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {
+    "workstation": "2",
+    "worksurface": {
+     "height": 0.75
+    }
+   }
+  },
+  {
+   "id": "ws.2.crt",
+   "name": "Ordinateur 2",
+   "type": "PROP",
+   "assetId": "lagos.crt",
+   "transform": {
+    "position": [
+     -12.09,
+     1.1099999999999999,
+     -15.15
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "computer",
+    "crt"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable"
+   ],
+   "metadata": {
+    "workstation": "2"
+   }
+  },
+  {
+   "id": "ws.2.chair",
+   "name": "Chaise 2",
+   "type": "CHAIR",
+   "assetId": "lagos.chair",
+   "transform": {
+    "position": [
+     -11.219999999999999,
+     0.36,
+     -15.15
+    ],
+    "rotation": [
+     0,
+     -0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "chair"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "interactable",
+    "sittable"
+   ],
+   "metadata": {
+    "workstation": "2",
+    "interaction": {
+     "seat": [
+      0,
+      0.43,
+      -0.02
+     ],
+     "approach": [
+      0.62,
+      0,
+      -0.25
+     ],
+     "facing": 0,
+     "occupiedBy": null
+    }
+   }
+  },
+  {
+   "id": "ws.3.desk",
+   "name": "Table du poste 3",
+   "type": "FURNITURE",
+   "assetId": "lagos.desk",
+   "transform": {
+    "position": [
+     -12.07,
+     0.36,
+     -13.55
+    ],
+    "rotation": [
+     0,
+     -0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1.4
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "desk",
+    "surface"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {
+    "workstation": "3",
+    "worksurface": {
+     "height": 0.75
+    }
+   }
+  },
+  {
+   "id": "ws.3.crt",
+   "name": "Ordinateur 3",
+   "type": "PROP",
+   "assetId": "lagos.crt",
+   "transform": {
+    "position": [
+     -12.09,
+     1.1099999999999999,
+     -13.55
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "computer",
+    "crt"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable"
+   ],
+   "metadata": {
+    "workstation": "3"
+   }
+  },
+  {
+   "id": "ws.3.chair",
+   "name": "Chaise 3",
+   "type": "CHAIR",
+   "assetId": "lagos.chair",
+   "transform": {
+    "position": [
+     -11.219999999999999,
+     0.36,
+     -13.55
+    ],
+    "rotation": [
+     0,
+     -0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "chair"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "interactable",
+    "sittable"
+   ],
+   "metadata": {
+    "workstation": "3",
+    "interaction": {
+     "seat": [
+      0,
+      0.43,
+      -0.02
+     ],
+     "approach": [
+      0.62,
+      0,
+      -0.25
+     ],
+     "facing": 0,
+     "occupiedBy": null
+    }
+   }
+  },
+  {
+   "id": "ws.4.desk",
+   "name": "Table du poste 4",
+   "type": "FURNITURE",
+   "assetId": "lagos.desk",
+   "transform": {
+    "position": [
+     -1.13,
+     0.36,
+     -16.75
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1.4
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "desk",
+    "surface"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {
+    "workstation": "4",
+    "worksurface": {
+     "height": 0.75
+    }
+   }
+  },
+  {
+   "id": "ws.4.crt",
+   "name": "Ordinateur 4",
+   "type": "PROP",
+   "assetId": "lagos.crt",
+   "transform": {
+    "position": [
+     -1.1099999999999994,
+     1.1099999999999999,
+     -16.75
+    ],
+    "rotation": [
+     0,
+     0.7071067811865476,
+     0,
+     -0.7071067811865475
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "computer",
+    "crt"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable"
+   ],
+   "metadata": {
+    "workstation": "4"
+   }
+  },
+  {
+   "id": "ws.4.chair",
+   "name": "Chaise 4",
+   "type": "CHAIR",
+   "assetId": "lagos.chair",
+   "transform": {
+    "position": [
+     -1.9799999999999995,
+     0.36,
+     -16.75
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "chair"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "interactable",
+    "sittable"
+   ],
+   "metadata": {
+    "workstation": "4",
+    "interaction": {
+     "seat": [
+      0,
+      0.43,
+      -0.02
+     ],
+     "approach": [
+      0.62,
+      0,
+      -0.25
+     ],
+     "facing": 0,
+     "occupiedBy": null
+    }
+   }
+  },
+  {
+   "id": "ws.5.desk",
+   "name": "Table du poste 5",
+   "type": "FURNITURE",
+   "assetId": "lagos.desk",
+   "transform": {
+    "position": [
+     -1.13,
+     0.36,
+     -15.15
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1.4
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "desk",
+    "surface"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {
+    "workstation": "5",
+    "worksurface": {
+     "height": 0.75
+    }
+   }
+  },
+  {
+   "id": "ws.5.crt",
+   "name": "Ordinateur 5",
+   "type": "PROP",
+   "assetId": "lagos.crt",
+   "transform": {
+    "position": [
+     -1.1099999999999994,
+     1.1099999999999999,
+     -15.15
+    ],
+    "rotation": [
+     0,
+     0.7071067811865476,
+     0,
+     -0.7071067811865475
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "computer",
+    "crt"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable"
+   ],
+   "metadata": {
+    "workstation": "5"
+   }
+  },
+  {
+   "id": "ws.5.chair",
+   "name": "Chaise 5",
+   "type": "CHAIR",
+   "assetId": "lagos.chair",
+   "transform": {
+    "position": [
+     -1.9799999999999995,
+     0.36,
+     -15.15
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "chair"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "interactable",
+    "sittable"
+   ],
+   "metadata": {
+    "workstation": "5",
+    "interaction": {
+     "seat": [
+      0,
+      0.43,
+      -0.02
+     ],
+     "approach": [
+      0.62,
+      0,
+      -0.25
+     ],
+     "facing": 0,
+     "occupiedBy": null
+    }
+   }
+  },
+  {
+   "id": "ws.6.desk",
+   "name": "Table du poste 6",
+   "type": "FURNITURE",
+   "assetId": "lagos.desk",
+   "transform": {
+    "position": [
+     -1.13,
+     0.36,
+     -13.55
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1.4
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "desk",
+    "surface"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {
+    "workstation": "6",
+    "worksurface": {
+     "height": 0.75
+    }
+   }
+  },
+  {
+   "id": "ws.6.crt",
+   "name": "Ordinateur 6",
+   "type": "PROP",
+   "assetId": "lagos.crt",
+   "transform": {
+    "position": [
+     -1.1099999999999994,
+     1.1099999999999999,
+     -13.55
+    ],
+    "rotation": [
+     0,
+     0.7071067811865476,
+     0,
+     -0.7071067811865475
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "computer",
+    "crt"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable"
+   ],
+   "metadata": {
+    "workstation": "6"
+   }
+  },
+  {
+   "id": "ws.6.chair",
+   "name": "Chaise 6",
+   "type": "CHAIR",
+   "assetId": "lagos.chair",
+   "transform": {
+    "position": [
+     -1.9799999999999995,
+     0.36,
+     -13.55
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "chair"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "interactable",
+    "sittable"
+   ],
+   "metadata": {
+    "workstation": "6",
+    "interaction": {
+     "seat": [
+      0,
+      0.43,
+      -0.02
+     ],
+     "approach": [
+      0.62,
+      0,
+      -0.25
+     ],
+     "facing": 0,
+     "occupiedBy": null
+    }
+   }
+  },
+  {
+   "id": "st.gen1",
+   "name": "Groupe électrogène",
+   "type": "PROP",
+   "assetId": "lagos.generator",
+   "transform": {
+    "position": [
+     14.3,
+     0.08,
+     -6.5
+    ],
+    "rotation": [
+     0,
+     0.13052619222005157,
+     0,
+     0.9914448613738104
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "generator",
+    "nepa",
+    "street"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "st.can1",
+   "name": "Jerrican",
+   "type": "PROP",
+   "assetId": "lagos.jerrycan",
+   "transform": {
+    "position": [
+     15.4,
+     0.08,
+     -6.800000000000001
+    ],
+    "rotation": [
+     0,
+     -0.17364817766693033,
+     0,
+     0.984807753012208
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "fuel",
+    "jerrycan"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "interactable",
+    "pickable"
+   ],
+   "metadata": {
+    "interaction": {
+     "pickable": true,
+     "heldBy": null
+    }
+   }
+  },
+  {
+   "id": "st.crates",
+   "name": "Casiers de bouteilles",
+   "type": "PROP",
+   "assetId": "lagos.crate",
+   "transform": {
+    "position": [
+     -31.2,
+     0.08,
+     -6.800000000000001
+    ],
+    "rotation": [
+     0,
+     0.03489949670250097,
+     0,
+     0.9993908270190958
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "crate",
+    "drinks"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "st.crates2",
+   "name": "Casiers de bouteilles",
+   "type": "PROP",
+   "assetId": "lagos.crate",
+   "transform": {
+    "position": [
+     -30.4,
+     0.08,
+     -6.800000000000001
+    ],
+    "rotation": [
+     0,
+     -0.0697564737441253,
+     0,
+     0.9975640502598242
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "crate",
+    "drinks"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "st.bench1",
+   "name": "Banc",
+   "type": "FURNITURE",
+   "assetId": "lagos.bench",
+   "transform": {
+    "position": [
+     5.6,
+     0.08,
+     6.65
+    ],
+    "rotation": [
+     0,
+     1,
+     0,
+     6.123233995736766e-17
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "bench",
+    "seat"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "st.stool1",
+   "name": "Tabouret",
+   "type": "FURNITURE",
+   "assetId": "lagos.stool",
+   "transform": {
+    "position": [
+     7.4,
+     0.08,
+     6.1000000000000005
+    ],
+    "rotation": [
+     0,
+     0.25881904510252074,
+     0,
+     0.9659258262890683
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "stool"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "st.chair_out",
+   "name": "Chaise monobloc",
+   "type": "CHAIR",
+   "assetId": "lagos.chair",
+   "transform": {
+    "position": [
+     -15.6,
+     0.08,
+     6
+    ],
+    "rotation": [
+     0,
+     0.984807753012208,
+     0,
+     -0.1736481776669303
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "chair",
+    "plastic",
+    "lagos",
+    "cybercafe"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "interactable",
+    "sittable"
+   ],
+   "metadata": {
+    "interaction": {
+     "seat": [
+      0,
+      0.43,
+      -0.02
+     ],
+     "approach": [
+      0.62,
+      0,
+      -0.25
+     ],
+     "facing": 0,
+     "occupiedBy": null
+    }
+   }
+  },
+  {
+   "id": "st.barrel",
+   "name": "Fût",
+   "type": "PROP",
+   "assetId": "lagos.barrel",
+   "transform": {
+    "position": [
+     27.8,
+     0.08,
+     -6.7
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "barrel",
+    "drum"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "st.tyres",
+   "name": "Pneus",
+   "type": "PROP",
+   "assetId": "lagos.tyre",
+   "transform": {
+    "position": [
+     29,
+     0.08,
+     -6.5
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "tyre",
+    "vulcanizer"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "st.trash",
+   "name": "Poubelle",
+   "type": "PROP",
+   "assetId": "lagos.trashcan",
+   "transform": {
+    "position": [
+     -3.5,
+     0.08,
+     6.800000000000001
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "trash"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "st.trashbag",
+   "name": "Sac poubelle",
+   "type": "PROP",
+   "assetId": "lagos.trashbag",
+   "transform": {
+    "position": [
+     -2.4,
+     0.08,
+     6.9
+    ],
+    "rotation": [
+     0,
+     0.08715574274765817,
+     0,
+     0.9961946980917455
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "trash"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "st.box",
+   "name": "Carton",
+   "type": "PROP",
+   "assetId": "lagos.box",
+   "transform": {
+    "position": [
+     -17.6,
+     0.08,
+     -6.800000000000001
+    ],
+    "rotation": [
+     0,
+     0.21643961393810288,
+     0,
+     0.9762960071199334
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "box"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "interactable",
+    "pickable"
+   ],
+   "metadata": {
+    "interaction": {
+     "pickable": true,
+     "heldBy": null
+    }
+   }
+  },
+  {
+   "id": "st.planter",
+   "name": "Bac à plantes",
+   "type": "VEGETATION",
+   "assetId": "lagos.planter",
+   "transform": {
+    "position": [
+     4.8,
+     0.08,
+     -6.8500000000000005
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "plant"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "st.powerbox",
+   "name": "Coffret électrique",
+   "type": "PROP",
+   "assetId": "lagos.powerbox",
+   "transform": {
+    "position": [
+     -12.9,
+     0.08,
+     -7.1000000000000005
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "electricity",
+    "box"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "veh.504",
+   "name": "Peugeot 504 break",
+   "type": "VEHICLE",
+   "assetId": "lagos.peugeot504",
+   "transform": {
+    "position": [
+     9.5,
+     0,
+     -2.3
+    ],
+    "rotation": [
+     0,
+     1,
+     0,
+     6.123233995736766e-17
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "car",
+    "peugeot",
+    "504",
+    "1980s"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "veh.corolla",
+   "name": "Toyota Corolla",
+   "type": "VEHICLE",
+   "assetId": "lagos.corolla",
+   "transform": {
+    "position": [
+     -26,
+     0,
+     2.4
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "car",
+    "toyota",
+    "1980s"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "veh.covered",
+   "name": "Voiture bâchée",
+   "type": "VEHICLE",
+   "assetId": "lagos.covered_car",
+   "transform": {
+    "position": [
+     24,
+     0,
+     2.5
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "car",
+    "covered"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "pole.0",
+   "name": "Poteau électrique",
+   "type": "PROP",
+   "assetId": "lagos.pole",
+   "transform": {
+    "position": [
+     -33,
+     0.08,
+     6.6
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "electricity",
+    "pole",
+    "street"
+   ],
+   "capabilities": [
+    "selectable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "pole.1",
+   "name": "Poteau électrique",
+   "type": "PROP",
+   "assetId": "lagos.pole",
+   "transform": {
+    "position": [
+     -16.5,
+     0.08,
+     6.6
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "electricity",
+    "pole",
+    "street"
+   ],
+   "capabilities": [
+    "selectable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "pole.2",
+   "name": "Poteau avec transformateur",
+   "type": "PROP",
+   "assetId": "lagos.pole_transformer",
+   "transform": {
+    "position": [
+     0,
+     0.08,
+     6.6
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "electricity",
+    "pole",
+    "transformer",
+    "street"
+   ],
+   "capabilities": [
+    "selectable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "pole.3",
+   "name": "Poteau électrique",
+   "type": "PROP",
+   "assetId": "lagos.pole",
+   "transform": {
+    "position": [
+     16.5,
+     0.08,
+     6.6
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "electricity",
+    "pole",
+    "street"
+   ],
+   "capabilities": [
+    "selectable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "pole.4",
+   "name": "Poteau électrique",
+   "type": "PROP",
+   "assetId": "lagos.pole",
+   "transform": {
+    "position": [
+     33,
+     0.08,
+     6.6
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "electricity",
+    "pole",
+    "street"
+   ],
+   "capabilities": [
+    "selectable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "ac.b.s1",
+   "name": "Climatiseur",
+   "type": "PROP",
+   "assetId": "lagos.aircon",
+   "transform": {
+    "position": [
+     -26.5,
+     3.95,
+     -7.180000000000001
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "aircon",
+    "facade"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "ac.b.s2",
+   "name": "Climatiseur",
+   "type": "PROP",
+   "assetId": "lagos.aircon",
+   "transform": {
+    "position": [
+     -15.350000000000001,
+     3.95,
+     -7.180000000000001
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "aircon",
+    "facade"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "ac.b.cafe",
+   "name": "Climatiseur",
+   "type": "PROP",
+   "assetId": "lagos.aircon",
+   "transform": {
+    "position": [
+     -1.5999999999999996,
+     4.15,
+     -7.180000000000001
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "aircon",
+    "facade"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "ac.b.s4",
+   "name": "Climatiseur",
+   "type": "PROP",
+   "assetId": "lagos.aircon",
+   "transform": {
+    "position": [
+     9.1,
+     3.95,
+     -7.180000000000001
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "aircon",
+    "facade"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "ac.b.s5",
+   "name": "Climatiseur",
+   "type": "PROP",
+   "assetId": "lagos.aircon",
+   "transform": {
+    "position": [
+     19.6,
+     3.95,
+     -7.180000000000001
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "aircon",
+    "facade"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "ac.b.s6",
+   "name": "Climatiseur",
+   "type": "PROP",
+   "assetId": "lagos.aircon",
+   "transform": {
+    "position": [
+     29.7,
+     3.95,
+     -7.180000000000001
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "aircon",
+    "facade"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "ac.b.n1",
+   "name": "Climatiseur",
+   "type": "PROP",
+   "assetId": "lagos.aircon",
+   "transform": {
+    "position": [
+     -33.5,
+     3.95,
+     7.18
+    ],
+    "rotation": [
+     0,
+     1,
+     0,
+     6.123233995736766e-17
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "aircon",
+    "facade"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "ac.b.n2",
+   "name": "Climatiseur",
+   "type": "PROP",
+   "assetId": "lagos.aircon",
+   "transform": {
+    "position": [
+     -20.4,
+     3.95,
+     7.18
+    ],
+    "rotation": [
+     0,
+     1,
+     0,
+     6.123233995736766e-17
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "aircon",
+    "facade"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "ac.b.n3",
+   "name": "Climatiseur",
+   "type": "PROP",
+   "assetId": "lagos.aircon",
+   "transform": {
+    "position": [
+     -9.45,
+     3.95,
+     7.18
+    ],
+    "rotation": [
+     0,
+     1,
+     0,
+     6.123233995736766e-17
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "aircon",
+    "facade"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "ac.b.n4",
+   "name": "Climatiseur",
+   "type": "PROP",
+   "assetId": "lagos.aircon",
+   "transform": {
+    "position": [
+     2.4000000000000004,
+     3.95,
+     7.18
+    ],
+    "rotation": [
+     0,
+     1,
+     0,
+     6.123233995736766e-17
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "aircon",
+    "facade"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "ac.b.n5",
+   "name": "Climatiseur",
+   "type": "PROP",
+   "assetId": "lagos.aircon",
+   "transform": {
+    "position": [
+     13.350000000000001,
+     3.95,
+     7.18
+    ],
+    "rotation": [
+     0,
+     1,
+     0,
+     6.123233995736766e-17
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "aircon",
+    "facade"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "ac.b.n6",
+   "name": "Climatiseur",
+   "type": "PROP",
+   "assetId": "lagos.aircon",
+   "transform": {
+    "position": [
+     24.599999999999998,
+     3.95,
+     7.18
+    ],
+    "rotation": [
+     0,
+     1,
+     0,
+     6.123233995736766e-17
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "aircon",
+    "facade"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {}
+  }
+ ],
+ "shots": [],
+ "worldState": {
+  "timeOfDay": "day"
+ }
+}

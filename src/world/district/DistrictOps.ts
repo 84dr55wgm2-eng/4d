@@ -50,24 +50,21 @@ export function workstation(doc: WorldDocument, roomId: string, idx: string, x: 
   const deskH = (assets.find((a) => a.id === WORKSTATION.desk)?.bounds?.[1] ?? 0.75);
   const at = (dx: number, dy: number, dz: number) => toWorld(b, x + right.x * dx + fwd.x * dz, y + dy, z + right.z * dx + fwd.z * dz);
   const id = (k: string) => `ws.${idx}.${k}`;
-  const seat = -0.62; // chair centre behind the desk edge
+  const seat = -0.75; // chair centre behind the desk edge
   const list: Entity[] = [
-    ent(id('desk'), `Bureau ${idx}`, 'FURNITURE', WORKSTATION.desk, at(0, 0, 0), yaw, ['selectable', 'movable', 'rotatable', 'collidable'], ['cybercafe', 'desk', 'surface'],
-      { workstation: idx, surface: { height: deskH } }),
-    ent(id('crt'), `Écran CRT ${idx}`, 'PROP', WORKSTATION.monitor, at(0.0, deskH, 0.08), yaw + 180, ['selectable', 'movable', 'rotatable'], ['cybercafe', 'computer', 'crt'], { workstation: idx }),
-    ent(id('kbd'), `Clavier ${idx}`, 'PROP', WORKSTATION.keyboard, at(0, deskH, -0.2), yaw + 180, ['selectable', 'movable', 'rotatable'], ['cybercafe', 'keyboard'], { workstation: idx }),
-    ent(id('pc'), `Unité centrale ${idx}`, 'PROP', WORKSTATION.tower, at(0.48, 0, 0.05), yaw + 180, ['selectable', 'movable', 'rotatable'], ['cybercafe', 'computer'], { workstation: idx }),
-    ent(id('chair'), `Chaise ${idx}`, 'CHAIR', WORKSTATION.chair, at(0, 0, seat), yaw + 180, ['selectable', 'movable', 'rotatable', 'interactable', 'sittable'], ['cybercafe', 'chair'], {
+    { ...ent(id('desk'), `Table du poste ${idx}`, 'FURNITURE', WORKSTATION.desk, at(0, 0, 0.1), yaw, ['selectable', 'movable', 'rotatable', 'collidable'], ['cybercafe', 'desk', 'surface'], { workstation: idx, worksurface: { height: deskH } }),
+      transform: { position: at(0, 0, 0.1).toArray() as Vec3, rotation: quatArr(yaw), scale: [1, 1, 1.4] } },
+    // one authored mesh: beige CRT monitor, tower, keyboard and mouse (screen faces the seated user)
+    ent(id('crt'), `Ordinateur ${idx}`, 'PROP', WORKSTATION.monitor, at(0, deskH, 0.12), yaw + 180, ['selectable', 'movable', 'rotatable'], ['cybercafe', 'computer', 'crt'], { workstation: idx }),
+    ent(id('chair'), `Chaise ${idx}`, 'CHAIR', WORKSTATION.chair, at(0, 0, seat), yaw, ['selectable', 'movable', 'rotatable', 'interactable', 'sittable'], ['cybercafe', 'chair'], {
       workstation: idx,
-      // seat anchor / approach / facing in the chair's own frame (chair asset faces +z = its front)
-      interaction: { seat: [0, 0.44, -0.02], approach: [0.55, 0, 0.35], facing: 180, occupiedBy: null },
+      // anchors in the chair's own frame (+z = where a seated person looks)
+      interaction: { seat: [0, 0.43, -0.02], approach: [0.62, 0, -0.25], facing: 0, occupiedBy: null },
     }),
   ];
   const rel: Relation[] = [
     { kind: 'in', from: id('desk'), to: roomId },
     { kind: 'onSurface', from: id('crt'), to: id('desk') },
-    { kind: 'onSurface', from: id('kbd'), to: id('desk') },
-    { kind: 'partOf', from: id('pc'), to: id('desk') },
     { kind: 'seatFor', from: id('chair'), to: id('desk'), data: { useYaw: yaw } },
     { kind: 'faces', from: id('chair'), to: id('crt') },
   ];
@@ -162,12 +159,12 @@ export function seatChairAt(doc: WorldDocument, chairId: string, targetId: strin
   if (!desk) throw new Error('Cet objet n’appartient à aucun poste');
   if ((chair.metadata?.interaction as { occupiedBy?: string })?.occupiedBy) throw new Error('La chaise est occupée');
   const q = new THREE.Quaternion(...desk.transform.rotation);
-  const p = new THREE.Vector3(0, 0, -0.62).applyQuaternion(q).add(new THREE.Vector3(...desk.transform.position));
+  const p = new THREE.Vector3(0, 0, -0.85).applyQuaternion(q).add(new THREE.Vector3(...desk.transform.position));
   // another chair already in that seat zone?
   const clash = doc.entities.find((e) => e.id !== chairId && e.type === 'CHAIR' && new THREE.Vector3(...e.transform.position).distanceTo(p) < 0.45);
   if (clash) throw new Error(`${clash.name} occupe déjà ce poste`);
   chair.transform.position = p.toArray() as Vec3;
-  chair.transform.rotation = q.clone().multiply(yawQ(180)).toArray() as Entity['transform']['rotation'];
+  chair.transform.rotation = q.clone().toArray() as Entity['transform']['rotation'];
   doc.relations = (doc.relations ?? []).filter((r) => !(r.kind === 'seatFor' && r.from === chairId));
   doc.relations.push({ kind: 'seatFor', from: chairId, to: desk.id });
   return desk.id;

@@ -1,6 +1,6 @@
 {
  "format": "cws-manifest",
- "version": "2026.10.2",
+ "version": "2026.10.12-yaba",
  "assets": [
   {
    "id": "env.bistro",
@@ -13,7 +13,7 @@
    "bytes": 71467344,
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "Amazon Lumberyard Bistro, © 2017 Amazon Lumberyard, CC-BY 4.0",
+    "attribution": "Amazon Lumberyard Bistro, \u00a9 2017 Amazon Lumberyard, CC-BY 4.0",
     "verified": true,
     "notes": "Prepared by tools/prepare (spec/gloss->metal/rough, BC7->WebP 1024, meshopt, instancing)"
    },
@@ -89,7 +89,7 @@
   },
   {
    "id": "actor.rpm-civilian",
-   "name": "Civilian — Bearded Man",
+   "name": "Civilian \u2014 Bearded Man",
    "category": "CHARACTERS",
    "source": "Ready Player Me avatar (three.js examples)",
    "sourceUrl": "https://github.com/mrdoob/three.js/tree/dev/examples/models/gltf",
@@ -142,7 +142,7 @@
   },
   {
    "id": "anim.rpm.idle",
-   "name": "Motion — Standing Idle",
+   "name": "Motion \u2014 Standing Idle",
    "category": "ANIMATIONS",
    "source": "Ready Player Me Animation Library",
    "sourceUrl": "https://github.com/readyplayerme/animation-library",
@@ -162,7 +162,7 @@
   },
   {
    "id": "anim.rpm.walk",
-   "name": "Motion — Walk",
+   "name": "Motion \u2014 Walk",
    "category": "ANIMATIONS",
    "source": "Ready Player Me Animation Library",
    "sourceUrl": "https://github.com/readyplayerme/animation-library",
@@ -181,7 +181,7 @@
   },
   {
    "id": "anim.rpm.jog",
-   "name": "Motion — Jog Run",
+   "name": "Motion \u2014 Jog Run",
    "category": "ANIMATIONS",
    "source": "Ready Player Me Animation Library",
    "sourceUrl": "https://github.com/readyplayerme/animation-library",
@@ -201,7 +201,7 @@
   },
   {
    "id": "anim.rpm.run",
-   "name": "Motion — Sprint Run",
+   "name": "Motion \u2014 Sprint Run",
    "category": "ANIMATIONS",
    "source": "Ready Player Me Animation Library",
    "sourceUrl": "https://github.com/readyplayerme/animation-library",
@@ -341,7 +341,7 @@
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "© 2021 Wayfair",
+    "attribution": "\u00a9 2021 Wayfair",
     "verified": true
    },
    "scale": {
@@ -419,7 +419,7 @@
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "© 2021 Wayfair",
+    "attribution": "\u00a9 2021 Wayfair",
     "verified": true
    },
    "scale": {
@@ -443,7 +443,7 @@
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "© 2023 Wayfair",
+    "attribution": "\u00a9 2023 Wayfair",
     "verified": true
    },
    "scale": {
@@ -491,7 +491,7 @@
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "© 2024 Darmstadt Graphics Group",
+    "attribution": "\u00a9 2024 Darmstadt Graphics Group",
     "verified": true
    },
    "scale": {
@@ -584,13 +584,13 @@
    "id": "kit.shop",
    "name": "Maison de briques",
    "category": "ARCHITECTURE",
-   "source": "Amazon Lumberyard Bistro — kit authored",
+   "source": "Amazon Lumberyard Bistro \u2014 kit authored",
    "sourceUrl": "https://developer.nvidia.com/orca/amazon-lumberyard-bistro",
    "url": "content/worlds/bistro/bistro.glb",
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "Amazon Lumberyard Bistro, © 2017 Amazon Lumberyard, CC-BY 4.0",
+    "attribution": "Amazon Lumberyard Bistro, \u00a9 2017 Amazon Lumberyard, CC-BY 4.0",
     "verified": true,
     "notes": "Prepared by tools/prepare (spec/gloss->metal/rough, BC7->WebP 1024, meshopt, instancing)"
    },
@@ -624,15 +624,15 @@
   },
   {
    "id": "kit.house",
-   "name": "Immeuble résidentiel",
+   "name": "Immeuble r\u00e9sidentiel",
    "category": "ARCHITECTURE",
-   "source": "Amazon Lumberyard Bistro — kit authored",
+   "source": "Amazon Lumberyard Bistro \u2014 kit authored",
    "sourceUrl": "https://developer.nvidia.com/orca/amazon-lumberyard-bistro",
    "url": "content/worlds/bistro/bistro.glb",
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "Amazon Lumberyard Bistro, © 2017 Amazon Lumberyard, CC-BY 4.0",
+    "attribution": "Amazon Lumberyard Bistro, \u00a9 2017 Amazon Lumberyard, CC-BY 4.0",
     "verified": true,
     "notes": "Prepared by tools/prepare (spec/gloss->metal/rough, BC7->WebP 1024, meshopt, instancing)"
    },
@@ -666,15 +666,15 @@
   },
   {
    "id": "kit.building",
-   "name": "Immeuble à auvents",
+   "name": "Immeuble \u00e0 auvents",
    "category": "ARCHITECTURE",
-   "source": "Amazon Lumberyard Bistro — kit authored",
+   "source": "Amazon Lumberyard Bistro \u2014 kit authored",
    "sourceUrl": "https://developer.nvidia.com/orca/amazon-lumberyard-bistro",
    "url": "content/worlds/bistro/bistro.glb",
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "Amazon Lumberyard Bistro, © 2017 Amazon Lumberyard, CC-BY 4.0",
+    "attribution": "Amazon Lumberyard Bistro, \u00a9 2017 Amazon Lumberyard, CC-BY 4.0",
     "verified": true,
     "notes": "Prepared by tools/prepare (spec/gloss->metal/rough, BC7->WebP 1024, meshopt, instancing)"
    },
@@ -709,13 +709,13 @@
    "id": "kit.tree",
    "name": "Arbre feuillu",
    "category": "VEGETATION",
-   "source": "Amazon Lumberyard Bistro — kit authored",
+   "source": "Amazon Lumberyard Bistro \u2014 kit authored",
    "sourceUrl": "https://developer.nvidia.com/orca/amazon-lumberyard-bistro",
    "url": "content/worlds/bistro/bistro.glb",
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "Amazon Lumberyard Bistro, © 2017 Amazon Lumberyard, CC-BY 4.0",
+    "attribution": "Amazon Lumberyard Bistro, \u00a9 2017 Amazon Lumberyard, CC-BY 4.0",
     "verified": true,
     "notes": "Prepared by tools/prepare (spec/gloss->metal/rough, BC7->WebP 1024, meshopt, instancing)"
    },
@@ -740,6 +740,786 @@
      181
     ]
    }
+  },
+  {
+   "id": "lagos.chair",
+   "name": "Chaise monobloc",
+   "category": "FURNITURE",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/plastic_monobloc_chair_01",
+   "url": "content/lagos/models/plastic_monobloc_chair_01.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "chair",
+    "plastic",
+    "lagos",
+    "cybercafe"
+   ],
+   "entityType": "CHAIR",
+   "bytes": 898928,
+   "runtime": {
+    "interaction": {
+     "seat": [
+      0,
+      0.43,
+      -0.02
+     ],
+     "approach": [
+      0.62,
+      0,
+      -0.25
+     ],
+     "facing": 0
+    }
+   }
+  },
+  {
+   "id": "lagos.desk",
+   "name": "Table de poste",
+   "category": "FURNITURE",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/wooden_table_02",
+   "url": "content/lagos/models/wooden_table_02.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "desk",
+    "table",
+    "cybercafe"
+   ],
+   "entityType": "FURNITURE",
+   "bytes": 1174868
+  },
+  {
+   "id": "lagos.crt",
+   "name": "Poste CRT (\u00e9cran, tour, clavier)",
+   "category": "PROPS",
+   "source": "Objaverse / Sketchfab",
+   "sourceUrl": "https://sketchfab.com/3d-models/82eaf2047e0447a1bfea22482f1d1404",
+   "url": "content/lagos/models/obj_retro_pc_setup.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC-BY-4.0",
+    "verified": true,
+    "attribution": "Retro Computer Setup (FREE) by dr.badass2142"
+   },
+   "tags": [
+    "computer",
+    "crt",
+    "keyboard",
+    "2003",
+    "cybercafe"
+   ],
+   "entityType": "PROP",
+   "bytes": 419752,
+   "scale": {
+    "unitsToMetres": 0.01
+   }
+  },
+  {
+   "id": "lagos.keyboard",
+   "name": "Clavier beige",
+   "category": "PROPS",
+   "source": "Objaverse / Sketchfab",
+   "sourceUrl": "https://sketchfab.com/3d-models/63aec0874c184b53becb74b792588e69",
+   "url": "content/lagos/models/obj_ibm_model_m.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC-BY-4.0",
+    "verified": true,
+    "attribution": "IBM Model M Keyboard by timblewee"
+   },
+   "tags": [
+    "keyboard",
+    "computer"
+   ],
+   "entityType": "PROP",
+   "bytes": 700668
+  },
+  {
+   "id": "lagos.tv",
+   "name": "T\u00e9l\u00e9viseur CRT",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/television_02",
+   "url": "content/lagos/models/television_02.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "tv",
+    "crt",
+    "electronics"
+   ],
+   "entityType": "PROP",
+   "bytes": 475552
+  },
+  {
+   "id": "lagos.counter",
+   "name": "Comptoir m\u00e9tallique",
+   "category": "FURNITURE",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/metal_office_desk",
+   "url": "content/lagos/models/metal_office_desk.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "desk",
+    "counter",
+    "cybercafe"
+   ],
+   "entityType": "FURNITURE",
+   "bytes": 254124
+  },
+  {
+   "id": "lagos.smalltable",
+   "name": "Petite table",
+   "category": "FURNITURE",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/small_wooden_table_01",
+   "url": "content/lagos/models/small_wooden_table_01.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "table"
+   ],
+   "entityType": "FURNITURE",
+   "bytes": 193692
+  },
+  {
+   "id": "lagos.fluorescent",
+   "name": "R\u00e9glette n\u00e9on",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/mounted_fluorescent_lights",
+   "url": "content/lagos/models/mounted_fluorescent_lights.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "light",
+    "fluorescent"
+   ],
+   "entityType": "LIGHT",
+   "bytes": 339504,
+   "runtime": {
+    "keepNodes": [
+     "mounted_fluorescent_lights_d"
+    ]
+   }
+  },
+  {
+   "id": "lagos.fan",
+   "name": "Ventilateur de plafond",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/ceiling_fan",
+   "url": "content/lagos/models/ceiling_fan.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "fan",
+    "ceiling"
+   ],
+   "entityType": "PROP",
+   "bytes": 341368
+  },
+  {
+   "id": "lagos.clock",
+   "name": "Horloge murale",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/wall_clock",
+   "url": "content/lagos/models/wall_clock.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "clock"
+   ],
+   "entityType": "PROP",
+   "bytes": 225544
+  },
+  {
+   "id": "lagos.chalkboard",
+   "name": "Ardoise de tarifs",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/standing_chalkboard_01",
+   "url": "content/lagos/models/standing_chalkboard_01.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "sign",
+    "chalkboard"
+   ],
+   "entityType": "PROP",
+   "bytes": 352304
+  },
+  {
+   "id": "lagos.pole",
+   "name": "Poteau \u00e9lectrique",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/modular_electricity_poles",
+   "url": "content/lagos/models/modular_electricity_poles.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "electricity",
+    "pole",
+    "street"
+   ],
+   "entityType": "PROP",
+   "bytes": 2553100,
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 8.4
+   },
+   "runtime": {
+    "keepPrefix": "preset_02_"
+   }
+  },
+  {
+   "id": "lagos.pole_transformer",
+   "name": "Poteau avec transformateur",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/modular_electricity_poles",
+   "url": "content/lagos/models/modular_electricity_poles.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "electricity",
+    "pole",
+    "transformer",
+    "street"
+   ],
+   "entityType": "PROP",
+   "bytes": 2553100,
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 8.4
+   },
+   "runtime": {
+    "keepPrefix": "preset_03_"
+   }
+  },
+  {
+   "id": "lagos.aircon",
+   "name": "Climatiseur ext\u00e9rieur",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/exterior_aircon_unit",
+   "url": "content/lagos/models/exterior_aircon_unit.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "aircon",
+    "facade"
+   ],
+   "entityType": "PROP",
+   "bytes": 1563672,
+   "runtime": {
+    "keepNodes": [
+     "exterior_aircon_unit_rusted"
+    ]
+   }
+  },
+  {
+   "id": "lagos.powerbox",
+   "name": "Coffret \u00e9lectrique",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/power_box_01",
+   "url": "content/lagos/models/power_box_01.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "electricity",
+    "box"
+   ],
+   "entityType": "PROP",
+   "bytes": 515840
+  },
+  {
+   "id": "lagos.utilitybox",
+   "name": "Armoire technique",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/utility_box_01",
+   "url": "content/lagos/models/utility_box_01.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "electricity",
+    "box"
+   ],
+   "entityType": "PROP",
+   "bytes": 292596
+  },
+  {
+   "id": "lagos.generator",
+   "name": "Groupe \u00e9lectrog\u00e8ne",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/portable_generator",
+   "url": "content/lagos/models/portable_generator.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "generator",
+    "nepa",
+    "street"
+   ],
+   "entityType": "PROP",
+   "bytes": 1869056
+  },
+  {
+   "id": "lagos.jerrycan",
+   "name": "Jerrican m\u00e9tal",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/metal_jerrycan",
+   "url": "content/lagos/models/metal_jerrycan.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "fuel",
+    "jerrycan"
+   ],
+   "entityType": "PROP",
+   "bytes": 716912,
+   "runtime": {
+    "interaction": {
+     "pickable": true
+    }
+   }
+  },
+  {
+   "id": "lagos.plasticcan",
+   "name": "Bidon plastique",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/plastic_jerrycan",
+   "url": "content/lagos/models/plastic_jerrycan.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "jerrycan",
+    "water"
+   ],
+   "entityType": "PROP",
+   "bytes": 562200,
+   "runtime": {
+    "interaction": {
+     "pickable": true
+    }
+   }
+  },
+  {
+   "id": "lagos.crate",
+   "name": "Casier de bouteilles",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/plastic_crate_01",
+   "url": "content/lagos/models/plastic_crate_01.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "crate",
+    "drinks"
+   ],
+   "entityType": "PROP",
+   "bytes": 724820
+  },
+  {
+   "id": "lagos.crate2",
+   "name": "Caisse plastique",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/plastic_crate_02",
+   "url": "content/lagos/models/plastic_crate_02.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "crate"
+   ],
+   "entityType": "PROP",
+   "bytes": 311744
+  },
+  {
+   "id": "lagos.barrel",
+   "name": "F\u00fbt m\u00e9tallique",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/barrel_03",
+   "url": "content/lagos/models/barrel_03.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "barrel",
+    "drum"
+   ],
+   "entityType": "PROP",
+   "bytes": 351148
+  },
+  {
+   "id": "lagos.trashcan",
+   "name": "Poubelle m\u00e9tallique",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/metal_trash_can",
+   "url": "content/lagos/models/metal_trash_can.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "trash"
+   ],
+   "entityType": "PROP",
+   "bytes": 1106188
+  },
+  {
+   "id": "lagos.trashbag",
+   "name": "Sac poubelle",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/trashbag",
+   "url": "content/lagos/models/trashbag.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "trash"
+   ],
+   "entityType": "PROP",
+   "bytes": 332232
+  },
+  {
+   "id": "lagos.tyre",
+   "name": "Vieux pneu",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/old_tyre",
+   "url": "content/lagos/models/old_tyre.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "tyre",
+    "vulcanizer"
+   ],
+   "entityType": "PROP",
+   "bytes": 481932
+  },
+  {
+   "id": "lagos.covered_car",
+   "name": "Voiture b\u00e2ch\u00e9e",
+   "category": "VEHICLES",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/covered_car",
+   "url": "content/lagos/models/covered_car.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "car",
+    "covered"
+   ],
+   "entityType": "VEHICLE",
+   "bytes": 1431836
+  },
+  {
+   "id": "lagos.peugeot504",
+   "name": "Peugeot 504 break",
+   "category": "VEHICLES",
+   "source": "Objaverse / Sketchfab",
+   "sourceUrl": "https://sketchfab.com/3d-models/71831821ad8a4884b78b5996e6039fc5",
+   "url": "content/lagos/models/obj_peugeot_504_break.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC-BY-4.0",
+    "verified": true,
+    "attribution": "Peugeot 504 break by medraphc"
+   },
+   "tags": [
+    "car",
+    "peugeot",
+    "504",
+    "1980s"
+   ],
+   "entityType": "VEHICLE",
+   "bytes": 156268,
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 1.5
+   }
+  },
+  {
+   "id": "lagos.corolla",
+   "name": "Toyota Corolla E70",
+   "category": "VEHICLES",
+   "source": "Objaverse / Sketchfab",
+   "sourceUrl": "https://sketchfab.com/3d-models/c4d66d21968c41da89114e2300578bc5",
+   "url": "content/lagos/models/obj_toyota_corolla_e70.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC-BY-4.0",
+    "verified": true,
+    "attribution": "Toyota corolla e70 (1980) by ditovirnantio"
+   },
+   "tags": [
+    "car",
+    "toyota",
+    "1980s"
+   ],
+   "entityType": "VEHICLE",
+   "bytes": 1774580,
+   "scale": {
+    "unitsToMetres": 0.01
+   }
+  },
+  {
+   "id": "lagos.bench",
+   "name": "Banc en bois peint",
+   "category": "FURNITURE",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/painted_wooden_bench",
+   "url": "content/lagos/models/painted_wooden_bench.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "bench",
+    "seat"
+   ],
+   "entityType": "FURNITURE",
+   "bytes": 353684
+  },
+  {
+   "id": "lagos.stool",
+   "name": "Tabouret",
+   "category": "FURNITURE",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/wooden_stool_01",
+   "url": "content/lagos/models/wooden_stool_01.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "stool"
+   ],
+   "entityType": "FURNITURE",
+   "bytes": 657492
+  },
+  {
+   "id": "lagos.box",
+   "name": "Carton",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/cardboard_box_01",
+   "url": "content/lagos/models/cardboard_box_01.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "box"
+   ],
+   "entityType": "PROP",
+   "bytes": 426820,
+   "runtime": {
+    "interaction": {
+     "pickable": true
+    }
+   }
+  },
+  {
+   "id": "lagos.planter",
+   "name": "Bac \u00e0 plantes",
+   "category": "VEGETATION",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/planter_box_01",
+   "url": "content/lagos/models/planter_box_01.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "plant"
+   ],
+   "entityType": "VEGETATION",
+   "bytes": 478112
+  },
+  {
+   "id": "lagos.radio",
+   "name": "Radio-cassette",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/portable_cassette_player",
+   "url": "content/lagos/models/portable_cassette_player.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "radio",
+    "cassette",
+    "2003"
+   ],
+   "entityType": "PROP",
+   "bytes": 536312,
+   "runtime": {
+    "interaction": {
+     "pickable": true
+    }
+   }
+  },
+  {
+   "id": "lagos.boombox",
+   "name": "Poste radio",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/boombox",
+   "url": "content/lagos/models/boombox.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "radio"
+   ],
+   "entityType": "PROP",
+   "bytes": 606872
+  },
+  {
+   "id": "lagos.securitylight",
+   "name": "Projecteur de fa\u00e7ade",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/security_light",
+   "url": "content/lagos/models/security_light.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "light"
+   ],
+   "entityType": "PROP",
+   "bytes": 562532
+  },
+  {
+   "id": "lagos.barrier",
+   "name": "Barri\u00e8re b\u00e9ton",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/concrete_road_barrier",
+   "url": "content/lagos/models/concrete_road_barrier.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "barrier"
+   ],
+   "entityType": "PROP",
+   "bytes": 955776
+  },
+  {
+   "id": "lagos.container",
+   "name": "Bac plastique",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/plastic_container",
+   "url": "content/lagos/models/plastic_container.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "tags": [
+    "container"
+   ],
+   "entityType": "PROP",
+   "bytes": 196640
   }
  ],
  "worlds": [
@@ -747,6 +1527,11 @@
    "id": "bistro",
    "name": "Paris Bistro Street",
    "url": "content/worlds/bistro/world.json"
+  },
+  {
+   "id": "yaba",
+   "name": "Yaba, Lagos \u2014 2003",
+   "url": "content/worlds/yaba/world.json"
   }
  ]
 }

@@ -141,6 +141,25 @@ function buildStreet(plan: DistrictPlan, sink: Sink, collide: THREE.BufferGeomet
     const dirt = metricBox(L, 0.14, 1.1); dirt.translate(0, -0.01, side * (half + dw + 0.55));
     sink.add('laterite', dirt.clone()); collide.push(dirt.clone()); navigate.push(dirt);
   }
+  // overhead wires: sagging spans pole to pole, plus service drops to the facades (the visual signature of the street)
+  const poles = (plan as DistrictPlan & { poles?: [number, number, number][] }).poles ?? [];
+  const sag = (a: THREE.Vector3, b: THREE.Vector3, drop: number, r: number) => {
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i <= 16; i++) { const t = i / 16; pts.push(a.clone().lerp(b, t).add(new THREE.Vector3(0, -drop * 4 * t * (1 - t), 0))); }
+    const g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, r, 5, false);
+    sink.add('cable', g);
+  };
+  for (let i = 0; i + 1 < poles.length; i++) {
+    const a = new THREE.Vector3(...poles[i]), b = new THREE.Vector3(...poles[i + 1]);
+    for (const [dy, dz, d] of [[8.05, -0.55, 0.7], [8.05, 0.0, 0.75], [8.05, 0.55, 0.7], [6.9, 0.2, 0.9]] as const)
+      sag(a.clone().add(new THREE.Vector3(0, dy, dz)), b.clone().add(new THREE.Vector3(0, dy, dz)), d, 0.012);
+  }
+  for (const p of poles) for (const side of [-1, 1]) {
+    // service drop across the street and to the near facade
+    const from = new THREE.Vector3(p[0], p[1] + 6.9, p[2]);
+    const to = new THREE.Vector3(p[0] + side * 2.5, 5.2, side === 1 ? 7.45 : -7.45);
+    sag(from, to, 0.35, 0.009);
+  }
   // back-lots ground so the scene never ends in a void behind buildings
   const back = metricBox(L + 30, 0.1, 50); back.translate(0, -0.1, 0);
   sink.add('laterite', back);
@@ -149,7 +168,8 @@ function buildStreet(plan: DistrictPlan, sink: Sink, collide: THREE.BufferGeomet
 function buildBuilding(b: BuildingSpec, sink: Sink, collide: THREE.BufferGeometry[], navigate: THREE.BufferGeometry[], out: DistrictBuild, mats: MaterialLibrary) {
   const M = new THREE.Matrix4().compose(new THREE.Vector3(...b.front), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(b.yaw)), new THREE.Vector3(1, 1, 1));
   const W = b.width, D = b.depth, FH = b.floorHeight, T = 0.22;
-  const paint = `plaster#${b.style.paint.join(',')}`;
+  // white_plaster_02 albedo is ~0.53: lift the paint factor so painted render reads at real-world brightness
+  const paint = `plaster#${b.style.paint.map((c) => +(c * 1.45).toFixed(3)).join(',')}`;
   const base = `plaster_base#${(b.style.base ?? [0.42, 0.4, 0.38]).join(',')}`;
   const H = b.floors * FH;
   const accessible = new Set(b.rooms.map((r) => r.id));
@@ -250,7 +270,6 @@ function buildBuilding(b: BuildingSpec, sink: Sink, collide: THREE.BufferGeometr
     // fluorescent tubes on the ceiling, real light is runtime-owned (toggle)
     const tubes: THREE.Vector3[] = [];
     for (let x = x0 + 1.5; x < x1 - 0.8; x += 2.6) for (let z = z0 + 1.6; z < z1 - 0.8; z += 2.8) tubes.push(new THREE.Vector3(x, y0 + FH - 0.29, z));
-    for (const t of tubes) { const housing = metricBox(1.25, 0.06, 0.16); housing.translate(t.x, t.y + 0.02, t.z); add('steel_painted', housing); }
     const corners = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]].map(([x, z]) => new THREE.Vector3(x, y0, z).applyMatrix4(M));
     const doorOp = b.openings.find((o) => o.kind === 'door' && o.level === r.level && o.wall === 'front' && o.offset - o.width / 2 >= x0 - 0.01 && o.offset + o.width / 2 <= x1 + 0.01);
     out.rooms.push({ id: r.id, buildingId: b.id, name: r.name, kind: r.kind, corners, floorY: y0 + 0.06, ceilingY: y0 + FH - 0.25,
@@ -329,7 +348,8 @@ function buildOpening(o: Opening, wallLen: number, y0: number, wm: THREE.Matrix4
     const sheet = metricBox(aw, 0.03, 1.5); sheet.rotateX(THREE.MathUtils.degToRad(14)); sheet.translate(cx, top + 0.42, 0.72); put('roof_metal', sheet);
     for (const sx of [-1, 1]) { const br = metricBox(0.05, 0.05, 1.5); br.rotateX(THREE.MathUtils.degToRad(14)); br.translate(cx + sx * (aw / 2 - 0.2), top + 0.38, 0.72); put('steel_rusty', br); }
     // step at the threshold
-    const step = metricBox(o.width + 0.3, 0.12, 0.45); step.translate(cx, 0.06, 0.22); put('concrete', step, { collide: true, nav: true });
+    // threshold: from the street step through the wall reveal to the interior floor (no gap under the doorway)
+    const step = metricBox(o.width + 0.3, 0.12, 0.8); step.translate(cx, 0.06, 0.05); put('concrete', step, { collide: true, nav: true });
   }
 }
 

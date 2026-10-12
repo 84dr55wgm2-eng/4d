@@ -14,14 +14,15 @@ export class Navigation {
     return new Navigation(navMesh, new NavMeshQuery(navMesh));
   }
 
-  static async build(geometry: THREE.BufferGeometry) {
+  static async build(geometry: THREE.BufferGeometry, opts: { cs?: number; radius?: number } = {}) {
     await init();
+    const cs = opts.cs ?? 0.25, radius = opts.radius ?? 0.5;
     const p = geometry.getAttribute('position').array as Float32Array;
     const i = new Uint32Array(geometry.index!.array);
     const { success, navMesh } = generateTiledNavMesh(p, i, {
       tileSize: 96,
-      cs: 0.25, ch: 0.1, walkableSlopeAngle: 40, walkableHeight: 18, walkableClimb: 3,
-      walkableRadius: 2, maxSimplificationError: 1.3,
+      cs, ch: 0.1, walkableSlopeAngle: 40, walkableHeight: 18, walkableClimb: 3,
+      walkableRadius: Math.ceil(radius / cs), maxSimplificationError: 1.3,
     });
     if (!success || !navMesh) throw new Error('Navigation generation failed');
     return new Navigation(navMesh, new NavMeshQuery(navMesh));
