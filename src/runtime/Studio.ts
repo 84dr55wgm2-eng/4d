@@ -490,7 +490,8 @@ export class Studio extends Emitter<Events> {
     this.cameras.update(dt);
     if (this.store.doc.assembly) {
       this.assembly.runtime.updateLod(this.entities.objects.values(), this.cameras.camera.position);
-      if (!this.sequences?.playing) this.sim.update(dt, this.actor ? { position: this.actor.position } : null);
+      // one clock: the population advances with the same frame time as the sequence and the actor (also in fixed-step rehearsal/export)
+      this.sim.update(dt, this.actor ? { position: this.actor.position } : null);
     }
     if (Number.isFinite(this.entities.radius) && (this.streamTimer += dt) > 0.5) {
       this.streamTimer = 0;

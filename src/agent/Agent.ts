@@ -44,6 +44,14 @@ export const AGENT_TOOLS: AgentToolDef[] = [
   { name: 'undo', description: 'Undo the last change.', input_schema: obj({}), call: ['editing', 'undo'] },
   { name: 'redo', description: 'Redo.', input_schema: obj({}), call: ['editing', 'redo'] },
   { name: 'save', description: 'Save the world in this browser.', input_schema: obj({}), call: ['world', 'save'] },
+  { name: 'create_sequence', description: 'New sequence from the current state (start state captured, including the population).', input_schema: obj({ name: str('sequence name') }), call: ['direction', 'create'] },
+  { name: 'add_beat', description: 'Add an action to a sequence: moveTo {position} or wait {seconds}; actor = a population member id (from assembly_state.population), omit for the embodied character.', input_schema: obj({ sequence: str('sequence id'), beat: obj({ kind: { type: 'string', enum: ['moveTo', 'wait'] }, position: vec3, seconds: num('0.2–60'), actor: str('population entity id'), label: str('label') }, ['kind', 'label']), index: num('position in the list') }, ['sequence', 'beat']), call: ['direction', 'add_beat'] },
+  { name: 'save_shot', description: 'Save the current camera as a named shot.', input_schema: obj({ name: str('shot name') }), call: ['camera', 'save_shot'] },
+  { name: 'set_camera', description: 'Director camera pose {position, target, focalLength 10–200 mm}.', input_schema: obj({ position: vec3, target: vec3, focalLength: num('mm') }), call: ['camera', 'set'] },
+  { name: 'add_cut', description: 'Cut to a shot (id or "follow") anchored on a beat index + offset seconds.', input_schema: obj({ sequence: str('sequence id'), shot: str('shot id or follow'), beat: num('beat index'), offset: num('seconds') }, ['sequence', 'shot']), call: ['direction', 'add_cut'] },
+  { name: 'play_sequence', description: 'Restore the start state and play (rehearses timing first if needed).', input_schema: obj({ id: str('sequence id') }, ['id']), call: ['direction', 'play'] },
+  { name: 'stop_sequence', description: 'Stop playback.', input_schema: obj({}), call: ['direction', 'stop'] },
+  { name: 'resume_sequence', description: 'Resume a stopped sequence from where it stopped.', input_schema: obj({ id: str('sequence id') }, ['id']), call: ['direction', 'resume'] },
   { name: 'set_time_of_day', description: 'Sun and exposure only.', input_schema: obj({ time: { type: 'string', enum: ['morning', 'midday', 'late_afternoon', 'dusk'] } }, ['time']), call: ['world', 'set_time_of_day'] },
 ];
 

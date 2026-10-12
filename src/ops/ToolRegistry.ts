@@ -61,7 +61,7 @@ export class StudioToolRegistry {
           remove_set: { ...step('remove_set', () => 'Retirer un ensemble'), description: 'Remove a placement {placement} with its junctions and the entities it contains.' },
           hide_members: { ...step('hide_members', () => 'Masquer des éléments'), description: 'Hide members of a placed set {placement, members:[memberId]} (e.g. a prop blocking a door).' },
           apply_plan: { description: 'Several steps as ONE transaction {steps:[{op, input}], label?, force?}; "$0" in an input = placement of step 0.', run: (a) => asm().run(a?.steps ?? [], String(a?.label ?? 'Plan d’assemblage'), { force: !!a?.force }) },
-          verify: { description: 'Overlaps, open/misaligned junctions, floor steps, blocked doors, isolated sets and walking reachability on the navmesh.', run: () => asm().verify() },
+          verify: { description: 'Overlaps, open/misaligned junctions, floor steps, blocked doors, isolated sets and walking reachability on the navmesh.', run: () => asm().verifySettled() },
         },
       },
       population: {
@@ -140,6 +140,7 @@ export class StudioToolRegistry {
           rehearse: { description: 'Re-measure beat times by fixed-step simulation.', run: (a) => ops.rehearseSequence(String(a.id)) },
           play: { description: 'Restore the start state and play actions + cuts.', run: (a) => ops.playSequence(String(a.id)) },
           stop: { description: 'Stop playback.', run: () => ops.stopSequence() },
+          resume: { description: 'Resume the stopped sequence from where it stopped (deterministic re-simulation, then real time).', run: async (a) => { const sq = studio.store.doc.sequences?.find((x) => x.id === String(a.id)); if (!sq) return { ok: false, error: 'Séquence introuvable' }; return { ok: true, value: await studio.sequences.resume(sq) }; } },
           seek: { description: 'Restore and re-simulate up to time t (seconds).', run: (a) => ops.seekSequence(String(a.id), Number(a.t)) },
           set_cut: { description: 'Change which shot a cut uses, its beat anchor or offset.', run: (a) => ops.setCut(String(a.sequence), String(a.cut), a.patch ?? {}) },
           create: { description: 'New sequence from the current world (one pause, follow camera).', run: (a) => ops.createSequence(a?.name) },

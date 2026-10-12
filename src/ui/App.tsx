@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { useEffect, useMemo, useState } from 'react';
 import type { AssetCategory, DistrictParams, DistrictPlan } from '../core/types';
 import type { RemoteAssetResult } from '../assets/AssetRegistry';
@@ -605,6 +606,7 @@ function SequencePanel({ studio }: { studio: Studio }) {
   const [busy, setBusy] = useState('');
   const [msg, setMsg] = useState('');
   const [video, setVideo] = useState<{ url: string; filename: string; bytes: number } | null>(null);
+  const [performer, setPerformer] = useState('');
   useEffect(() => studio.sequences.on('tick', setTick), [studio]);
   const seq = seqs.find((x) => x.id === id) ?? seqs.at(-1) ?? null;
   const shotName = (sid: string) => sid === 'follow' ? 'Suivi (3e personne)' : studio.store.doc.shots.find((x) => x.id === sid)?.name ?? '—';
@@ -639,6 +641,7 @@ function SequencePanel({ studio }: { studio: Studio }) {
         onPointerUp={(e) => run('Positionnement…', () => studio.ops.seekSequence(seq.id, Number((e.target as HTMLInputElement).value)))} />
       <div className="seq-controls">
         {tick.playing ? <button className="row-btn" onClick={() => studio.ops.stopSequence()}>■ Arrêter</button> : <button className="row-btn" disabled={!!busy} onClick={() => run(stale ? 'Répétition puis lecture…' : 'Lecture…', () => studio.ops.playSequence(seq.id))}>▶ Lire</button>}
+        {!tick.playing && tick.time > 0.05 && tick.time < dur - 0.05 && <button className="row-btn" disabled={!!busy} onClick={() => run('Reprise…', () => studio.sequences.resume(seq))}>⏵ Reprendre</button>}
         <span className="mono">{tick.time.toFixed(1)} / {dur.toFixed(1)} s</span>
         <button className="row-btn" disabled={!!busy} onClick={() => run('Répétition…', () => studio.ops.rehearseSequence(seq.id))}>Re-minuter</button>
         <button className="row-btn" disabled={!!busy} onClick={() => run('Export vidéo…', async () => { setVideo(null); const r = await studio.ops.exportSequence(seq.id, (f) => setBusy(`Export vidéo… ${Math.round(f * 100)} %`)); if (r.ok) setVideo(r.value); return r; })}>Exporter la vidéo</button>
@@ -676,6 +679,20 @@ function SequencePanel({ studio }: { studio: Studio }) {
       <div className="seq-controls">
         <button className="row-btn" onClick={() => { const t = targets[0]; if (!t) return setMsg('Aucun objet interactif dans ce monde'); report(studio.ops.addBeat(seq.id, { kind: 'interact', target: t.id, action: t.actions[0]?.id, label: labelFor(t.id, t.actions[0]?.id) })); }}>+ Action</button>
         <button className="row-btn" onClick={() => report(studio.ops.addBeat(seq.id, { kind: 'wait', seconds: 2, label: 'Pause 2 s' }))}>+ Pause</button>
+        {studio.store.doc.assembly && <>
+          <select value={performer} onChange={(e) => setPerformer(e.target.value)} aria-label="Qui se déplace">
+            <option value="">Personnage incarné</option>
+            {studio.store.doc.entities.filter((e) => (e.metadata?.sim as { kind?: string } | undefined)?.kind === 'person').map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
+          </select>
+          <button className="row-btn" title="Destination : le sol au centre de la vue" onClick={() => {
+            const cam = studio.cameras.camera, dir = cam.getWorldDirection(new THREE.Vector3());
+            const d = studio.collision?.rayDistance(cam.position, dir, 400) ?? Infinity;
+            const p = Number.isFinite(d) && d < 400 ? studio.nav?.closest(cam.position.clone().addScaledVector(dir, d)) : null;
+            if (!p) return setMsg('Vise un sol praticable au centre de la vue');
+            const who = performer ? studio.store.entity(performer)?.name : 'Personnage';
+            report(studio.ops.addBeat(seq.id, { kind: 'moveTo', position: [+p.x.toFixed(2), +p.y.toFixed(2), +p.z.toFixed(2)], label: `${who} → (${p.x.toFixed(0)}, ${p.z.toFixed(0)})`, ...(performer ? { actor: performer } : {}) }));
+          }}>+ Marche vers le centre de la vue</button>
+        </>}
       </div>
 
       <div className="pop-title">Plans</div>

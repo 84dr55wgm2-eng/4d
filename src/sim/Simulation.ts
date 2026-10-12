@@ -22,6 +22,8 @@ interface Person {
   agent: CrowdAgent; obj: THREE.Object3D; mixer: THREE.AnimationMixer | null; walk?: THREE.AnimationAction; idle?: THREE.AnimationAction; clipSpeed: number;
   phase: Phase; plan: string[]; until: number; target: THREE.Vector3 | null; seat: Seat | null;
   stuck: number; repaths: number; rng: () => number; heading: number;
+  /** directed by a sequence: the routine is suspended; resolve when the move ends */
+  directed?: { done?: (r: { ok: boolean; error?: string }) => void } | null;
 }
 interface Seat { id: string; position: THREE.Vector3; approach: THREE.Vector3; heading: number; placement: string; occupant: string | null }
 interface Lane { id: string; points: THREE.Vector3[]; length: number }
@@ -248,6 +250,7 @@ export class Simulation {
     this.t += dt;
     if (this.actorAgent && actor) this.actorAgent.teleport(actor.position);
     for (const p of this.people) {
+      if (p.directed) continue;
       if (p.phase === 'idle' && p.behavior !== 'idle') this.plan(p);
       else if ((p.phase === 'wait' || p.phase === 'seated') && this.t >= p.until) this.plan(p);
     }
@@ -257,11 +260,12 @@ export class Simulation {
       const speed = Math.hypot(vel.x, vel.z);
       if (p.phase === 'walk' && p.target) {
         const left = Math.hypot(p.target.x - pos.x, p.target.z - pos.z);
-        if (left < 0.45) { p.agent.resetMoveTarget(); p.phase = 'idle'; p.target = null; if (p.plan[0] === 'stay' || p.plan[0] === 'sitforever' || p.plan[0] === 'pause') this.plan(p); }
+        if (left < 0.45 && p.directed) { p.agent.resetMoveTarget(); p.phase = 'idle'; p.target = null; const d = p.directed.done; p.directed.done = undefined; d?.({ ok: true }); }
+        else if (left < 0.45) { p.agent.resetMoveTarget(); p.phase = 'idle'; p.target = null; if (p.plan[0] === 'stay' || p.plan[0] === 'sitforever' || p.plan[0] === 'pause') this.plan(p); }
         else if (speed < 0.08) {
           // blocked (another agent, the actor, a door): wait, then ask for a new path, then give up on this leg
           p.stuck += dt;
-          if (p.stuck > 2.5) { p.stuck = 0; p.repaths++; if (p.repaths > 2) { p.agent.resetMoveTarget(); p.phase = 'wait'; p.until = this.t + 2; p.plan = []; if (p.seat) { p.seat.occupant = null; p.seat = null; } } else p.agent.requestMoveTarget(p.target); }
+          if (p.stuck > 2.5) { p.stuck = 0; p.repaths++; if (p.repaths > 2 && p.directed) { p.agent.resetMoveTarget(); p.phase = 'idle'; const d = p.directed.done; p.directed.done = undefined; d?.({ ok: false, error: `${p.id} est bloqué avant la destination` }); } else if (p.repaths > 2) { p.agent.resetMoveTarget(); p.phase = 'wait'; p.until = this.t + 2; p.plan = []; if (p.seat) { p.seat.occupant = null; p.seat = null; } } else p.agent.requestMoveTarget(p.target); }
         } else p.stuck = 0;
       }
       if (p.phase === 'seated' && p.seat) { pos.copy(p.seat.approach); p.heading = p.seat.heading; }
@@ -295,6 +299,38 @@ export class Simulation {
       const at = this.laneAt(v.lane, v.s);
       v.obj.position.copy(at.p); v.obj.rotation.y = Math.atan2(at.dir.x, at.dir.z);
     }
+  }
+
+  /** a sequence beat: walk a population member to a point (its routine is suspended until the next restore) */
+  direct(id: string, position: [number, number, number], cancelled: () => boolean): Promise<{ ok: boolean; error?: string }> {
+    const p = this.people.find((x) => x.id === id);
+    if (!p || !this.nav) return Promise.resolve({ ok: false, error: `Figurant ${id} absent de la simulation` });
+    const to = this.nav.closest(new THREE.Vector3(...position));
+    if (!to) return Promise.resolve({ ok: false, error: 'Destination hors des zones praticables' });
+    if (p.seat) { p.seat.occupant = null; p.seat = null; }
+    p.plan = []; p.phase = 'walk'; p.target = to; p.stuck = 0; p.repaths = 0;
+    p.agent.requestMoveTarget(to);
+    return new Promise((resolve) => {
+      p.directed = { done: resolve };
+      const check = () => { if (!p.directed?.done) return; if (cancelled()) { p.directed.done = undefined; resolve({ ok: true }); return; } setTimeout(check, 50); };
+      setTimeout(check, 50);
+    });
+  }
+
+  /** back to a captured state without reloading bodies (sequence restore) */
+  applySnapshot(snap: SimSnapshot) {
+    this.t = snap.t;
+    for (const s of this.seats) s.occupant = null;
+    for (const p of this.people) {
+      const st = snap.people[p.id]; p.directed = null;
+      if (!st) continue;
+      const pos = new THREE.Vector3(...st.p);
+      p.agent.teleport(pos); p.agent.resetMoveTarget(); p.obj.position.copy(pos);
+      p.phase = st.phase === 'walk' ? 'idle' : st.phase; p.plan = [...st.plan]; p.until = st.until; p.target = null; p.stuck = 0; p.repaths = 0;
+      p.seat = st.seat ? this.seats.find((s) => s.id === st.seat) ?? null : null;
+      if (p.seat) p.seat.occupant = p.id;
+    }
+    for (const v of this.vehicles) { const st = snap.vehicles[v.id]; if (st) { const l = this.lanes.find((x) => x.id === st.lane); if (l) v.lane = l; v.s = st.s; v.speed = 0; } }
   }
 
   snapshot(): SimSnapshot {

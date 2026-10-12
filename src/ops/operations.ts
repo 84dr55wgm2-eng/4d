@@ -47,6 +47,11 @@ export function createOps(studio: Studio) {
     return out;
   };
   const validateBeat = (b: Partial<SequenceBeat>): string | null => {
+    if (b.actor) {
+      const who = store().entity(b.actor);
+      if (!(who?.metadata?.sim as { kind?: string } | undefined)?.kind || (who!.metadata!.sim as { kind: string }).kind !== 'person') return 'Figurant introuvable';
+      if (b.kind !== 'moveTo' && b.kind !== 'wait') return 'Un figurant ne peut que se déplacer ou attendre';
+    }
     if (b.kind === 'wait') return b.seconds !== undefined && b.seconds >= 0.2 && b.seconds <= 60 ? null : 'Durée entre 0,2 et 60 s';
     if (b.kind === 'interact') {
       const e = b.target ? store().entity(b.target) : null;

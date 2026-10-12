@@ -123,6 +123,14 @@ export class StudioAssembly {
     });
   }
 
+  /** verify after any pending collision/navigation rebuild has finished (what tools and the agent call) */
+  async verifySettled(): Promise<Issue[]> {
+    if (this.rebuildTimer) { clearTimeout(this.rebuildTimer); this.rebuildTimer = 0; this.onDocChangeForce(); }
+    await this.building;
+    return this.verify();
+  }
+  private onDocChangeForce() { this.signature = ''; const doc = this.s.store.doc; this.signature = JSON.stringify(doc.entities.filter((e) => e.type === 'SET').map((e) => [e.id, e.transform, e.metadata?.set])); void this.rebuildGeometry(); }
+
   /** scene rules + navigation continuity between placements (needs the rebuilt navmesh) */
   verify(): Issue[] {
     const issues = verifyAssembly(this.nodes(), this.ctx());
@@ -164,7 +172,7 @@ export class StudioAssembly {
     this.signature = sig;
     clearTimeout(this.rebuildTimer);
     const gen = ++this.rebuildGen;
-    this.rebuildTimer = window.setTimeout(() => { if (gen === this.rebuildGen) this.rebuildGeometry().catch((e) => this.s.toast(`Navigation : ${e instanceof Error ? e.message : String(e)}`)); }, 300);
+    this.rebuildTimer = window.setTimeout(() => { this.rebuildTimer = 0; if (gen === this.rebuildGen) this.rebuildGeometry().catch((e) => this.s.toast(`Navigation : ${e instanceof Error ? e.message : String(e)}`)); }, 300);
   }
 
   async waitForSets(timeoutMs = 180000) {

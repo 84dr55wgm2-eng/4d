@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { Emitter, uid } from '../core/emitter';
 import type { Sequence, SequenceBeat, SequenceStart, Transform, Vec3 } from '../core/types';
 import type { Studio } from './Studio';
+import type { SimSnapshot } from '../sim/Simulation';
 
 /**
  * Actions and cameras on one directing clock.
@@ -44,7 +45,8 @@ export class SequencePlayer extends Emitter<Events> {
       const e = s.store.entity(id);
       if (e) entities[id] = { transform: structuredClone(e.transform), interaction: structuredClone((e.metadata?.interaction ?? undefined) as Record<string, unknown> | undefined) };
     }
-    return { actor: { position: a.position.toArray() as Vec3, heading: a.heading, seatedOn }, entities };
+    const sim = s.store.doc.assembly && (s.sim?.people.length || s.sim?.vehicles.length) ? s.sim.snapshot() : undefined;
+    return { actor: { position: a.position.toArray() as Vec3, heading: a.heading, seatedOn }, entities, ...(sim ? { sim } : {}) };
   }
 
   create(name: string, beats: SequenceBeat[], cuts: Sequence['cuts'] = []): Sequence {
@@ -71,6 +73,7 @@ export class SequencePlayer extends Emitter<Events> {
       }
     });
     a.place(new THREE.Vector3(...seq.start.actor.position), seq.start.actor.heading);
+    if (seq.start.sim && s.sim) s.sim.applySnapshot(seq.start.sim as SimSnapshot);
     if (seq.start.actor.seatedOn) s.interactions.restoreSeat();
     this.time = 0;
     this.beat = -1;
@@ -153,7 +156,9 @@ export class SequencePlayer extends Emitter<Events> {
       starts?.push(this.time);
       const b = seq.beats[i];
       let r: { ok: boolean; error?: string } = { ok: true };
-      if (b.kind === 'moveTo' && b.position) r = await s.ops.moveActorTo(b.position);
+      if (b.actor && b.kind === 'moveTo' && b.position) r = await s.sim.direct(b.actor, b.position, () => token !== this.token);
+      else if (b.actor && b.kind !== 'wait') r = { ok: false, error: 'un figurant ne peut que se déplacer ou attendre' };
+      else if (b.kind === 'moveTo' && b.position) r = await s.ops.moveActorTo(b.position);
       else if (b.kind === 'interact' && b.target) r = await s.interactions.execute(b.target, b.action);
       else if (b.kind === 'turnTo' && b.position) { s.ops.turnActorTo(b.position); await this.wait(0.8, token); }
       else if (b.kind === 'wait') await this.wait(b.seconds ?? 1, token);
@@ -204,6 +209,31 @@ export class SequencePlayer extends Emitter<Events> {
       () => this.wait(1.2, token).then(() => token === this.token && this.stop()),
       (err) => { if (token === this.token) { this.stop(); this.studio.toast(String(err instanceof Error ? err.message : err)); } },
     );
+  }
+
+  /**
+   * Resume after stop: the run is re-simulated from the start state up to the stop time in fixed steps (same
+   * result as having kept playing), then continues in real time.
+   */
+  async resume(seq: Sequence, dt = 1 / 30) {
+    const t = this.seq?.id === seq.id ? this.time : 0;
+    if (this.isStale(seq)) await this.rehearse(seq, dt);
+    this.stop();
+    const e = this.studio.engine, wasPaused = e.paused;
+    this.restore(seq);
+    this.seq = seq;
+    this.playing = true;
+    const token = this.token;
+    this.studio.set({ mode: 'direct' });
+    this.runBeats(seq, token).then(
+      () => this.wait(1.2, token).then(() => token === this.token && this.stop()),
+      (err) => { if (token === this.token) { this.stop(); this.studio.toast(String(err instanceof Error ? err.message : err)); } },
+    );
+    e.paused = true;
+    while (this.time < t && token === this.token) { e.step(dt, dt); await Promise.resolve(); await Promise.resolve(); }
+    this.applyCut(seq, this.time, true);
+    e.paused = wasPaused;
+    return { time: this.time };
   }
 
   /** Stop playback and the action in progress (walk, approach, waits); the actor stays where he is. */

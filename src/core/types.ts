@@ -183,6 +183,8 @@ export interface SequenceBeat {
   id: string;
   kind: 'moveTo' | 'interact' | 'wait' | 'turnTo';
   label: string;
+  /** who performs it: a population member's entity id (assembled places); absent = the embodied actor */
+  actor?: string;
   target?: string;
   action?: string;
   position?: Vec3;
@@ -193,6 +195,8 @@ export interface SequenceCut { id: string; shotId: string; beat: number; offset:
 export interface SequenceStart {
   actor: { position: Vec3; heading: number; seatedOn?: string | null };
   entities: Record<string, { transform: Transform; interaction?: Record<string, unknown> }>;
+  /** population state at the start (assembled places): every play/seek begins from the same crowd */
+  sim?: unknown;
 }
 export interface Sequence {
   id: string;
