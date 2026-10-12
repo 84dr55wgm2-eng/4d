@@ -1,1 +1,1012 @@
-{}
+{
+ "models/plastic_monobloc_chair_01.glb": {
+  "source": "Poly Haven",
+  "id": "plastic_monobloc_chair_01",
+  "name": "Plastic Monobloc Chair 01",
+  "url": "https://polyhaven.com/a/plastic_monobloc_chair_01",
+  "license": "CC0-1.0",
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "dimensions": [
+   641.8611407279968,
+   627.5919079780579,
+   879.8411972820759
+  ],
+  "bytes": 898928
+ },
+ "models/wooden_table_02.glb": {
+  "source": "Poly Haven",
+  "id": "wooden_table_02",
+  "name": "Wooden Table 02",
+  "url": "https://polyhaven.com/a/wooden_table_02",
+  "license": "CC0-1.0",
+  "authors": [
+   "Serhii Khromov"
+  ],
+  "dimensions": [
+   1134.41663980484,
+   706.0248255729675,
+   799.5428870490286
+  ],
+  "bytes": 1174868
+ },
+ "models/small_wooden_table_01.glb": {
+  "source": "Poly Haven",
+  "id": "small_wooden_table_01",
+  "name": "Small Wooden Table 01",
+  "url": "https://polyhaven.com/a/small_wooden_table_01",
+  "license": "CC0-1.0",
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "dimensions": [
+   916.1878228187561,
+   439.96262550354004,
+   533.0857671797276
+  ],
+  "bytes": 193692
+ },
+ "models/metal_office_desk.glb": {
+  "source": "Poly Haven",
+  "id": "metal_office_desk",
+  "name": "Metal Office Desk",
+  "url": "https://polyhaven.com/a/metal_office_desk",
+  "license": "CC0-1.0",
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "dimensions": [
+   2000.0003576278687,
+   947.2135305404663,
+   787.5000089406967
+  ],
+  "bytes": 254124
+ },
+ "models/television_02.glb": {
+  "source": "Poly Haven",
+  "id": "television_02",
+  "name": "Television 02",
+  "url": "https://polyhaven.com/a/television_02",
+  "license": "CC0-1.0",
+  "authors": [
+   "Benny Weimer"
+  ],
+  "dimensions": [
+   399.74847435951233,
+   350.19391775131226,
+   411.41476929375244
+  ],
+  "bytes": 475552
+ },
+ "models/modular_electricity_poles.glb": {
+  "source": "Poly Haven",
+  "id": "modular_electricity_poles",
+  "name": "Modular Electricity Poles",
+  "url": "https://polyhaven.com/a/modular_electricity_poles",
+  "license": "CC0-1.0",
+  "authors": [
+   "James Ray Cock"
+  ],
+  "dimensions": [
+   13119.13776397705,
+   1957.2706818580627,
+   7000.0002812594175
+  ],
+  "bytes": 2553100
+ },
+ "models/modular_electric_cables.glb": {
+  "source": "Poly Haven",
+  "id": "modular_electric_cables",
+  "name": "Modular Electric Cables",
+  "url": "https://polyhaven.com/a/modular_electric_cables",
+  "license": "CC0-1.0",
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "dimensions": [
+   2076.6327381134033,
+   214.5041599869728,
+   757.2520458308203
+  ],
+  "bytes": 1364344
+ },
+ "models/exterior_aircon_unit.glb": {
+  "source": "Poly Haven",
+  "id": "exterior_aircon_unit",
+  "name": "Exterior Aircon Unit",
+  "url": "https://polyhaven.com/a/exterior_aircon_unit",
+  "license": "CC0-1.0",
+  "authors": [
+   "Monsta3D"
+  ],
+  "dimensions": [
+   1799.971342086792,
+   374.15920197963715,
+   927.8970956802368
+  ],
+  "bytes": 1563672
+ },
+ "models/power_box_01.glb": {
+  "source": "Poly Haven",
+  "id": "power_box_01",
+  "name": "Power Box 01",
+  "url": "https://polyhaven.com/a/power_box_01",
+  "license": "CC0-1.0",
+  "authors": [
+   "Rico Cilliers",
+   "Yann Kervran"
+  ],
+  "dimensions": [
+   377.4920701980591,
+   418.45703125,
+   503.142774105072
+  ],
+  "bytes": 515840
+ },
+ "models/utility_box_01.glb": {
+  "source": "Poly Haven",
+  "id": "utility_box_01",
+  "name": "Utility Box 01",
+  "url": "https://polyhaven.com/a/utility_box_01",
+  "license": "CC0-1.0",
+  "authors": [
+   "James Ray Cock"
+  ],
+  "dimensions": [
+   520.0002193450928,
+   431.999996304512,
+   1120.3334331512451
+  ],
+  "bytes": 292596
+ },
+ "models/portable_generator.glb": {
+  "source": "Poly Haven",
+  "id": "portable_generator",
+  "name": "Portable Generator",
+  "url": "https://polyhaven.com/a/portable_generator",
+  "license": "CC0-1.0",
+  "authors": [
+   "James Ray Cock"
+  ],
+  "dimensions": [
+   818.3408081531525,
+   564.0000104904175,
+   576.9232391612604
+  ],
+  "bytes": 1869056
+ },
+ "models/metal_jerrycan.glb": {
+  "source": "Poly Haven",
+  "id": "metal_jerrycan",
+  "name": "Metal Jerrycan",
+  "url": "https://polyhaven.com/a/metal_jerrycan",
+  "license": "CC0-1.0",
+  "authors": [
+   "Sean Buckley"
+  ],
+  "dimensions": [
+   350.3298610448837,
+   171.74389213323593,
+   455.1599698197606
+  ],
+  "bytes": 716912
+ },
+ "models/plastic_jerrycan.glb": {
+  "source": "Poly Haven",
+  "id": "plastic_jerrycan",
+  "name": "Plastic Jerrycan",
+  "url": "https://polyhaven.com/a/plastic_jerrycan",
+  "license": "CC0-1.0",
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "dimensions": [
+   268.02290976047516,
+   340.8927023410797,
+   318.4274435043335
+  ],
+  "bytes": 562200
+ },
+ "models/plastic_crate_01.glb": {
+  "source": "Poly Haven",
+  "id": "plastic_crate_01",
+  "name": "Plastic Crate 01",
+  "url": "https://polyhaven.com/a/plastic_crate_01",
+  "license": "CC0-1.0",
+  "authors": [
+   "PierreB3D"
+  ],
+  "dimensions": [
+   298.00063371658325,
+   408.00413489341736,
+   264.1694247722626
+  ],
+  "bytes": 724820
+ },
+ "models/plastic_crate_02.glb": {
+  "source": "Poly Haven",
+  "id": "plastic_crate_02",
+  "name": "Plastic Crate 02",
+  "url": "https://polyhaven.com/a/plastic_crate_02",
+  "license": "CC0-1.0",
+  "authors": [
+   "Fabi_G"
+  ],
+  "dimensions": [
+   505.501389503479,
+   405.5013954639435,
+   254.08916175365448
+  ],
+  "bytes": 311744
+ },
+ "models/barrel_03.glb": {
+  "source": "Poly Haven",
+  "id": "barrel_03",
+  "name": "Barrel 03",
+  "url": "https://polyhaven.com/a/barrel_03",
+  "license": "CC0-1.0",
+  "authors": [
+   "Serhii Khromov"
+  ],
+  "dimensions": [
+   633.943498134613,
+   638.5995149612427,
+   930.4736243899824
+  ],
+  "bytes": 351148
+ },
+ "models/metal_trash_can.glb": {
+  "source": "Poly Haven",
+  "id": "metal_trash_can",
+  "name": "Metal Trash Can",
+  "url": "https://polyhaven.com/a/metal_trash_can",
+  "license": "CC0-1.0",
+  "authors": [
+   "GurJas Studios"
+  ],
+  "dimensions": [
+   1846.9352722167969,
+   556.2898814678192,
+   906.1697272554738
+  ],
+  "bytes": 1106188
+ },
+ "models/trashbag.glb": {
+  "source": "Poly Haven",
+  "id": "trashbag",
+  "name": "Trashbag",
+  "url": "https://polyhaven.com/a/trashbag",
+  "license": "CC0-1.0",
+  "authors": [
+   "Benny Weimer"
+  ],
+  "dimensions": [
+   528.0700623989105,
+   462.893009185791,
+   574.9993845820427
+  ],
+  "bytes": 332232
+ },
+ "models/old_tyre.glb": {
+  "source": "Poly Haven",
+  "id": "old_tyre",
+  "name": "Old Tyre",
+  "url": "https://polyhaven.com/a/old_tyre",
+  "license": "CC0-1.0",
+  "authors": [
+   "MP"
+  ],
+  "dimensions": [
+   600.0000238418579,
+   164.99999910593033,
+   600.0000238418579
+  ],
+  "bytes": 481932
+ },
+ "models/rollershutter_door.glb": {
+  "source": "Poly Haven",
+  "id": "rollershutter_door",
+  "name": "Rollershutter Door",
+  "url": "https://polyhaven.com/a/rollershutter_door",
+  "license": "CC0-1.0",
+  "authors": [
+   "MP"
+  ],
+  "dimensions": [
+   3079.9999833106995,
+   300.0857066363096,
+   2399.973489344575
+  ],
+  "bytes": 1322196
+ },
+ "models/mounted_fluorescent_lights.glb": {
+  "source": "Poly Haven",
+  "id": "mounted_fluorescent_lights",
+  "name": "Mounted Fluorescent Lights",
+  "url": "https://polyhaven.com/a/mounted_fluorescent_lights",
+  "license": "CC0-1.0",
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "dimensions": [
+   912.1809005737305,
+   645.4365849494934,
+   35.35318718786584
+  ],
+  "bytes": 339504
+ },
+ "models/ceiling_fan.glb": {
+  "source": "Poly Haven",
+  "id": "ceiling_fan",
+  "name": "Ceiling Fan",
+  "url": "https://polyhaven.com/a/ceiling_fan",
+  "license": "CC0-1.0",
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "dimensions": [
+   1462.9170894622803,
+   1462.9170894622803,
+   516.343355178833
+  ],
+  "bytes": 341368
+ },
+ "models/wall_clock.glb": {
+  "source": "Poly Haven",
+  "id": "wall_clock",
+  "name": "Wall Clock",
+  "url": "https://polyhaven.com/a/wall_clock",
+  "license": "CC0-1.0",
+  "authors": [
+   "PierreB3D"
+  ],
+  "dimensions": [
+   320.4909861087799,
+   47.2230945505423,
+   320.4909861087799
+  ],
+  "bytes": 225544
+ },
+ "models/standing_chalkboard_01.glb": {
+  "source": "Poly Haven",
+  "id": "standing_chalkboard_01",
+  "name": "Standing Chalkboard 01",
+  "url": "https://polyhaven.com/a/standing_chalkboard_01",
+  "license": "CC0-1.0",
+  "authors": [
+   "ParzivalCG"
+  ],
+  "dimensions": [
+   919.5267558097839,
+   758.704662322998,
+   1509.0324000189241
+  ],
+  "bytes": 352304
+ },
+ "models/covered_car.glb": {
+  "source": "Poly Haven",
+  "id": "covered_car",
+  "name": "Covered Car",
+  "url": "https://polyhaven.com/a/covered_car",
+  "license": "CC0-1.0",
+  "authors": [
+   "MP"
+  ],
+  "dimensions": [
+   1788.962960243225,
+   4380.25426864624,
+   1411.1130833625793
+  ],
+  "bytes": 1431836
+ },
+ "models/painted_wooden_bench.glb": {
+  "source": "Poly Haven",
+  "id": "painted_wooden_bench",
+  "name": "Painted Wooden Bench",
+  "url": "https://polyhaven.com/a/painted_wooden_bench",
+  "license": "CC0-1.0",
+  "authors": [
+   "Kirill Sannikov"
+  ],
+  "dimensions": [
+   1164.9435758590698,
+   496.5430945158005,
+   889.2914750613272
+  ],
+  "bytes": 353684
+ },
+ "models/wooden_stool_01.glb": {
+  "source": "Poly Haven",
+  "id": "wooden_stool_01",
+  "name": "Wooden Stool 01",
+  "url": "https://polyhaven.com/a/wooden_stool_01",
+  "license": "CC0-1.0",
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "dimensions": [
+   425.3551661968231,
+   442.36281514167786,
+   437.35266576914
+  ],
+  "bytes": 657492
+ },
+ "models/cardboard_box_01.glb": {
+  "source": "Poly Haven",
+  "id": "cardboard_box_01",
+  "name": "Cardboard Box 01",
+  "url": "https://polyhaven.com/a/cardboard_box_01",
+  "license": "CC0-1.0",
+  "authors": [
+   "Rahul Chaudhary"
+  ],
+  "dimensions": [
+   387.02359795570374,
+   515.8704221248627,
+   341.7995423078537
+  ],
+  "bytes": 426820
+ },
+ "models/planter_box_01.glb": {
+  "source": "Poly Haven",
+  "id": "planter_box_01",
+  "name": "Planter Box 01",
+  "url": "https://polyhaven.com/a/planter_box_01",
+  "license": "CC0-1.0",
+  "authors": [
+   "James Ray Cock"
+  ],
+  "dimensions": [
+   912.6113951206207,
+   413.6679768562317,
+   424.96823612600565
+  ],
+  "bytes": 478112
+ },
+ "models/boombox.glb": {
+  "source": "Poly Haven",
+  "id": "boombox",
+  "name": "Boombox",
+  "url": "https://polyhaven.com/a/boombox",
+  "license": "CC0-1.0",
+  "authors": [
+   "Thomas Paul Mouilleron"
+  ],
+  "dimensions": [
+   723.7796187400818,
+   186.46465986967087,
+   470.10064125061035
+  ],
+  "bytes": 606872
+ },
+ "models/portable_cassette_player.glb": {
+  "source": "Poly Haven",
+  "id": "portable_cassette_player",
+  "name": "Portable Cassette Player",
+  "url": "https://polyhaven.com/a/portable_cassette_player",
+  "license": "CC0-1.0",
+  "authors": [
+   "Mateusz Sadek"
+  ],
+  "dimensions": [
+   172.25529998540878,
+   39.671553298830986,
+   130.30561804771423
+  ],
+  "bytes": 536312
+ },
+ "models/security_light.glb": {
+  "source": "Poly Haven",
+  "id": "security_light",
+  "name": "Security Light",
+  "url": "https://polyhaven.com/a/security_light",
+  "license": "CC0-1.0",
+  "authors": [
+   "Maximilian Schuster"
+  ],
+  "dimensions": [
+   323.14473390579224,
+   417.2230511903763,
+   530.9766530990601
+  ],
+  "bytes": 562532
+ },
+ "models/street_lamp_02.glb": {
+  "source": "Poly Haven",
+  "id": "street_lamp_02",
+  "name": "Street Lamp 02",
+  "url": "https://polyhaven.com/a/street_lamp_02",
+  "license": "CC0-1.0",
+  "authors": [
+   "Josh Dean"
+  ],
+  "dimensions": [
+   386.49316132068634,
+   806.7893021069672,
+   1675.0419437885284
+  ],
+  "bytes": 398508
+ },
+ "models/concrete_road_barrier.glb": {
+  "source": "Poly Haven",
+  "id": "concrete_road_barrier",
+  "name": "Concrete Road Barrier",
+  "url": "https://polyhaven.com/a/concrete_road_barrier",
+  "license": "CC0-1.0",
+  "authors": [
+   "Amal Kumar"
+  ],
+  "dimensions": [
+   1545.3570485115051,
+   640.9457623958588,
+   835.279269143939
+  ],
+  "bytes": 955776
+ },
+ "models/plastic_container.glb": {
+  "source": "Poly Haven",
+  "id": "plastic_container",
+  "name": "Plastic Container",
+  "url": "https://polyhaven.com/a/plastic_container",
+  "license": "CC0-1.0",
+  "authors": [
+   "PierreB3D"
+  ],
+  "dimensions": [
+   895.0786888599396,
+   626.3633966445923,
+   429.68997440377774
+  ],
+  "bytes": 196640
+ },
+ "materials/road_damaged": {
+  "source": "Poly Haven",
+  "id": "road_damaged",
+  "name": "Road Damaged",
+  "url": "https://polyhaven.com/a/road_damaged",
+  "license": "CC0-1.0",
+  "authors": [
+   "Dimitrios Savva"
+  ],
+  "dimensions": [
+   2200.000047683716,
+   2200.000047683716
+  ]
+ },
+ "materials/interlocking_concrete_pavers": {
+  "source": "Poly Haven",
+  "id": "interlocking_concrete_pavers",
+  "name": "Interlocking Concrete Pavers",
+  "url": "https://polyhaven.com/a/interlocking_concrete_pavers",
+  "license": "CC0-1.0",
+  "authors": [
+   "Amal Kumar"
+  ],
+  "dimensions": [
+   1800.0000715255737,
+   1800.0000715255737
+  ]
+ },
+ "materials/red_laterite_soil_stones": {
+  "source": "Poly Haven",
+  "id": "red_laterite_soil_stones",
+  "name": "Red Laterite Soil Stones",
+  "url": "https://polyhaven.com/a/red_laterite_soil_stones",
+  "license": "CC0-1.0",
+  "authors": [
+   "Amal Kumar"
+  ],
+  "dimensions": [
+   2000,
+   2000
+  ]
+ },
+ "materials/white_plaster_rough_02": {
+  "source": "Poly Haven",
+  "id": "white_plaster_rough_02",
+  "name": "White Plaster Rough 02",
+  "url": "https://polyhaven.com/a/white_plaster_rough_02",
+  "license": "CC0-1.0",
+  "authors": [
+   "Rob Tuytel"
+  ],
+  "dimensions": [
+   1000,
+   1000
+  ]
+ },
+ "materials/worn_tile_floor": {
+  "source": "Poly Haven",
+  "id": "worn_tile_floor",
+  "name": "Worn Tile Floor",
+  "url": "https://polyhaven.com/a/worn_tile_floor",
+  "license": "CC0-1.0",
+  "authors": [
+   "Dimitrios Savva"
+  ],
+  "dimensions": [
+   2000,
+   2000
+  ]
+ },
+ "materials/dirty_concrete": {
+  "source": "Poly Haven",
+  "id": "dirty_concrete",
+  "name": "Dirty Concrete",
+  "url": "https://polyhaven.com/a/dirty_concrete",
+  "license": "CC0-1.0",
+  "authors": [
+   "Rob Tuytel"
+  ],
+  "dimensions": [
+   3000,
+   3000
+  ]
+ },
+ "materials/concrete_wall_004": {
+  "source": "Poly Haven",
+  "id": "concrete_wall_004",
+  "name": "Concrete Wall 004",
+  "url": "https://polyhaven.com/a/concrete_wall_004",
+  "license": "CC0-1.0",
+  "authors": [
+   "Dario Barresi",
+   "Charlotte Baglioni"
+  ],
+  "dimensions": [
+   2000,
+   2000
+  ]
+ },
+ "materials/concrete_floor_worn_001": {
+  "source": "Poly Haven",
+  "id": "concrete_floor_worn_001",
+  "name": "Concrete Floor Worn 001",
+  "url": "https://polyhaven.com/a/concrete_floor_worn_001",
+  "license": "CC0-1.0",
+  "authors": [
+   "Dimitrios Savva",
+   "Rico Cilliers"
+  ],
+  "dimensions": [
+   3000,
+   3000.000238418579
+  ]
+ },
+ "materials/painted_concrete": {
+  "source": "Poly Haven",
+  "id": "painted_concrete",
+  "name": "Painted Concrete",
+  "url": "https://polyhaven.com/a/painted_concrete",
+  "license": "CC0-1.0",
+  "authors": [
+   "Dario Barresi",
+   "Dimitrios Savva"
+  ],
+  "dimensions": [
+   2000,
+   2000
+  ]
+ },
+ "materials/grey_plaster": {
+  "source": "Poly Haven",
+  "id": "grey_plaster",
+  "name": "Grey Plaster",
+  "url": "https://polyhaven.com/a/grey_plaster",
+  "license": "CC0-1.0",
+  "authors": [
+   "Rob Tuytel"
+  ],
+  "dimensions": [
+   1000,
+   1000
+  ]
+ },
+ "materials/white_plaster_02": {
+  "source": "Poly Haven",
+  "id": "white_plaster_02",
+  "name": "White Plaster 02",
+  "url": "https://polyhaven.com/a/white_plaster_02",
+  "license": "CC0-1.0",
+  "authors": [
+   "Rob Tuytel"
+  ],
+  "dimensions": [
+   1000,
+   1000
+  ]
+ },
+ "materials/rusty_metal_shutter": {
+  "source": "Poly Haven",
+  "id": "rusty_metal_shutter",
+  "name": "Rusty Metal Shutter",
+  "url": "https://polyhaven.com/a/rusty_metal_shutter",
+  "license": "CC0-1.0",
+  "authors": [
+   "Charlotte Baglioni"
+  ],
+  "dimensions": [
+   1899.9998569488525,
+   1899.9998569488525
+  ]
+ },
+ "materials/rusty_corrugated_iron": {
+  "source": "Poly Haven",
+  "id": "rusty_corrugated_iron",
+  "name": "Rusty Corrugated Iron",
+  "url": "https://polyhaven.com/a/rusty_corrugated_iron",
+  "license": "CC0-1.0",
+  "authors": [
+   "Charlotte Baglioni"
+  ],
+  "dimensions": [
+   2000,
+   2000
+  ]
+ },
+ "materials/rusty_metal_02": {
+  "source": "Poly Haven",
+  "id": "rusty_metal_02",
+  "name": "Rusty Metal 02",
+  "url": "https://polyhaven.com/a/rusty_metal_02",
+  "license": "CC0-1.0",
+  "authors": [
+   "Rob Tuytel"
+  ],
+  "dimensions": [
+   1000,
+   1000
+  ]
+ },
+ "materials/rusty_painted_metal": {
+  "source": "Poly Haven",
+  "id": "rusty_painted_metal",
+  "name": "Rusty Painted Metal",
+  "url": "https://polyhaven.com/a/rusty_painted_metal",
+  "license": "CC0-1.0",
+  "authors": [
+   "Amal Kumar"
+  ],
+  "dimensions": [
+   2200.000047683716,
+   2200.000047683716
+  ]
+ },
+ "materials/metal_plate": {
+  "source": "Poly Haven",
+  "id": "metal_plate",
+  "name": "Metal Plate",
+  "url": "https://polyhaven.com/a/metal_plate",
+  "license": "CC0-1.0",
+  "authors": [
+   "Rob Tuytel"
+  ],
+  "dimensions": [
+   500,
+   500
+  ]
+ },
+ "materials/plywood": {
+  "source": "Poly Haven",
+  "id": "plywood",
+  "name": "Plywood",
+  "url": "https://polyhaven.com/a/plywood",
+  "license": "CC0-1.0",
+  "authors": [
+   "Rob Tuytel"
+  ],
+  "dimensions": [
+   499.999940395355,
+   499.999940395355
+  ]
+ },
+ "materials/wood_peeling_paint_weathered": {
+  "source": "Poly Haven",
+  "id": "wood_peeling_paint_weathered",
+  "name": "Wood Peeling Paint Weathered",
+  "url": "https://polyhaven.com/a/wood_peeling_paint_weathered",
+  "license": "CC0-1.0",
+  "authors": [
+   "Rob Tuytel",
+   "Dimitrios Savva"
+  ],
+  "dimensions": [
+   761.9999647140503,
+   762.0000243186951
+  ]
+ },
+ "materials/worn_plaster_wall": {
+  "source": "Poly Haven",
+  "id": "worn_plaster_wall",
+  "name": "Worn Plaster Wall",
+  "url": "https://polyhaven.com/a/worn_plaster_wall",
+  "license": "CC0-1.0",
+  "authors": [
+   "Dimitrios Savva"
+  ],
+  "dimensions": [
+   1800.0000715255737,
+   1800.0000715255737
+  ]
+ },
+ "materials/terrazzo_tiles": {
+  "source": "Poly Haven",
+  "id": "terrazzo_tiles",
+  "name": "Terrazzo Tiles",
+  "url": "https://polyhaven.com/a/terrazzo_tiles",
+  "license": "CC0-1.0",
+  "authors": [
+   "Amal Kumar"
+  ],
+  "dimensions": [
+   2000,
+   2000
+  ]
+ },
+ "models/obj_retro_pc_setup.glb": {
+  "source": "Objaverse / Sketchfab",
+  "uid": "82eaf2047e0447a1bfea22482f1d1404",
+  "name": "Retro Computer Setup (FREE)",
+  "url": "https://sketchfab.com/3d-models/82eaf2047e0447a1bfea22482f1d1404",
+  "license": "CC-BY-4.0",
+  "authors": [
+   "dr.badass2142"
+  ],
+  "bytes": 419752
+ },
+ "models/obj_retro_computer_urpo.glb": {
+  "source": "Objaverse / Sketchfab",
+  "uid": "f844c0357d284fd8baa1435e9ff31bb2",
+  "name": "Retro computer",
+  "url": "https://sketchfab.com/3d-models/f844c0357d284fd8baa1435e9ff31bb2",
+  "license": "CC-BY-4.0",
+  "authors": [
+   "Urpo"
+  ],
+  "bytes": 1087300
+ },
+ "models/obj_desktop_computer.glb": {
+  "source": "Objaverse / Sketchfab",
+  "uid": "561abc2fc95941609fc7bc6f232895c2",
+  "name": "Desktop Computer",
+  "url": "https://sketchfab.com/3d-models/561abc2fc95941609fc7bc6f232895c2",
+  "license": "CC-BY-4.0",
+  "authors": [
+   "tylerhalterman"
+  ],
+  "bytes": 226964
+ },
+ "models/obj_ibm_model_m.glb": {
+  "source": "Objaverse / Sketchfab",
+  "uid": "63aec0874c184b53becb74b792588e69",
+  "name": "IBM Model M Keyboard",
+  "url": "https://sketchfab.com/3d-models/63aec0874c184b53becb74b792588e69",
+  "license": "CC-BY-4.0",
+  "authors": [
+   "timblewee"
+  ],
+  "bytes": 700668
+ },
+ "models/obj_computer_desk.glb": {
+  "source": "Objaverse / Sketchfab",
+  "uid": "28c67457f2ef4973a0bbc8b667bb183f",
+  "name": "Computer Desk",
+  "url": "https://sketchfab.com/3d-models/28c67457f2ef4973a0bbc8b667bb183f",
+  "license": "CC-BY-4.0",
+  "authors": [
+   "dradnon"
+  ],
+  "bytes": 395764
+ },
+ "models/obj_weathered_workstation.glb": {
+  "source": "Objaverse / Sketchfab",
+  "uid": "dc877404be0445f0a855e37f2747794a",
+  "name": "Weathered Workstation",
+  "url": "https://sketchfab.com/3d-models/dc877404be0445f0a855e37f2747794a",
+  "license": "CC-BY-4.0",
+  "authors": [
+   "lee.johansson"
+  ],
+  "bytes": 640580
+ },
+ "models/obj_peugeot_504_break.glb": {
+  "source": "Objaverse / Sketchfab",
+  "uid": "71831821ad8a4884b78b5996e6039fc5",
+  "name": "Peugeot 504 break",
+  "url": "https://sketchfab.com/3d-models/71831821ad8a4884b78b5996e6039fc5",
+  "license": "CC-BY-4.0",
+  "authors": [
+   "medraphc"
+  ],
+  "bytes": 156268
+ },
+ "models/obj_peugeot_504.glb": {
+  "source": "Objaverse / Sketchfab",
+  "uid": "2bf330a3c92c4b89959fe1fbb1b197d9",
+  "name": "Peugeot 504",
+  "url": "https://sketchfab.com/3d-models/2bf330a3c92c4b89959fe1fbb1b197d9",
+  "license": "CC-BY-4.0",
+  "authors": [
+   "3d_engineer"
+  ],
+  "bytes": 10023048
+ },
+ "models/obj_vw_bus_1971.glb": {
+  "source": "Objaverse / Sketchfab",
+  "uid": "4e19f98e9e804a309ddd81e8b235ab88",
+  "name": "VW Bus 1971",
+  "url": "https://sketchfab.com/3d-models/4e19f98e9e804a309ddd81e8b235ab88",
+  "license": "CC-BY-4.0",
+  "authors": [
+   "Batuhan13"
+  ],
+  "bytes": 1727200
+ },
+ "models/obj_kiosk_90s.glb": {
+  "source": "Objaverse / Sketchfab",
+  "uid": "a04e69a838054f7cb39a635943ab9b0d",
+  "name": "Simple 90's Kiosk",
+  "url": "https://sketchfab.com/3d-models/a04e69a838054f7cb39a635943ab9b0d",
+  "license": "CC-BY-4.0",
+  "authors": [
+   "Vagabondare"
+  ],
+  "bytes": 557348
+ },
+ "models/obj_rusty_kiosk.glb": {
+  "source": "Objaverse / Sketchfab",
+  "uid": "882bfc1b677f48eb82d6dc9f7516c299",
+  "name": "Rusty Kiosk 01",
+  "url": "https://sketchfab.com/3d-models/882bfc1b677f48eb82d6dc9f7516c299",
+  "license": "CC-BY-4.0",
+  "authors": [
+   "randombug"
+  ],
+  "bytes": 220300
+ },
+ "models/obj_crt_tv.glb": {
+  "source": "Objaverse / Sketchfab",
+  "uid": "9ba4baa106e64319a0b540cf0af5aa9e",
+  "name": "CRT TV",
+  "url": "https://sketchfab.com/3d-models/9ba4baa106e64319a0b540cf0af5aa9e",
+  "license": "CC-BY-4.0",
+  "authors": [
+   "timothyahene"
+  ],
+  "bytes": 410148
+ },
+ "models/obj_toyota_corolla_e70.glb": {
+  "source": "Objaverse / Sketchfab",
+  "uid": "c4d66d21968c41da89114e2300578bc5",
+  "name": "Toyota corolla e70 (1980)",
+  "url": "https://sketchfab.com/3d-models/c4d66d21968c41da89114e2300578bc5",
+  "license": "CC-BY-4.0",
+  "authors": [
+   "ditovirnantio"
+  ],
+  "bytes": 1774580
+ },
+ "models/obj_old_scooter.glb": {
+  "source": "Objaverse / Sketchfab",
+  "uid": "5e9b5072b2224ba982366490ad5f31d9",
+  "name": "Old Scooter",
+  "url": "https://sketchfab.com/3d-models/5e9b5072b2224ba982366490ad5f31d9",
+  "license": "CC-BY-4.0",
+  "authors": [
+   "ribitis"
+  ],
+  "bytes": 676892
+ },
+ "models/obj_plastic_chairs.glb": {
+  "source": "Objaverse / Sketchfab",
+  "uid": "6d139742099d48f195e6774514ccb7ef",
+  "name": "Classic Plastic Chairs",
+  "url": "https://sketchfab.com/3d-models/6d139742099d48f195e6774514ccb7ef",
+  "license": "CC-BY-4.0",
+  "authors": [
+   "topfrank2013"
+  ],
+  "bytes": 1201220
+ }
+}
