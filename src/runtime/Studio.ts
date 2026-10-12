@@ -23,6 +23,7 @@ import { cableObject, DistrictRuntime, doorObject, lightBankObject } from '../wo
 import { closedDoorBoxes, setTimeOfDay } from '../world/district/DistrictOps';
 import { composeYabaWorld } from '../world/district/YabaWorld';
 import { ShopDresser } from '../world/district/ShopDresser';
+import { StudioAssembly, characterClips } from '../assembly/StudioAssembly';
 import { INTERIOR_ENV } from '../world/district/Materials';
 import type { DistrictBriefPlan } from '../world/district/Commands';
 import { SequencePlayer } from './SequencePlayer';
@@ -80,6 +81,8 @@ export class Studio extends Emitter<Events> {
   thumbnails!: Thumbnails;
   district: DistrictRuntime | null = null;
   dresser: ShopDresser | null = null;
+  /** imported packages, catalogue and assembled worlds */
+  assembly!: StudioAssembly;
   private pendingNotice = '';
   /** recent selections (chair, then computer…) for commands like « déplace cette chaise devant cet ordinateur » */
   selectionHistory: string[] = [];
@@ -144,8 +147,10 @@ export class Studio extends Emitter<Events> {
       performance.mark('boot:start');
       await this.registry.init();
       performance.mark('boot:manifest');
+      this.assembly = new StudioAssembly(this);
+      await this.assembly.loadInstalled();
       const localWorlds = await idb.all<WorldDocument>('worlds');
-      this.worlds = [...this.registry.manifest.worlds.map(({id, name}) => ({id, name})), ...localWorlds.filter((d) => (d.composition || d.imported || d.district) && !this.registry.manifest.worlds.some((w) => w.id === d.id)).map(({id, name}) => ({id, name}))];
+      this.worlds = [...this.registry.manifest.worlds.map(({id, name}) => ({id, name})), ...localWorlds.filter((d) => (d.composition || d.imported || d.district || d.assembly) && !this.registry.manifest.worlds.some((w) => w.id === d.id)).map(({id, name}) => ({id, name}))];
       const doc = await this.loadWorldDocument();
       for (const e of doc.entities) {
         const rec = e.assetId ? this.registry.manifest.assets.find((a) => a.id === e.assetId) : undefined;
@@ -204,6 +209,7 @@ export class Studio extends Emitter<Events> {
         this.dresser.prepare = (o) => this.engine.renderer.compileAsync(o, this.cameras.camera, this.engine.scene);
         this.engine.scene.add(this.dresser.group);
       }
+      if (doc.assembly) this.entities.factories.set('set', (e) => this.assembly.runtime.build(e));
       this.appliedSun = JSON.stringify([env.sun, env.exposure]);
       const [world, bakedCollision, bakedNav, actor] = await Promise.all([
         env.assetId ? this.registry.loadGLTF(env.assetId, track(envRec!.name)) : null,
@@ -263,6 +269,17 @@ export class Studio extends Emitter<Events> {
       performance.mark('boot:world-and-actor');
       await this.entities.ready();
       performance.mark('boot:entities');
+      if (doc.assembly) {
+        this.set({ loading: [...this.ui.loading, { label: 'Ensembles, collisions et navigation', loaded: 0, total: 0 }] });
+        await this.assembly.rebuildGeometry();
+        performance.mark('boot:navigation');
+        if (this.actor) {
+          const p = this.nav?.closest(new THREE.Vector3(...doc.spawn.position)) ?? this.assembly.spawnPoint();
+          if (p) this.actor.place(p, doc.spawn.heading);
+          this.resetFollowCamera();
+        }
+        void StudioAssembly.rememberLast(doc.id);
+      }
       if (this.district) {
         this.set({ loading: [...this.ui.loading, { label: 'Navigation du quartier', loaded: 0, total: 0 }] });
         await this.rebuildDistrictGeometry();
@@ -283,10 +300,22 @@ export class Studio extends Emitter<Events> {
   }
 
   private async loadWorldDocument(): Promise<WorldDocument> {
-    const wanted = new URLSearchParams(location.search).get('world');
+    let wanted = new URLSearchParams(location.search).get('world');
+    if (!wanted) {
+      // the studio opens on the last assembled place, or on an empty one — never on a bundled demo district
+      const last = await StudioAssembly.lastWorld();
+      const saved = last ? await idb.get<WorldDocument>('worlds', last) : undefined;
+      if (saved?.assembly) return saved;
+      wanted = '';
+      const hdri = this.registry.manifest.assets.find((a) => a.id === 'hdri.pedestrian-overpass') ? 'hdri.pedestrian-overpass' : this.registry.manifest.assets.find((a) => a.id.startsWith('hdri.'))!.id;
+      const doc = StudioAssembly.emptyWorld('Nouveau lieu', { fictional: true }, hdri);
+      await idb.put('worlds', doc.id, doc);
+      this.worlds.push({ id: doc.id, name: doc.name });
+      return doc;
+    }
     if (wanted) {
       const saved = await idb.get<WorldDocument>('worlds', wanted);
-      if ((saved?.composition || saved?.imported || saved?.district) && saved.format === 'cws-world' && !this.registry.manifest.worlds.some((w) => w.id === wanted)) return saved;
+      if ((saved?.composition || saved?.imported || saved?.district || saved?.assembly) && saved.format === 'cws-world' && !this.registry.manifest.worlds.some((w) => w.id === wanted)) return saved;
     }
     const entry = this.registry.manifest.worlds.find((w) => w.id === wanted) ?? this.registry.manifest.worlds[0];
     if (!entry) throw new Error('content manifest has no worlds');
@@ -313,6 +342,23 @@ export class Studio extends Emitter<Events> {
     const ent = doc.entities.find((e) => e.type === 'ACTOR');
     if (!ent?.assetId) return null;
     const rec = this.registry.get(ent.assetId);
+    if (rec.url.startsWith('pkg://')) {
+      // a character from an imported package: its own rig and clips (no substitution by another avatar)
+      const a = await this.registry.loadGLTF(ent.assetId, track(rec.name));
+      const c = characterClips(a.gltf.animations);
+      if (!c.walk || !c.idle) throw new Error(`${rec.name} : aucune animation de locomotion dans le fichier — personnage non dirigeable`);
+      const loco = (clip: THREE.AnimationClip) => {
+        const k = clip.clone();
+        const root = k.tracks.find((t) => t.name.endsWith('.position'))?.name.split('.')[0];
+        const dist = root ? stripRootMotion(k, root) : 0;
+        // clips animated in place have no root travel: a walking pace is assumed and recorded
+        return { clip: k, speed: dist > 0.05 ? dist / k.duration : 1.3 };
+      };
+      const model = this.registry.instantiate(a);
+      model.traverse((o) => { if ((o as THREE.SkinnedMesh).isSkinnedMesh) o.frustumCulled = false; });
+      const actor = new Actor(model, { idle: c.idle.clone(), walk: loco(c.walk), run: c.run === c.walk ? { ...loco(c.walk), speed: loco(c.walk).speed * 1.9 } : loco(c.run!) });
+      return { actor, entityId: ent.id };
+    }
     const clipIds = rec.runtime?.clips as Record<'idle' | 'walk' | 'run', string>;
     const [avatar, idle, walk, run] = await Promise.all([
       this.registry.loadGLTF(ent.assetId, track(rec.name)),
@@ -552,6 +598,7 @@ export class Studio extends Emitter<Events> {
 
   private onDocChange(source: string) {
     this.entities.sync(this.store.doc);
+    if (this.store.doc.assembly) this.assembly.onDocChange(source);
     // moved objects follow the light of the space they are now in
     if (this.district) for (const o of this.entities.objects.values()) if (o !== this.actor?.root) this.applyInteriorLight(o, !!this.roomAt(_v.copy(o.position).setY(o.position.y + 0.3)));
     const env = this.store.doc.environment, sunKey = JSON.stringify([env.sun, env.exposure]);

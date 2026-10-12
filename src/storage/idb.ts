@@ -1,7 +1,8 @@
 // Minimal promise wrapper around IndexedDB (no dependency).
 const DB_NAME = 'cinematic-world-studio';
-const DB_VERSION = 1;
-export type StoreName = 'worlds' | 'contentMeta' | 'settings';
+const DB_VERSION = 2;
+/** packageFiles: prepared package files when OPFS is unavailable (key: `<packageId>/<path>`, value: Blob) */
+export type StoreName = 'worlds' | 'contentMeta' | 'settings' | 'packageFiles';
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
@@ -11,7 +12,7 @@ function open(): Promise<IDBDatabase> {
     const req = indexedDB.open(DB_NAME, DB_VERSION);
     req.onupgradeneeded = () => {
       const db = req.result;
-      for (const s of ['worlds', 'contentMeta', 'settings']) if (!db.objectStoreNames.contains(s)) db.createObjectStore(s);
+      for (const s of ['worlds', 'contentMeta', 'settings', 'packageFiles']) if (!db.objectStoreNames.contains(s)) db.createObjectStore(s);
     };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);

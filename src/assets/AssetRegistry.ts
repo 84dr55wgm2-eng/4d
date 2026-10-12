@@ -44,6 +44,8 @@ export class AssetRegistry {
   private loaded = new Map<string, Promise<LoadedAsset>>();
   /** called whenever an asset finishes loading (thumbnails, diagnostics) */
   onLoaded?: (asset: LoadedAsset) => void;
+  /** reads `pkg://<packageId>/<file>` from the browser's package store (prepared content, never fetched) */
+  packageReader?: (url: string) => Promise<ArrayBuffer>;
   /**
    * Three levels are kept apart: the persistent byte cache (OPFS/IDB, survives reloads), parsed models in memory
    * (`loaded`), and visible instances (counted by retain/release). A model nobody retains any more is dropped
@@ -84,7 +86,7 @@ export class AssetRegistry {
   get version() { return this.manifest.version; }
 
   resolveUrl(a: AssetRecord) {
-    return /^(https?:|user:)/.test(a.url) ? a.url : `${this.baseUrl}${a.url.replace(/^\//, '')}`;
+    return /^(https?:|user:|pkg:)/.test(a.url) ? a.url : `${this.baseUrl}${a.url.replace(/^\//, '')}`;
   }
 
   get(id: string) {
@@ -277,6 +279,9 @@ export class AssetRegistry {
             if (totalBytes > 200 * 1024 * 1024) throw new Error('Import et dépendances limités à 200 Mo');
           }));
           gltf = await this.loader.parseAsync(embeddedGLTF(new Uint8Array(buf), resources), '');
+        } else if (url.startsWith('pkg://')) {
+          if (!this.packageReader) throw new Error('Paquets indisponibles dans ce navigateur');
+          gltf = await this.loader.parseAsync(await this.packageReader(url), '');
         } else {
           const buf = await this.cache.fetch(url, this.version, onProgress);
           gltf = await this.loader.parseAsync(buf, url.slice(0, url.lastIndexOf('/') + 1));

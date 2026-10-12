@@ -12,7 +12,9 @@ export interface Transform {
 
 export type EntityType =
   | 'ACTOR' | 'BUILDING' | 'ROOM' | 'DOOR' | 'CHAIR' | 'FURNITURE' | 'VEHICLE'
-  | 'ROAD' | 'PROP' | 'VEGETATION' | 'LIGHT' | 'ENVIRONMENT';
+  | 'ROAD' | 'PROP' | 'VEGETATION' | 'LIGHT' | 'ENVIRONMENT'
+  /** a placed set of imported content (metadata.set.ref = `<packageId>/<setId>`) */
+  | 'SET';
 
 export type Capability =
   | 'selectable' | 'movable' | 'rotatable' | 'scalable' | 'walkable' | 'collidable' | 'directable'
@@ -58,6 +60,8 @@ export interface WorldState {
 }
 
 export interface WorldDocument {
+  /** a world assembled from imported packages: placements are SET entities; this keeps their junctions and context */
+  assembly?: Assembly;
   /** content revision of a published package; a saved copy from an older revision is kept aside, not reused */
   revision?: string;
   format: 'cws-world';
@@ -198,4 +202,16 @@ export interface Sequence {
   start: SequenceStart;
   /** measured by rehearsal (deterministic fixed-step simulation) */
   timing?: { beatStarts: number[]; duration: number; dt: number; /** what the timing was measured against (SequencePlayer.timingKey) */ key?: string };
+}
+
+/** Context and junctions of an assembled world (placements themselves are SET entities). */
+export interface Assembly {
+  /** what was asked and how it was read: a recomposition, never a geographic reconstruction */
+  context: { brief?: string; place?: string; fictional: boolean; era?: string; timeOfDay?: string; ambience?: string; notes?: string[] };
+  /** connector pairs that were joined (ids are placement entity ids + connector ids) */
+  junctions: { id: string; a: { placement: string; connector: string }; b: { placement: string; connector: string }; kind: string }[];
+  /** packages the world depends on (to reopen it, they must be imported in this browser) */
+  packages: string[];
+  /** last verification, kept with the world */
+  issues?: { code: string; message: string; ids: string[] }[];
 }
