@@ -553,8 +553,9 @@ function ActionDock({ studio }: { studio: Studio }) {
   } else if (ui.mode === 'edit') {
     content = <span className="hint">Tap an object to select · drag to look · use the on-screen gizmo to move, rotate or scale</span>;
   } else {
-    const actorSelected = ui.selection === studio.actorEntityId;
-    content = <>
+    const actorSelected = !!studio.actor && !!studio.actorEntityId && ui.selection === studio.actorEntityId;
+    if (!studio.actor) content = <span className="hint">{studio.store.doc.assembly ? (studio.store.doc.entities.some((e) => e.type === 'SET') ? 'Pas de personnage incarné : choisis-en un dans Lieux → Assemblage, ou passe en DIRECT pour la caméra libre' : 'Lieu vide : importe un paquet (Lieux → Sources), puis place des ensembles depuis le Catalogue') : 'Aucun personnage dans ce monde'}</span>;
+    else content = <>
       <span className={`state-pill s-${ui.actorState}`}>{ui.actorState.toUpperCase()}</span>
       <span className="hint">{actorSelected ? 'Personnage sélectionné · touche le sol pour marcher · touche un objet pour agir' : 'Touche le personnage puis une destination · caméra automatique'}</span>
       {contextId && <span className="context-actions">{studio.interactions.actionsFor(contextId).map((action) => <Btn key={action.id} text={action.label} label={action.label} onClick={async () => { const r = await studio.interactions.execute(contextId, action.id); if (!r.ok) studio.toast(r.error); else studio.toast(action.label); }} />)}</span>}

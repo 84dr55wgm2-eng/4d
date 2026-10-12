@@ -26,6 +26,8 @@ const BLENDER = process.env.BLENDER ?? 'blender';
 const JOBS = path.resolve(process.env.JOBS_DIR ?? path.join(ROOT, 'tools/gta/work/jobs'));
 const CW = path.join(ROOT, 'tools/gta/cw-extract/bin/Release/net8.0/cw-extract');
 const PORT = +(process.env.PORT ?? 8787), HOST = process.env.HOST ?? '127.0.0.1';
+// the published studio's origin by default (the browser calls this service from the site, with the token)
+const ORIGIN = process.env.ALLOW_ORIGIN ?? 'https://84dr55wgm2-eng.github.io';
 if (!TOKEN) { console.error('CONVERT_TOKEN is required (the service never runs open)'); process.exit(2); }
 fs.mkdirSync(JOBS, { recursive: true });
 
@@ -112,7 +114,7 @@ async function drive(job) {
 
 // ------------------------------------------------------------------ http
 const send = (res, code, body, type = 'application/json') => {
-  res.writeHead(code, { 'content-type': type, 'access-control-allow-origin': process.env.ALLOW_ORIGIN ?? 'null', 'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'GET, POST, DELETE' });
+  res.writeHead(code, { 'content-type': type, 'access-control-allow-origin': ORIGIN, 'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'GET, POST, DELETE', 'access-control-allow-private-network': 'true', vary: 'origin' });
   res.end(type === 'application/json' ? JSON.stringify(body) : body);
 };
 const body = (req) => new Promise((r) => { let s = ''; req.on('data', (d) => (s += d)); req.on('end', () => { try { r(JSON.parse(s || '{}')); } catch { r({}); } }); });
@@ -143,7 +145,7 @@ http.createServer(async (req, res) => {
     if (req.method === 'GET' && parts[2] === 'package') {
       const f = path.join(jobDir(id), 'package.cwspkg');
       if (!fs.existsSync(f)) return send(res, 409, { error: 'package not ready' });
-      res.writeHead(200, { 'content-type': 'application/zip', 'access-control-allow-origin': process.env.ALLOW_ORIGIN ?? 'null' });
+      res.writeHead(200, { 'content-type': 'application/zip', 'access-control-allow-origin': ORIGIN });
       return fs.createReadStream(f).pipe(res);
     }
     if (req.method === 'DELETE' && parts.length === 2) { running.get(id)?.kill(); fs.rmSync(jobDir(id), { recursive: true, force: true }); return send(res, 200, { deleted: id }); }

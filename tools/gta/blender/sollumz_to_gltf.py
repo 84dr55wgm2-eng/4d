@@ -160,13 +160,19 @@ def main():
         d = IN / sub
         if d.exists():
             todo += [f for f in sorted(d.glob(f"*.{sub}.xml")) if names is None or f.name.split(".")[0] in names]
+    cache = state.setdefault("sources", {})  # name -> sha256 of the original it was converted from
     for i, f in enumerate(todo):
         name = f.name.split(".")[0]
-        if name in state["done"] and (OUT / f"{name}.glb").exists():
+        src = f.parent / f"{name}.source.json"
+        sha = json.loads(src.read_text()).get("sha256") if src.exists() else None
+        # cache by source identity: same original bytes -> keep the glb; a changed original (patch, DLC) re-converts
+        if name in state["done"] and (OUT / f"{name}.glb").exists() and cache.get(name) == sha:
             continue
         try:
             convert(f)
-            state["done"].append(name)
+            if name not in state["done"]:
+                state["done"].append(name)
+            cache[name] = sha
             state["failed"].pop(name, None)
         except Exception as e:  # recorded, the batch goes on
             state["failed"][name] = f"{type(e).__name__}: {e}"

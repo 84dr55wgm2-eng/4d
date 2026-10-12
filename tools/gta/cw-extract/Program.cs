@@ -283,7 +283,9 @@ static class Program
                 var outDir = Path.Combine(xml, e.ext.TrimStart('.')); Directory.CreateDirectory(outDir);
                 var text = MetaXml.GetXml(fe, data, out var fn, outDir); // ydr/ytd/yft also write their textures (.dds) next to it
                 if (!string.IsNullOrEmpty(text)) File.WriteAllText(Path.Combine(outDir, fn), text);
-                File.WriteAllText(Path.Combine(outDir, name + ".source.json"), JsonSerializer.Serialize(new { name, e.rpf, e.path, e.priority, e.version, overridden = list.Skip(1).Select(x => $"{x.rpf}:{x.path}") }, J));
+                // source identity: the hash of the extracted original keys every later conversion (cache by source, not by name)
+                var sha256 = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(data)).ToLowerInvariant();
+                File.WriteAllText(Path.Combine(outDir, name + ".source.json"), JsonSerializer.Serialize(new { name, sha256, bytes = data.Length, e.rpf, e.path, e.priority, e.version, overridden = list.Skip(1).Select(x => $"{x.rpf}:{x.path}") }, J));
                 st.Done.Add(name);
             }
             catch (Exception ex) { st.Failed.Add($"{name}: {ex.Message}"); }

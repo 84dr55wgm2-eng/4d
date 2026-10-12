@@ -49,3 +49,15 @@
 - **Loading:** obstacles from manifest footprints (routes independent of streaming); instance refcounts and
   eviction of unused models; protected ids (interaction target, held objects, sequence targets).
 - Published Yaba package carries `revision`; an older saved copy is kept as « … (avant mise à jour) ».
+
+## 2026-10-12 — Studio de lieux, contenu GTA séparé
+- Correction de mission appliquée : pas d’acquisition des fichiers du jeu, pas de redistribution ; le studio public
+  ne lit que des paquets préparés ; les archives brutes passent par un service privé chez le propriétaire.
+- Trois environnements (public / préparation / données locales) ; paquet `cws-package` v1 comme frontière.
+- Opérations d’assemblage au contrat Pascal, une transaction par appel, vérifiées avant commit (navmesh compris).
+- Les constructions Recast concurrentes faisaient avorter la page : reconstructions sérialisées.
+- La vérification a révélé une porte infranchissable dans la fixture (dalle limitée à l’intérieur des murs) :
+  fixture corrigée, paquet de test reconstruit.
+- Agent : la boucle d’outils tourne dans le navigateur ; le relais ne fait que porter la clé. Vérifié avec un
+  fournisseur scripté de test, jamais présenté comme un modèle.
+- Accueil : lieu vide par défaut ; Yaba et l’acteur RPM ne sont plus montrés comme livraison.

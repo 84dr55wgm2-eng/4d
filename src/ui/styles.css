@@ -323,3 +323,6 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .agent-line.tool { font-size: 12px; color: var(--text-dim); }
 .agent-line.tool.failed summary { color: #ff8a80; }
 .agent-line pre { white-space: pre-wrap; word-break: break-all; font-size: 11px; margin: 4px 0 0; }
+.place-section .search { flex: none; }
+.place-section input[type=file] { font: inherit; font-size: 12px; color: var(--text-dim); max-width: 100%; }
+.place-section input[type=file]::file-selector-button { background: rgba(255,255,255,0.12); color: var(--text); border: 0; border-radius: 8px; padding: 5px 10px; margin-right: 8px; font: inherit; cursor: pointer; }
