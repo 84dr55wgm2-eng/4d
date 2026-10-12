@@ -14,10 +14,12 @@
     "@recast-navigation/generators": "^0.43.1",
     "@recast-navigation/three": "^0.43.1",
     "@sparkjsdev/spark": "^2.3.1",
+    "mp4-muxer": "^5.2.2",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "three": "^0.186.1",
-    "three-mesh-bvh": "^0.9.16"
+    "three-mesh-bvh": "^0.9.16",
+    "webm-muxer": "^5.1.4"
   },
   "devDependencies": {
     "@gltf-transform/core": "^4.5.1",

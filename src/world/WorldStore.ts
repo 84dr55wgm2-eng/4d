@@ -6,7 +6,7 @@ import type { Entity, WorldDocument } from '../core/types';
  * a snapshot for undo/redo (documents are small: entities + shots, never geometry).
  */
 type StoreEvents = {
-  change: { doc: WorldDocument; label: string; source: 'commit' | 'undo' | 'redo' | 'load' };
+  change: { doc: WorldDocument; label: string; source: 'commit' | 'undo' | 'redo' | 'load' | 'sequence' };
 };
 
 const clone = <T,>(v: T): T => structuredClone(v);
@@ -58,6 +58,15 @@ export class WorldStore extends Emitter<StoreEvents> {
     this.dirty = true;
     this.emit('change', { doc: this._doc, label, source: 'commit' });
     return true;
+  }
+
+  /** Runtime state restore (sequence playback): changes the document without an undo step. */
+  applySilently(label: string, mutate: (doc: WorldDocument) => void) {
+    const draft = clone(this._doc);
+    mutate(draft);
+    this._doc = draft;
+    this.dirty = true;
+    this.emit('change', { doc: this._doc, label, source: 'sequence' });
   }
 
   get canUndo() { return this.undoStack.length > 0; }

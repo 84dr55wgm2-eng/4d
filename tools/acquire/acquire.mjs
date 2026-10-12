@@ -99,7 +99,7 @@ for (const spec of req.textures ?? []) {
 // Objaverse (Sketchfab-derived, per-object license recorded; only CC0/CC-BY accepted)
 if (req.objaverseSearch || req.objaverse) {
   const { execSync } = await import('node:child_process');
-  execSync(`python3 tools/acquire/objaverse.py ${process.argv[2]}`, { stdio: 'inherit' });
+  try { execSync(`python3 tools/acquire/objv_fetch.py ${process.argv[2]}`, { stdio: 'inherit' }); } catch (e) { log('FAIL objaverse lane: ' + e.message); }
 }
 
 fs.mkdirSync(OUT, { recursive: true });

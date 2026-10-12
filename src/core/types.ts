@@ -87,6 +87,11 @@ export interface WorldDocument {
     dependencies: string[];
     missing: string[];
   };
+  /** Yaba-style district package: semantic plan the runtime builds from (lots, buildings, rooms, openings). */
+  district?: DistrictPlan;
+  /** Semantic graph: object in room, chair assigned to workstation, door connecting spaces, … */
+  relations?: Relation[];
+  sequences?: Sequence[];
   spawn: { position: Vec3; heading: number };
   zones: Zone[];
   entities: Entity[];
@@ -126,3 +131,53 @@ export interface ContentManifest {
 }
 
 export type CacheStatus = 'remote' | 'downloading' | 'cached' | 'error';
+
+// ---------------------------------------------------------------- district (Pascal-style semantic construction)
+export interface Opening { id: string; kind: 'door' | 'shopfront' | 'window'; wall: 'front' | 'back' | 'left' | 'right'; offset: number; width: number; height: number; sill?: number; level: number }
+export interface RoomSpec { id: string; name: string; kind: 'cybercafe' | 'shop' | 'office'; level: number; /** local rect inside the building [x0,z0,x1,z1] */ rect: [number, number, number, number] }
+export interface BuildingSpec {
+  id: string; name: string;
+  /** centre of the front edge (street side) in world space, facing direction yaw (deg) toward the street */
+  front: Vec3; yaw: number;
+  width: number; depth: number; floors: number; floorHeight: number;
+  style: { wall: string; trim: string; paint: [number, number, number]; base?: [number, number, number]; roof: 'parapet' | 'corrugated'; balcony: boolean; louvres: boolean; bars: boolean };
+  openings: Opening[];
+  rooms: RoomSpec[];
+  signs: { text: string; sub?: string; colors: [string, string]; level: number; kind: 'board' | 'painted' | 'blade' }[];
+}
+export interface DistrictPlan {
+  brief: { place: string; era: string; mood: string; text: string };
+  street: { length: number; carriageway: number; sidewalk: number; drain: boolean };
+  buildings: BuildingSpec[];
+  /** asset ids the plan requires; resolution report lists any that are missing */
+  requires: string[];
+  missing: string[];
+}
+export type RelationKind = 'in' | 'seatFor' | 'connects' | 'onSurface' | 'faces' | 'partOf';
+export interface Relation { kind: RelationKind; from: string; to: string; data?: Record<string, unknown> }
+
+// ---------------------------------------------------------------- direction
+export interface SequenceBeat {
+  id: string;
+  kind: 'moveTo' | 'interact' | 'wait' | 'turnTo';
+  label: string;
+  target?: string;
+  action?: string;
+  position?: Vec3;
+  seconds?: number;
+}
+/** camera cut: shotId references doc.shots, or 'follow' for the third-person camera */
+export interface SequenceCut { id: string; shotId: string; beat: number; offset: number }
+export interface SequenceStart {
+  actor: { position: Vec3; heading: number; seatedOn?: string | null };
+  entities: Record<string, { transform: Transform; interaction?: Record<string, unknown> }>;
+}
+export interface Sequence {
+  id: string;
+  name: string;
+  beats: SequenceBeat[];
+  cuts: SequenceCut[];
+  start: SequenceStart;
+  /** measured by rehearsal (deterministic fixed-step simulation) */
+  timing?: { beatStarts: number[]; duration: number; dt: number };
+}
