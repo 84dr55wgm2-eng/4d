@@ -70,6 +70,15 @@ export interface WorldDocument {
     sun: { azimuth: number; elevation: number; intensity: number };
     exposure: number;
   };
+  imported?: {
+    sourceAssetId: string;
+    dataKey?: string;
+    sourceUrl: string;
+    license: AssetRecord['license'];
+    triangleCount: number;
+    bounds: [number, number, number, number];
+    cells: { id: string; bounds: [number,number,number,number]; dependencies: string[] }[];
+  };
   composition?: {
     brief: string;
     layout: 'street' | 'courtyard';

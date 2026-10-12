@@ -17,6 +17,7 @@ import { Thumbnails } from './Thumbnails';
 import { InteractionSystem } from './InteractionSystem';
 import { composeWorld, refreshSpatialData, type WorldPlan } from '../world/WorldCreator';
 import { worldGeometry } from '../world/WorldGeometry';
+import { importedDocument, sceneGeometry, sceneSpawn } from '../world/SceneWorld';
 import { createToolRegistry } from '../ops/ToolRegistry';
 
 export type AppMode = 'explore' | 'edit' | 'direct';
@@ -124,7 +125,7 @@ export class Studio extends Emitter<Events> {
       this.registry.setRenderer(this.engine.renderer);
       await this.registry.init();
       const localWorlds = await idb.all<WorldDocument>('worlds');
-      this.worlds = [...this.registry.manifest.worlds.map(({id, name}) => ({id, name})), ...localWorlds.filter((d) => d.composition).map(({id, name}) => ({id, name}))];
+      this.worlds = [...this.registry.manifest.worlds.map(({id, name}) => ({id, name})), ...localWorlds.filter((d) => d.composition || d.imported).map(({id, name}) => ({id, name}))];
       const doc = await this.loadWorldDocument();
       for (const e of doc.entities) {
         const rec = e.assetId ? this.registry.manifest.assets.find((a) => a.id === e.assetId) : undefined;
@@ -165,13 +166,21 @@ export class Studio extends Emitter<Events> {
           this.thumbnails.make(a.record.id, a.template, this.registry.version).then(() => this.set({}), (e) => console.warn('[thumbnail]', a.record.id, e));
       };
 
-      const [world, collision, nav, actor] = await Promise.all([
+      const [world, bakedCollision, bakedNav, actor] = await Promise.all([
         env.assetId ? this.registry.loadGLTF(env.assetId, track(envRec!.name)) : null,
         composedGeometry ? Promise.resolve(new CollisionWorld(composedGeometry)) : env.collision ? CollisionWorld.load((u) => this.registry.cache.fetch(u, this.registry.version, track('Collision')), `${base}${env.collision}`) : null,
         // navigation is optional: without it, directed walking reports an error instead of breaking the world
         composedGeometry ? Navigation.build(worldGeometry(doc, this.registry.manifest.assets, true)) : env.navmesh ? this.registry.cache.fetch(`${base}${env.navmesh}`, this.registry.version).then((b) => Navigation.load(b)).catch((e) => { console.warn('[nav] unavailable', e); return null; }) : null,
         this.loadActor(doc, track),
       ]);
+      let collision = bakedCollision, nav = bakedNav;
+      if (doc.imported && world) {
+        this.set({ loading: [...this.ui.loading, { label: 'Géométrie et navigation du monde importé', loaded: 0, total: 0 }] });
+        const cached = doc.imported.dataKey ? await idb.get<{ positions: Float32Array; indices: Uint32Array; nav: Uint8Array }>('settings', doc.imported.dataKey) : undefined;
+        const geometry = cached ? new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(cached.positions, 3)).setIndex(new THREE.BufferAttribute(cached.indices, 1)) : await sceneGeometry(world.template);
+        nav = cached ? await Navigation.load(cached.nav.buffer as ArrayBuffer) : await Navigation.build(geometry);
+        collision = new CollisionWorld(geometry);
+      }
       this.collision = collision;
       this.nav = nav;
       this.cameras.collision = collision;
@@ -216,7 +225,7 @@ export class Studio extends Emitter<Events> {
     const wanted = new URLSearchParams(location.search).get('world');
     if (wanted) {
       const saved = await idb.get<WorldDocument>('worlds', wanted);
-      if (saved?.composition && saved.format === 'cws-world') return saved;
+      if ((saved?.composition || saved?.imported) && saved.format === 'cws-world') return saved;
     }
     const entry = this.registry.manifest.worlds.find((w) => w.id === wanted) ?? this.registry.manifest.worlds[0];
     if (!entry) throw new Error('content manifest has no worlds');
@@ -460,6 +469,38 @@ export class Studio extends Emitter<Events> {
     this.worlds.push({ id: doc.id, name: doc.name });
     await this.switchWorld(doc.id);
     return doc.id;
+  }
+
+  async importWorldFile(file: File, unitsToMetres = 1) {
+    const record = await this.registry.importFile(file, unitsToMetres);
+    return this.importWorldAsset(record.id);
+  }
+
+  async importWorldURL(url: string, unitsToMetres = 1) {
+    const record = await this.registry.importWorldURL(url, unitsToMetres);
+    return this.importWorldAsset(record.id);
+  }
+
+  async importWorldAsset(id: string) {
+    const record = await this.registry.worldSource(id);
+    const source = await this.registry.loadGLTF(record.id);
+    const geometry = await sceneGeometry(source.template);
+    let nav: Navigation | null = null;
+    try {
+      nav = await Navigation.build(geometry);
+      const preferred = this.registry.get(id).runtime?.spawn as [number,number,number] | undefined;
+      const spawn = sceneSpawn(nav, geometry.boundingBox!, preferred);
+      const doc = importedDocument(record, this.store.snapshot(), geometry.boundingBox!, spawn, geometry.index!.count / 3);
+      doc.imported!.dataKey = `derived:${doc.id}:v1`;
+      await idb.put('settings', doc.imported!.dataKey, { positions: geometry.getAttribute('position').array, indices: geometry.index!.array, nav: nav.serialize() });
+      if (!await this.save()) throw new Error('Sauvegarde du monde actuel impossible');
+      await idb.put('worlds', doc.id, doc);
+      const back = await idb.get<WorldDocument>('worlds', doc.id);
+      if (!back?.imported) throw new Error('Sauvegarde du monde importé impossible');
+      this.worlds.push({id:doc.id,name:doc.name});
+      await this.switchWorld(doc.id);
+      return doc.id;
+    } finally { nav?.dispose(); geometry.dispose(); }
   }
 
   async switchWorld(id: string) {

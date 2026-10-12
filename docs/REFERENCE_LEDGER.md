@@ -6,13 +6,13 @@ REFERENCE → exact component/pattern used → our module → status
 - **shadany7824/playgta5** → content-as-data (manifest → world catalog → assets → persistent cache → runtime), package selection instead of a hardcoded scene, same-world quality budgets → `public/content/manifest.json`, dynamic world lookup in `Studio`, `src/storage/ContentCache.ts`, `Engine` budgets → USED (browser-native subset; block/range streaming still deferred)
 - **joncodeofficial/gta-vice-city-wasm** → remote content → background storage (OPFS) → normal runtime; persistence separate from app code → `src/storage/ContentCache.ts` (OPFS bytes + IndexedDB metadata) → USED
 - **playcanvas/supersplat-viewer / engine assets** → splat lane evaluated with Spark (`@sparkjsdev/spark`, .sog); not V1-verifiable in software GL (2M splats ≫ 10 min/frame) → content model keeps `format: 'sog'` open → DEFERRED
-- **arielshad/3d-asset-server** → SEARCH→FETCH→NORMALIZE→CACHE→PLACE plus live multi-provider discovery → `src/assets/AssetRegistry.ts` local + remote search/registration, Library PROJECT/WEB source tabs, persistent external records in IndexedDB → USED (live HTTP provider; GLB-first import)
+- **arielshad/3d-asset-server** → SEARCH→FETCH→NORMALIZE→CACHE→PLACE plus live multi-provider discovery → `src/assets/AssetRegistry.ts` local + remote search/registration, Library PROJECT/WEB source tabs, persistent external records in IndexedDB → USED (live HTTP provider; actual GLB/glTF file discovery and companion resources)
 - **pascalorg/editor** → semantic serializable entities, commands + undo/redo, headless ops → `src/core/types.ts`, `src/world/WorldStore.ts`, `src/ops/operations.ts` → USED (concepts only)
 - **EpicGames/unreal-engine-skills-for-claude-code-plugin** → small-context tool discovery (`listToolsets` → `describeToolset` → `callTool`) instead of registering every operation in model context → `src/ops/ToolRegistry.ts` / `window.studio.tools` → USED
 - **HeroicSwan/after-effects-mcp** → ACTION → CAPTURE → INSPECT → REPAIR loop → `tools/studio.mjs` + `tools/scenarios/*` → USED
 - **nanocle/Charakuru** → staged character data (body/head/hair/outfit/rig/motion) → `AssetRecord.runtime.parts/clips/rigProfile` → DESIGN ONLY
-- **kino-der-toten** → "prepare content for runtime" principle → `tools/prepare/*` → PRINCIPLE ONLY (not opened yet)
-- **morluto/rea, marvelous-designer-mcp, image-blaster, webXash, diablo_web, webwars** → not needed yet → NOT USED
+- **kino-der-toten** → "prepare content for runtime" principle → `tools/prepare/*` → NOT INTEGRATED (repository returned 404 on October 12, 2026)
+- **morluto/rea, marvelous-designer-mcp, image-blaster, webXash, diablo_web, webwars** → NOT INTEGRATED
 
 ## Content sources
 - Amazon Lumberyard Bistro (CC-BY 4.0) via `NVIDIA-RTX/RTXPT-Assets` (glTF + BC7 DDS, Git LFS) → `tools/prepare/bistro_materials.py` + `optimize.mjs` + `bake_world.mjs`
@@ -37,3 +37,14 @@ REFERENCE → exact component/pattern used → our module → status
 - **Camera/input fixes** → heading and position drive the follow camera; editor navigation uses touch/mouse OrbitControls rather than keyboard flight. Movement cancellation resolves superseded operations. Pointer cancellation and multi-touch cannot trigger accidental destinations. Thin interactable objects receive expanded screen hit targets.
 
 Limits: the creation kit is European exterior architecture derived from Bistro, not a Lagos-specific asset library. Native Bistro scenery remains baked geometry; it is not automatically split into interactive doors/chairs. Doors need an authored individual object with hinge metadata and are not included in the tested kit. Remote discovery remains an optional asset source and is not required for world creation. No new claim of using Kino/REA/webXash is made in this pass.
+
+
+## Reference verification and import correction — October 12, 2026
+
+- **shadany7824/playgta5**, README and `ENGINE_INVESTIGATION.md` at `c47078e1e1f66032ade08eb491a8681b97aa6044`: the code repository excludes the `.mirror` game data. Its README requires a separate 19.7 GB data bundle. No GTA map data or RAGE runtime has been imported here. Earlier “USED” labels above refer only to architectural inspiration, not reuse of a complete playable GTA world.
+- **arielshad/3d-asset-server** `/v1/assets/{id}/files`: real format discovery plus root/buffer/texture dependencies → `AssetResources.ts`, `AssetRegistry.ts` → IMPLEMENTED and live Poly Haven glTF tested. This fixes the former unconditional `/download?format=glb` assumption.
+- **pascalorg/editor** actual `create-room.ts` and `create-house-from-brief.ts` reviewed: polygon rooms, wall-edge openings and templates. No Pascal source code was transplanted into this pass; its house template selector is not an arbitrary city generator.
+- **apmlabs/webwars**: browser Hedgewars/WASM game port, not a 3D urban asset pack. **morluto/rea**: application/binary reverse-engineering tools, not city data. Reviewed, not integrated.
+- **Actual supplied glTF scene geometry** → `SceneWorld.ts` → preserved visible scene, collision-only simplification, instances, tiled navigation and persistence → IMPLEMENTED. The full-import test deliberately uses the already licensed Bistro scene. It does not demonstrate new Lagos content.
+
+The requested Lagos result is still missing. This pass removes the misleading substitution and opens a usable full-scene content path; it does not claim to have delivered the requested dense district.

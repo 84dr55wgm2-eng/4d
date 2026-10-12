@@ -18,6 +18,8 @@ export interface WorldPlan {
  * that searching the web fulfils an unsupported place, era or building requirement. */
 export function planWorld(brief: string, assets: AssetRecord[]): WorldPlan {
   const intent = compileWorldIntent(brief);
+  const tokens = brief.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const courtyard = /\b(cour|place|square|jardin|garden|park)\b/.test(tokens);
   const lower = brief.toLowerCase();
   const missing: string[] = [];
   if (/lagos|afri|tropi|cyber|2003|japon|tokyo|new york|futur|desert|désert|rural|village/.test(lower))
@@ -26,8 +28,8 @@ export function planWorld(brief: string, assets: AssetRecord[]): WorldPlan {
     missing.push('Les bâtiments de ce kit sont des enveloppes extérieures. Les intérieurs ne sont pas encore composés.');
   return {
     brief: intent.brief, name: intent.title,
-    layout: /cour|place|square|jardin|garden|park/.test(lower) ? 'courtyard' : 'street',
-    size: /cour|place|square|jardin|garden|park|dense|beaucoup/.test(lower) ? 112 : 84,
+    layout: courtyard ? 'courtyard' : 'street',
+    size: courtyard || /\b(dense|beaucoup)\b/.test(tokens) ? 112 : 84,
     count: /dense|beaucoup/.test(lower) ? 6 : 4,
     lighting: /soir|sunset|golden|coucher/.test(lower) ? 'golden' : /gris|overcast|nuage/.test(lower) ? 'overcast' : 'day',
     buildingAssets: assets.filter((a) => a.entityType === 'BUILDING' && a.id.startsWith('kit.')).map((a) => a.id),
@@ -36,6 +38,7 @@ export function planWorld(brief: string, assets: AssetRecord[]): WorldPlan {
 }
 
 export function composeWorld(plan: WorldPlan, baseline: WorldDocument, assets: AssetRecord[]): WorldDocument {
+  if (plan.missing.length) throw new Error('Ce brief ne peut pas être construit avec le contenu disponible : ' + plan.missing.join(' '));
   if (!plan.name.trim() || !plan.brief.trim()) throw new Error('Nom et description requis');
   if (!Number.isFinite(plan.size) || plan.size < 60 || plan.size > 140) throw new Error('Taille : 60 à 140 mètres');
   if (!Number.isInteger(plan.count) || plan.count < 2 || plan.count > 8) throw new Error('Nombre de bâtiments : 2 à 8');

@@ -15,6 +15,7 @@ export function App({ studio }: { studio: Studio }) {
       {ui.phase === 'ready' && (
         <>
           <TopIsland studio={studio} />
+          {!!studio.store.doc.composition?.missing.length && <div className="glass incomplete-world" role="status">Assemblage incomplet : ce décor ne respecte pas tout le brief. Ouvre le menu des mondes pour voir le contenu manquant.</div>}
           <LibraryRail studio={studio} />
           <Inspector studio={studio} />
           <ActionDock studio={studio} />
@@ -85,8 +86,9 @@ function TopIsland({ studio }: { studio: Studio }) {
                   {w.name}{w.id === studio.store.doc.id && <Icon name="check" size={16} />}
                 </button>
               ))}
-              <div className="pop-title">Nouveau monde</div>
+              <div className="pop-title">Assembler le kit Bistro</div>
               <WorldBrief studio={studio} />
+              <WorldImport studio={studio} />
             </div>
           )}
         </div>
@@ -149,16 +151,51 @@ function WorldBrief({ studio }: { studio: Studio }) {
       <label>Bâtiments<input type="number" min="2" max={plan.layout === 'courtyard' ? 4 : 8} value={plan.count} onChange={(e) => patch({ count: Number(e.target.value) })} /></label>
       <label>Ambiance<select value={plan.lighting} onChange={(e) => patch({ lighting: e.target.value as WorldPlan['lighting'] })}><option value="day">Jour</option><option value="golden">Coucher du soleil</option><option value="overcast">Couvert</option></select></label>
       <label><input type="checkbox" checked={plan.vegetation} onChange={(e) => patch({ vegetation: e.target.checked })} /> Arbres</label>
-      <div className="world-note">Kit urbain européen · bâtiments détaillés, sol pavé, chaise, lanterne et objet à prendre. Enveloppes extérieures.</div>
+      <div className="world-note">Ce mode assemble uniquement le kit Bistro disponible. Il ne génère pas une ville arbitraire. Pour un autre décor, utilise un monde complet ci-dessous.</div>
       <div className="kit-options">{studio.registry.manifest.assets.filter((a) => a.entityType === 'BUILDING' && a.bounds).map((a) => <label key={a.id}><input type="checkbox" checked={plan.buildingAssets.includes(a.id)} onChange={(e) => patch({ buildingAssets: e.target.checked ? [...plan.buildingAssets, a.id] : plan.buildingAssets.filter((id) => id !== a.id) })} />{a.name}</label>)}</div>
       {plan.missing.map((m) => <div className="world-error" key={m}>{m}</div>)}
-      <button className="world-discover" disabled={busy || !plan.buildingAssets.length} onClick={async () => {
+      <button className="world-discover" disabled={busy || !plan.buildingAssets.length || plan.missing.length > 0} onClick={async () => {
         setBusy(true); setError('');
         try { await studio.createWorld(plan); } catch (e) { setError(e instanceof Error ? e.message : String(e)); setBusy(false); }
-      }}>{busy ? 'Composition et navigation…' : 'Créer et ouvrir ce monde'}</button>
+      }}>{busy ? 'Composition et navigation…' : plan.missing.length ? 'Contenu manquant pour ce brief' : 'Assembler et ouvrir ce décor'}</button>
     </div>}
     {error && <div className="world-error" role="alert">{error}</div>}
   </div>;
+}
+
+function WorldImport({ studio }: { studio: Studio }) {
+  const [file, setFile] = useState<File | null>(null);
+  const [scale, setScale] = useState(1);
+  const [query, setQuery] = useState('');
+  const [url, setURL] = useState('');
+  const [results, setResults] = useState<RemoteAssetResult[]>([]);
+  const [busy, setBusy] = useState('');
+  const [error, setError] = useState('');
+  const execute = async (label: string, run: () => Promise<unknown>) => {
+    setBusy(label); setError('');
+    try { await run(); } catch (e) { setError(e instanceof Error ? e.message : String(e)); } finally { setBusy(''); }
+  };
+  return <section className="world-import">
+    <div className="pop-title">Partir d’un monde complet</div>
+    <div className="world-note">Le décor, les textures et les proportions viennent du fichier. Le studio prépare ses collisions et sa navigation ; aucun bâtiment du Bistro n’est ajouté.</div>
+    <label className="import-file">Fichier GLB ou ZIP glTF<input type="file" accept=".glb,.zip" aria-label="Fichier de monde" disabled={!!busy} onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></label>
+    <label className="import-scale">Unités du fichier<select value={scale} onChange={(e) => setScale(Number(e.target.value))}><option value="1">Mètres</option><option value="0.01">Centimètres</option><option value="0.001">Millimètres</option></select></label>
+    <button className="world-discover" disabled={!file || !!busy} onClick={() => execute('Préparation du monde…', () => studio.importWorldFile(file!, scale))}>Importer et ouvrir le monde</button>
+    <div className="search"><input value={url} onChange={(e) => setURL(e.target.value)} placeholder="Ou URL directe d’un monde GLB/glTF" aria-label="URL de monde" /></div>
+    <button className="world-discover" disabled={!url.trim() || !!busy} onClick={() => execute('Acquisition du monde…', () => studio.importWorldURL(url.trim(), scale))}>Ouvrir ce monde depuis son URL</button>
+    <div className="pop-title">Acquérir des environnements</div>
+    <div className="search"><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Nom du décor ou environnement" aria-label="Chercher des environnements" /></div>
+    <button className="world-discover" disabled={!!busy || query.trim().length < 2} onClick={() => execute('Recherche des sources…', async () => { setResults(await studio.registry.searchRemote(query, 12)); })}>Chercher du contenu réel</button>
+    <div className="world-results">{results.map((r) => <div className="import-candidate" key={r.id}>
+      {r.thumbnail && <img src={r.thumbnail} alt="" loading="lazy" />}
+      <strong>{r.title}</strong><small>{r.license?.name ?? 'Licence à vérifier'} · {r.formats?.join(', ') || 'Format selon la source'}</small>
+      <p>{r.description}</p>
+      <button disabled={!!busy} onClick={() => execute('Acquisition et navigation…', async () => { const rec = await studio.registry.registerRemote(r); await studio.importWorldAsset(rec.id); })}>Utiliser comme monde</button>
+    </div>)}</div>
+    <div className="world-note">Choisis un environnement avec un sol praticable. Un asset isolé reste un objet ; il ne devient pas automatiquement une ville.</div>
+    {busy && <div className="world-note" role="status">{busy}</div>}
+    {error && <div className="world-error" role="alert">{error}</div>}
+  </section>;
 }
 
 function Settings({ studio, close }: { studio: Studio; close: () => void }) {

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { init, importNavMesh, NavMeshQuery, type NavMesh } from '@recast-navigation/core';
-import { generateSoloNavMesh } from '@recast-navigation/generators';
+import { init, importNavMesh, exportNavMesh, NavMeshQuery, type NavMesh } from '@recast-navigation/core';
+import { generateTiledNavMesh } from '@recast-navigation/generators';
 import { NavMeshHelper } from '@recast-navigation/three';
 
 /** Offline-baked Recast navmesh (tools/prepare/bake_world.mjs) + path queries for directed movement. */
@@ -18,13 +18,16 @@ export class Navigation {
     await init();
     const p = geometry.getAttribute('position').array as Float32Array;
     const i = new Uint32Array(geometry.index!.array);
-    const { success, navMesh } = generateSoloNavMesh(p, i, {
+    const { success, navMesh } = generateTiledNavMesh(p, i, {
+      tileSize: 96,
       cs: 0.25, ch: 0.1, walkableSlopeAngle: 40, walkableHeight: 18, walkableClimb: 3,
       walkableRadius: 2, maxSimplificationError: 1.3,
     });
     if (!success || !navMesh) throw new Error('Navigation generation failed');
     return new Navigation(navMesh, new NavMeshQuery(navMesh));
   }
+
+  serialize() { return exportNavMesh(this.navMesh); }
 
   dispose() { this.helper?.removeFromParent(); this.query.destroy(); this.navMesh.destroy(); }
 

@@ -7,6 +7,7 @@ import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js
 import type { AssetCategory, AssetRecord, ContentManifest, EntityType } from '../core/types';
 import { ContentCache } from '../storage/ContentCache';
 import { idb } from '../storage/idb';
+import { discoverFiles, embeddedGLTF, unpackUpload } from './AssetResources';
 
 export interface RemoteAssetResult {
   id: string;
@@ -17,6 +18,10 @@ export interface RemoteAssetResult {
   score?: number;
   tags?: string[];
   thumbnail?: string;
+  thumbnailUrl?: string;
+  formats?: string[];
+  description?: string;
+  provider?: string;
   license?: { name?: string; attributionRequired?: boolean; commercialUse?: boolean };
 }
 
@@ -71,7 +76,7 @@ export class AssetRegistry {
   get version() { return this.manifest.version; }
 
   resolveUrl(a: AssetRecord) {
-    return /^https?:/.test(a.url) ? a.url : `${this.baseUrl}${a.url.replace(/^\//, '')}`;
+    return /^(https?:|user:)/.test(a.url) ? a.url : `${this.baseUrl}${a.url.replace(/^\//, '')}`;
   }
 
   get(id: string) {
@@ -110,15 +115,28 @@ export class AssetRegistry {
     const res = await fetch(u, { headers: { Accept: 'application/json' } });
     if (!res.ok) throw new Error(`asset search HTTP ${res.status}`);
     const data = await res.json() as { results?: RemoteAssetResult[] };
-    return (data.results ?? []).filter((r) => r.downloadable !== false);
+    return (data.results ?? []).filter((r) => r.downloadable !== false).map((r) => ({ ...r, thumbnail: r.thumbnailUrl ?? r.thumbnail }));
   }
 
   /** Register a remote result as a normal AssetRecord so cache/load/place use one pipeline. */
   async registerRemote(r: RemoteAssetResult): Promise<AssetRecord> {
     const id = `remote.${safeId(r.id)}`;
     const existing = this.manifest.assets.find((a) => a.id === id || a.sourceUrl === r.url);
-    if (existing) return existing;
+    if (existing) {
+      if (existing.url.includes('/download?')) {
+        const descriptor = await discoverFiles(r.id, r.formats), root = descriptor.files[0];
+        existing.url = root.url; existing.format = root.filename.toLowerCase().endsWith('.gltf') ? 'gltf' : 'glb';
+        (existing.runtime ??= {}).resources = root.includes ?? [];
+        existing.thumbnail = r.thumbnailUrl ?? r.thumbnail;
+        this.loaded.delete(existing.id);
+        await this.persistRecords();
+      }
+      await this.loadGLTF(existing.id);
+      return existing;
+    }
     const entityType = inferEntityType(r.title, r.tags);
+    const descriptor = await discoverFiles(r.id, r.formats);
+    const root = descriptor.files[0];
     const provider = r.id.includes(':') ? r.id.split(':', 1)[0] : '3d-asset-server';
     const record: AssetRecord = {
       id,
@@ -126,25 +144,80 @@ export class AssetRegistry {
       category: categoryFor(entityType),
       source: `3D Asset Server · ${provider}`,
       sourceUrl: r.url,
-      url: `https://3d.shep.bot/v1/assets/${encodeURIComponent(r.id)}/download?format=glb&resolution=1k`,
-      format: 'glb',
+      url: root.url,
+      format: root.filename.toLowerCase().endsWith('.gltf') ? 'gltf' : 'glb',
+      thumbnail: r.thumbnailUrl ?? r.thumbnail,
+      bytes: root.sizeBytes,
       license: {
-        id: r.license?.name || 'See source',
+        id: descriptor.license?.name ?? r.license?.name ?? 'See source',
         attribution: r.license?.attributionRequired ? 'Attribution required — see source asset page' : undefined,
         verified: !!r.license?.name,
         notes: 'Discovered through 3d-asset-server; verify the selected asset before commercial publishing.',
       },
       tags: [...new Set([...(r.tags ?? []), ...r.title.toLowerCase().split(/[^a-z0-9]+/).filter((x) => x.length > 2)])],
       entityType,
-      runtime: { remoteAssetId: r.id, interaction: entityType === 'LIGHT' ? { toggleable: true, enabled: true } : undefined },
+      runtime: { remoteAssetId: r.id, resources: root.includes ?? [], description: r.description, interaction: entityType === 'LIGHT' ? { toggleable: true, enabled: true } : undefined },
     };
     this.manifest.assets.push(record);
     try { const loaded = await this.loadGLTF(id); record.bounds = loaded.size.toArray() as AssetRecord['bounds']; } catch (e) {
       this.manifest.assets = this.manifest.assets.filter((a) => a.id !== id);
       throw new Error(`Import impossible pour ${r.title}: ${e instanceof Error ? e.message : String(e)}`);
     }
-    await idb.put('settings', 'external-assets', this.manifest.assets.filter((a) => a.id.startsWith('remote.')));
+    await this.persistRecords();
     return record;
+  }
+
+  async persistRecords() {
+    await idb.put('settings', 'external-assets', this.manifest.assets.filter((a) => /^(remote|user|import)\./.test(a.id)));
+  }
+
+  async importFile(file: File, unitsToMetres = 1): Promise<AssetRecord> {
+    if (!(unitsToMetres > 0 && unitsToMetres <= 100)) throw new Error('Échelle invalide');
+    const bytes = await file.arrayBuffer();
+    unpackUpload(bytes, file.name); // Reject incomplete formats before persisting.
+    const id = `user.${crypto.randomUUID()}`;
+    const record: AssetRecord = { id, name: file.name.replace(/\.(glb|zip)$/i, ''), category: 'ENVIRONMENT', entityType: 'ENVIRONMENT',
+      source: 'Fichier fourni', sourceUrl: file.name, url: `user:${id}`, format: 'glb', bytes: bytes.byteLength,
+      license: { id: 'Licence du fichier fourni', verified: false }, tags: ['imported', 'world'], scale: { unitsToMetres },
+      runtime: { uploadKey: `upload:${id}`, filename: file.name, preserveOrigin: true } };
+    await idb.put('settings', String(record.runtime!.uploadKey), bytes);
+    this.manifest.assets.push(record);
+    try { await this.loadGLTF(id); await this.persistRecords(); return record; }
+    catch (error) { this.manifest.assets = this.manifest.assets.filter((a) => a.id !== id); await idb.del('settings', String(record.runtime!.uploadKey)); throw error; }
+  }
+
+  async importWorldURL(raw: string, unitsToMetres = 1): Promise<AssetRecord> {
+    if (!(unitsToMetres > 0 && unitsToMetres <= 100)) throw new Error('Échelle invalide');
+    const url = new URL(raw);
+    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) throw new Error('URL HTTP/HTTPS publique requise');
+    const id = `user.${crypto.randomUUID()}`;
+    const bytes = await this.cache.fetch(url.href, this.version);
+    if (bytes.byteLength > 200*1024*1024) throw new Error('Import limité à 200 Mo');
+    const binary = bytes.byteLength >= 4 && new DataView(bytes).getUint32(0, true) === 0x46546c67;
+    const resources: { path: string; url: string }[] = [];
+    if (!binary) {
+      const doc = JSON.parse(new TextDecoder().decode(bytes));
+      if (doc.asset?.version !== '2.0') throw new Error('Cette URL ne renvoie pas un modèle glTF 2.0');
+      for (const object of [...(doc.buffers ?? []), ...(doc.images ?? [])]) {
+        if (object.uri && !object.uri.startsWith('data:')) resources.push({path:decodeURIComponent(object.uri), url:new URL(object.uri, url).href});
+      }
+    }
+    const record: AssetRecord = {id, name:decodeURIComponent(url.pathname.split('/').pop() || 'Monde importé').replace(/\.(glb|gltf)$/i,''),
+      category:'ENVIRONMENT',entityType:'ENVIRONMENT', source:'URL de monde fournie',sourceUrl:url.href,url:url.href,format:binary?'glb':'gltf',
+      license:{id:'Licence du fichier source',verified:false}, tags:['world','imported'],scale:{unitsToMetres},runtime:{resources,preserveOrigin:true}};
+    this.manifest.assets.push(record);
+    try { await this.loadGLTF(id); await this.persistRecords(); return record; }
+    catch(error) { this.manifest.assets=this.manifest.assets.filter((a)=>a.id!==id); throw error; }
+  }
+
+  async worldSource(id: string): Promise<AssetRecord> {
+    const source = this.get(id), key = `import.${id}`;
+    const existing = this.manifest.assets.find((a) => a.id === key);
+    if (existing) return existing;
+    const record: AssetRecord = { ...structuredClone(source), id: key, entityType: 'ENVIRONMENT', category: 'ENVIRONMENT',
+      scale: { unitsToMetres: source.scale?.unitsToMetres ?? 1 }, runtime: { ...source.runtime, preserveOrigin: true } };
+    this.manifest.assets.push(record);
+    await this.loadGLTF(key); await this.persistRecords(); return record;
   }
 
   async fetchBytes(id: string, onProgress?: (l: number, t: number) => void) {
@@ -178,10 +251,31 @@ export class AssetRegistry {
           return out;
         }
         const url = this.resolveUrl(record);
-        const buf = await this.cache.fetch(url, this.version, onProgress);
-        const gltf = await this.loader.parseAsync(buf, url.slice(0, url.lastIndexOf('/') + 1));
+        let gltf: GLTF;
+        if (record.runtime?.uploadKey) {
+          const bytes = await idb.get<ArrayBuffer>('settings', String(record.runtime.uploadKey));
+          if (!bytes) throw new Error('Le fichier importé n’est plus disponible dans ce navigateur');
+          const archive = unpackUpload(bytes, String(record.runtime.filename));
+          gltf = await this.loader.parseAsync(archive.binary ? archive.root.slice().buffer : embeddedGLTF(archive.root, archive.resources), '');
+        } else if (record.format === 'gltf' && record.runtime?.resources) {
+          const buf = await this.cache.fetch(url, this.version, onProgress);
+          const resources: Record<string, Uint8Array> = {};
+          let totalBytes = buf.byteLength;
+          const companions = record.runtime.resources as { path: string; url: string }[];
+          // Bound concurrent decoding/downloads rather than creating an unbounded request fan-out.
+          for (let i=0; i<companions.length; i+=4) await Promise.all(companions.slice(i,i+4).map(async (f) => {
+            resources[f.path] = new Uint8Array(await this.cache.fetch(f.url, this.version));
+            totalBytes += resources[f.path].byteLength;
+            if (totalBytes > 200 * 1024 * 1024) throw new Error('Import et dépendances limités à 200 Mo');
+          }));
+          gltf = await this.loader.parseAsync(embeddedGLTF(new Uint8Array(buf), resources), '');
+        } else {
+          const buf = await this.cache.fetch(url, this.version, onProgress);
+          gltf = await this.loader.parseAsync(buf, url.slice(0, url.lastIndexOf('/') + 1));
+        }
         const template = this.normalize(record, gltf.scene);
         const size = new THREE.Box3().setFromObject(template).getSize(new THREE.Vector3());
+        record.bounds = size.toArray() as AssetRecord['bounds'];
         const out = { record, gltf, template, size };
         this.onLoaded?.(out);
         return out;
@@ -224,7 +318,7 @@ export class AssetRegistry {
       box = new THREE.Box3().setFromObject(scene);
     }
     // Environments keep their authored origin: baked collision/navmesh share that coordinate frame.
-    if (record.entityType !== 'ENVIRONMENT') {
+    if (record.entityType !== 'ENVIRONMENT' && !record.runtime?.preserveOrigin) {
       const c = box.getCenter(new THREE.Vector3());
       scene.position.sub(new THREE.Vector3(c.x, box.min.y, c.z));
     }
