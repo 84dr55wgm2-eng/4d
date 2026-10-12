@@ -1,1 +1,288 @@
-{"catalog": true, "objaverseSearch": ["\\bcrt\\b|computer monitor|old monitor|retro computer|desktop computer|beige computer|\\bpc\\b", "keyboard", "danfo|vw bus|volkswagen (t1|t2|bus|type 2)|kombi|minibus", "okada|motorcycle|motorbike", "generator", "monobloc|plastic chair", "lagos|nigeria|african (house|building|street|shop)", "kiosk|market stall", "electric pole|power pole|utility pole|transformer", "water tank|polytank", "air conditioner|ac unit", "ceiling fan", "fluorescent", "peugeot 504|peugeot 505|toyota corolla|nissan sunny", "office chair|plastic stool", "computer desk|office desk", "signboard|billboard", "router|modem|ethernet"], "rerun": 1}
+{
+ "models": [
+  {
+   "id": "plastic_monobloc_chair_01",
+   "res": "2k"
+  },
+  {
+   "id": "wooden_table_02",
+   "res": "2k"
+  },
+  {
+   "id": "small_wooden_table_01",
+   "res": "1k"
+  },
+  {
+   "id": "metal_office_desk",
+   "res": "1k"
+  },
+  {
+   "id": "television_02",
+   "res": "2k"
+  },
+  {
+   "id": "modular_electricity_poles",
+   "res": "1k"
+  },
+  {
+   "id": "modular_electric_cables",
+   "res": "1k"
+  },
+  {
+   "id": "exterior_aircon_unit",
+   "res": "1k"
+  },
+  {
+   "id": "power_box_01",
+   "res": "1k"
+  },
+  {
+   "id": "utility_box_01",
+   "res": "1k"
+  },
+  {
+   "id": "portable_generator",
+   "res": "2k"
+  },
+  {
+   "id": "metal_jerrycan",
+   "res": "1k"
+  },
+  {
+   "id": "plastic_jerrycan",
+   "res": "1k"
+  },
+  {
+   "id": "plastic_crate_01",
+   "res": "1k"
+  },
+  {
+   "id": "plastic_crate_02",
+   "res": "1k"
+  },
+  {
+   "id": "barrel_03",
+   "res": "1k"
+  },
+  {
+   "id": "metal_trash_can",
+   "res": "1k"
+  },
+  {
+   "id": "trashbag",
+   "res": "1k"
+  },
+  {
+   "id": "old_tyre",
+   "res": "1k"
+  },
+  {
+   "id": "rollershutter_door",
+   "res": "2k"
+  },
+  {
+   "id": "mounted_fluorescent_lights",
+   "res": "1k"
+  },
+  {
+   "id": "ceiling_fan",
+   "res": "1k"
+  },
+  {
+   "id": "wall_clock",
+   "res": "1k"
+  },
+  {
+   "id": "standing_chalkboard_01",
+   "res": "1k"
+  },
+  {
+   "id": "covered_car",
+   "res": "2k"
+  },
+  {
+   "id": "painted_wooden_bench",
+   "res": "1k"
+  },
+  {
+   "id": "wooden_stool_01",
+   "res": "1k"
+  },
+  {
+   "id": "cardboard_box_01",
+   "res": "1k"
+  },
+  {
+   "id": "planter_box_01",
+   "res": "1k"
+  },
+  {
+   "id": "boombox",
+   "res": "1k"
+  },
+  {
+   "id": "portable_cassette_player",
+   "res": "1k"
+  },
+  {
+   "id": "security_light",
+   "res": "1k"
+  },
+  {
+   "id": "street_lamp_02",
+   "res": "1k"
+  },
+  {
+   "id": "concrete_road_barrier",
+   "res": "1k"
+  },
+  {
+   "id": "plastic_container",
+   "res": "1k"
+  }
+ ],
+ "textures": [
+  {
+   "id": "road_damaged",
+   "res": "2k"
+  },
+  {
+   "id": "interlocking_concrete_pavers",
+   "res": "2k"
+  },
+  {
+   "id": "red_laterite_soil_stones",
+   "res": "2k"
+  },
+  {
+   "id": "white_plaster_rough_02",
+   "res": "2k"
+  },
+  {
+   "id": "worn_tile_floor",
+   "res": "2k"
+  },
+  {
+   "id": "dirty_concrete",
+   "res": "1k"
+  },
+  {
+   "id": "concrete_wall_004",
+   "res": "1k"
+  },
+  {
+   "id": "concrete_floor_worn_001",
+   "res": "1k"
+  },
+  {
+   "id": "painted_concrete",
+   "res": "1k"
+  },
+  {
+   "id": "grey_plaster",
+   "res": "1k"
+  },
+  {
+   "id": "white_plaster_02",
+   "res": "1k"
+  },
+  {
+   "id": "rusty_metal_shutter",
+   "res": "1k"
+  },
+  {
+   "id": "rusty_corrugated_iron",
+   "res": "1k"
+  },
+  {
+   "id": "rusty_metal_02",
+   "res": "1k"
+  },
+  {
+   "id": "rusty_painted_metal",
+   "res": "1k"
+  },
+  {
+   "id": "metal_plate",
+   "res": "1k"
+  },
+  {
+   "id": "plywood",
+   "res": "1k"
+  },
+  {
+   "id": "wood_peeling_paint_weathered",
+   "res": "1k"
+  },
+  {
+   "id": "worn_plaster_wall",
+   "res": "1k"
+  },
+  {
+   "id": "terrazzo_tiles",
+   "res": "1k"
+  }
+ ],
+ "objaverse": [
+  {
+   "uid": "82eaf2047e0447a1bfea22482f1d1404",
+   "id": "obj_retro_pc_setup"
+  },
+  {
+   "uid": "f844c0357d284fd8baa1435e9ff31bb2",
+   "id": "obj_retro_computer_urpo"
+  },
+  {
+   "uid": "561abc2fc95941609fc7bc6f232895c2",
+   "id": "obj_desktop_computer"
+  },
+  {
+   "uid": "63aec0874c184b53becb74b792588e69",
+   "id": "obj_ibm_model_m"
+  },
+  {
+   "uid": "28c67457f2ef4973a0bbc8b667bb183f",
+   "id": "obj_computer_desk"
+  },
+  {
+   "uid": "dc877404be0445f0a855e37f2747794a",
+   "id": "obj_weathered_workstation"
+  },
+  {
+   "uid": "71831821ad8a4884b78b5996e6039fc5",
+   "id": "obj_peugeot_504_break"
+  },
+  {
+   "uid": "2bf330a3c92c4b89959fe1fbb1b197d9",
+   "id": "obj_peugeot_504"
+  },
+  {
+   "uid": "4e19f98e9e804a309ddd81e8b235ab88",
+   "id": "obj_vw_bus_1971"
+  },
+  {
+   "uid": "a04e69a838054f7cb39a635943ab9b0d",
+   "id": "obj_kiosk_90s"
+  },
+  {
+   "uid": "882bfc1b677f48eb82d6dc9f7516c299",
+   "id": "obj_rusty_kiosk"
+  },
+  {
+   "uid": "9ba4baa106e64319a0b540cf0af5aa9e",
+   "id": "obj_crt_tv"
+  },
+  {
+   "uid": "c4d66d21968c41da89114e2300578bc5",
+   "id": "obj_toyota_corolla_e70"
+  },
+  {
+   "uid": "5e9b5072b2224ba982366490ad5f31d9",
+   "id": "obj_old_scooter"
+  },
+  {
+   "uid": "6d139742099d48f195e6774514ccb7ef",
+   "id": "obj_plastic_chairs"
+  }
+ ]
+}

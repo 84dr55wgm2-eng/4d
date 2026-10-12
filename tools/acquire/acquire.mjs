@@ -102,6 +102,20 @@ if (req.objaverseSearch || req.objaverse) {
   try { execSync(`python3 tools/acquire/objv_fetch.py ${process.argv[2]}`, { stdio: 'inherit' }); } catch (e) { log('FAIL objaverse lane: ' + e.message); }
 }
 
+// prepare raw Objaverse downloads like every other model (WebP textures, meshopt), then drop the raw files
+const rawDir = `${OUT}/raw`;
+if (fs.existsSync(rawDir)) {
+  const prov = fs.existsSync(`${OUT}/provenance.json`) ? JSON.parse(fs.readFileSync(`${OUT}/provenance.json`, 'utf8')) : {};
+  Object.assign(provenance, prov, provenance);
+  for (const f of fs.readdirSync(rawDir)) {
+    try {
+      const size = await packGltf(rawDir, f, `${OUT}/models/${f}`, 1024);
+      if (provenance[`models/${f}`]) provenance[`models/${f}`].bytes = size;
+      log(`objaverse ${f} ${(size / 1e6).toFixed(2)}MB (raw ${(fs.statSync(path.join(rawDir, f)).size / 1e6).toFixed(1)}MB)`);
+    } catch (e) { log(`FAIL pack ${f}: ${e.message}`); }
+  }
+  fs.rmSync(rawDir, { recursive: true });
+}
 fs.mkdirSync(OUT, { recursive: true });
 fs.writeFileSync(`${OUT}/provenance.json`, JSON.stringify(provenance, null, 1));
 fs.writeFileSync('tools/acquire/last-run.log', LOG.join('\n') + '\n');
