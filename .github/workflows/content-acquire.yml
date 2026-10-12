@@ -1,0 +1,41 @@
+name: Acquire content
+
+# Content acquisition runs here because the open web (Poly Haven, Objaverse) is reachable from Actions.
+# Results (prepared GLB/WebP + provenance) are committed back to the branch that triggered the run.
+on:
+  push:
+    paths: ['tools/acquire/request.json']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: acquire
+  cancel-in-progress: false
+
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci
+      - run: pip install objaverse==0.1.7 trimesh pygltflib
+      - run: node tools/acquire/acquire.mjs tools/acquire/request.json
+      - name: Commit acquired content
+        run: |
+          git config user.name "content-acquire[bot]"
+          git config user.email "content-acquire@users.noreply.github.com"
+          git add public/content/lagos tools/acquire/catalog tools/acquire/last-run.log
+          git diff --cached --quiet && echo "nothing new" && exit 0
+          git commit -m "Content: acquired assets (${{ github.sha }})"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
