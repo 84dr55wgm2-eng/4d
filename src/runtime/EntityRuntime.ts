@@ -15,6 +15,8 @@ export class EntityRuntime {
   external = new Map<string, THREE.Object3D>();
   onLoadError?: (entity: Entity, err: unknown) => void;
   onSpawn?: (obj: THREE.Object3D) => void;
+  /** procedural entity kinds (district doors, light banks) — data in entity.metadata.procedural */
+  factories = new Map<string, (e: Entity) => THREE.Object3D>();
 
   constructor(private registry: AssetRegistry) {
     this.group.name = 'entities';
@@ -40,7 +42,7 @@ export class EntityRuntime {
       if (obj) {
         applyTransform(obj, e);
         applySemanticState(obj, e);
-      } else if ((e.assetId || e.metadata?.surface) && !this.pending.has(e.id)) this.spawn(e);
+      } else if ((e.assetId || e.metadata?.surface || e.metadata?.procedural) && !this.pending.has(e.id)) this.spawn(e);
     }
   }
 
@@ -48,7 +50,12 @@ export class EntityRuntime {
     this.pending.add(e.id);
     try {
       let obj: THREE.Object3D;
-      if (e.metadata?.surface) {
+      const proc = e.metadata?.procedural as { kind: string } | undefined;
+      if (proc) {
+        const make = this.factories.get(proc.kind);
+        if (!make) throw new Error(`Procedural kind ${proc.kind} unavailable`);
+        obj = make(e);
+      } else if (e.metadata?.surface) {
         const cfg = e.metadata.surface as { width: number; depth: number; material: string };
         const source = await this.registry.loadGLTF('env.bistro');
         let material: THREE.Material | undefined;

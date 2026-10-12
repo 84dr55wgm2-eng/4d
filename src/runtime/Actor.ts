@@ -254,7 +254,27 @@ export class Actor {
     this.run.setEffectiveWeight(THREE.MathUtils.lerp(this.run.getEffectiveWeight(), wRun, k));
   }
 
+  /** dynamic obstacles (closed doors, moved furniture) in world space */
+  blockers: () => THREE.Box3[] = () => [];
+
+  private resolveBlockers() {
+    for (const b of this.blockers()) {
+      if (this.position.y + this.height < b.min.y || this.position.y > b.max.y) continue;
+      const cx = THREE.MathUtils.clamp(this.position.x, b.min.x, b.max.x), cz = THREE.MathUtils.clamp(this.position.z, b.min.z, b.max.z);
+      const dx = this.position.x - cx, dz = this.position.z - cz, d = Math.hypot(dx, dz);
+      if (d >= this.radius) continue;
+      if (d > 1e-5) { this.position.x = cx + (dx / d) * this.radius; this.position.z = cz + (dz / d) * this.radius; }
+      else {
+        // centre inside the box: leave by the nearest face
+        const opts = [[b.min.x - this.radius - this.position.x, 0], [b.max.x + this.radius - this.position.x, 0], [0, b.min.z - this.radius - this.position.z], [0, b.max.z + this.radius - this.position.z]];
+        opts.sort((p, q) => Math.hypot(p[0], p[1]) - Math.hypot(q[0], q[1]));
+        this.position.x += opts[0][0]; this.position.z += opts[0][1];
+      }
+    }
+  }
+
   private resolveCollisions() {
+    this.resolveBlockers();
     if (!this.collision) return;
     for (let i = 0; i < 3; i++) {
       _a.set(this.position.x, this.position.y + this.radius + 0.35, this.position.z);
