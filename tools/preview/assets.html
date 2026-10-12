@@ -1,0 +1,28 @@
+<!doctype html><html><body style="margin:0;background:#2a2c31"><canvas id="c"></canvas><script type="module">
+// Dev-only contact sheet: node tools/preview/sheet.mjs renders each GLB with its real size and front direction (+Z arrow).
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+const files = new URLSearchParams(location.search).get('f').split(',');
+const S = 320, cols = Math.min(4, files.length), rows = Math.ceil(files.length / cols);
+const r = new THREE.WebGLRenderer({ canvas: c, antialias: true, preserveDrawingBuffer: true });
+r.setSize(S * cols, S * rows); r.setScissorTest(true); r.toneMapping = THREE.ACESFilmicToneMapping;
+const pm = new THREE.PMREMGenerator(r); const env = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+const info = [];
+for (let i = 0; i < files.length; i++) {
+  const s = new THREE.Scene(); s.environment = env; s.background = new THREE.Color(0x3a3d44);
+  let g; try { g = await loader.loadAsync('/content/lagos/models/' + files[i] + '.glb'); } catch (e) { info.push(files[i] + ' FAIL ' + e.message); continue; }
+  s.add(g.scene);
+  const b = new THREE.Box3().setFromObject(g.scene), sz = b.getSize(new THREE.Vector3()), ce = b.getCenter(new THREE.Vector3());
+  s.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(ce.x, b.min.y, ce.z), Math.max(sz.x, sz.z) * 0.9, 0xff3030));
+  const cam = new THREE.PerspectiveCamera(35, 1, 0.01, 1000); const d = sz.length() * 1.5;
+  cam.position.set(ce.x + d * 0.55, ce.y + d * 0.35, ce.z + d * 0.75); cam.lookAt(ce);
+  const x = (i % cols) * S, y = (rows - 1 - Math.floor(i / cols)) * S;
+  r.setViewport(x, y, S, S); r.setScissor(x, y, S, S); r.render(s, cam);
+  let tris = 0; g.scene.traverse((o) => { if (o.isMesh) tris += (o.geometry.index ? o.geometry.index.count : o.geometry.attributes.position.count) / 3; });
+  info.push(`${files[i]} size=${sz.toArray().map((v) => v.toFixed(2)).join('x')} tris=${Math.round(tris)}`);
+}
+document.title = 'done ' + JSON.stringify(info);
+</script></body></html>

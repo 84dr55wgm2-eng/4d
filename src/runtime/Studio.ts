@@ -19,6 +19,9 @@ import { composeWorld, refreshSpatialData, type WorldPlan } from '../world/World
 import { worldGeometry } from '../world/WorldGeometry';
 import { importedDocument, sceneGeometry, sceneSpawn } from '../world/SceneWorld';
 import { createToolRegistry } from '../ops/ToolRegistry';
+import { DistrictRuntime, doorObject, lightBankObject } from '../world/district/DistrictRuntime';
+import { closedDoorBoxes } from '../world/district/DistrictOps';
+import { SequencePlayer } from './SequencePlayer';
 
 export type AppMode = 'explore' | 'edit' | 'direct';
 export type GizmoMode = 'translate' | 'rotate' | 'scale';
@@ -69,6 +72,10 @@ export class Studio extends Emitter<Events> {
   nav: Navigation | null = null;
   environment: THREE.Object3D | null = null;
   thumbnails!: Thumbnails;
+  district: DistrictRuntime | null = null;
+  sequences!: SequencePlayer;
+  private districtSignature = '';
+  private appliedSun = '';
   readonly gizmo: TransformControls;
   ui: StudioUI = {
     phase: 'boot', loading: [], mode: 'explore', cameraMode: 'follow', focalLength: 35, selection: null, gizmo: 'translate',
@@ -166,8 +173,19 @@ export class Studio extends Emitter<Events> {
           this.thumbnails.make(a.record.id, a.template, this.registry.version).then(() => this.set({}), (e) => console.warn('[thumbnail]', a.record.id, e));
       };
 
+      if (doc.district) {
+        this.district = new DistrictRuntime(base, this.engine.renderer.capabilities.getMaxAnisotropy());
+        this.district.sync(doc);
+        this.engine.scene.add(this.district.group);
+        const fixture = await this.registry.loadGLTF('lagos.fluorescent').then((a) => a.template, () => null);
+        const mats = this.district.mats;
+        this.entities.factories.set('door', (e) => doorObject(e, mats));
+        this.entities.factories.set('light_bank', (e) => lightBankObject(e, fixture, mats));
+      }
+      this.appliedSun = JSON.stringify([env.sun, env.exposure]);
       const [world, bakedCollision, bakedNav, actor] = await Promise.all([
         env.assetId ? this.registry.loadGLTF(env.assetId, track(envRec!.name)) : null,
+        this.district ? Promise.resolve(new CollisionWorld(this.district.build.collide.clone())) :
         composedGeometry ? Promise.resolve(new CollisionWorld(composedGeometry)) : env.collision ? CollisionWorld.load((u) => this.registry.cache.fetch(u, this.registry.version, track('Collision')), `${base}${env.collision}`) : null,
         // navigation is optional: without it, directed walking reports an error instead of breaking the world
         composedGeometry ? Navigation.build(worldGeometry(doc, this.registry.manifest.assets, true)) : env.navmesh ? this.registry.cache.fetch(`${base}${env.navmesh}`, this.registry.version).then((b) => Navigation.load(b)).catch((e) => { console.warn('[nav] unavailable', e); return null; }) : null,
@@ -201,6 +219,7 @@ export class Studio extends Emitter<Events> {
         this.actor = actor.actor;
         this.actorEntityId = actor.entityId;
         this.actor.collision = collision;
+        this.actor.blockers = () => closedDoorBoxes(this.store.doc).map((d) => d.box);
         this.entities.external.set(actor.entityId, actor.actor.root);
         this.engine.scene.add(actor.actor.root);
       }
@@ -214,6 +233,14 @@ export class Studio extends Emitter<Events> {
       this.engine.setQuality(this.ui.quality);
       this.engine.start();
       await this.entities.ready();
+      if (this.district) {
+        this.set({ loading: [...this.ui.loading, { label: 'Navigation du quartier', loaded: 0, total: 0 }] });
+        await this.rebuildDistrictGeometry();
+        this.placeActorFromDoc();
+        this.interactions.restoreSeat();
+        this.resetFollowCamera();
+      }
+      this.sequences = new SequencePlayer(this);
       this.set({ phase: 'ready', loading: [], canUndo: false, canRedo: false });
     } catch (e) {
       console.error(e);
@@ -234,7 +261,8 @@ export class Studio extends Emitter<Events> {
     const pkg = (await res.json()) as WorldDocument;
     const saved = await idb.get<WorldDocument>('worlds', pkg.id).catch(() => undefined);
     // User edits (entities, shots, world state) persist; environment settings always come from the package.
-    if (saved && saved.format === pkg.format && saved.version === pkg.version) return { ...saved, environment: pkg.environment, zones: pkg.zones };
+    if (saved && saved.format === pkg.format && saved.version === pkg.version)
+      return pkg.district ? saved : { ...saved, environment: pkg.environment, zones: pkg.zones };
     return pkg;
   }
 
@@ -386,8 +414,48 @@ export class Studio extends Emitter<Events> {
     if (!committed) this.entities.sync(this.store.doc);
   }
 
+  /** Collision + navigation from the district plan and the current obstacle entities. */
+  async rebuildDistrictGeometry() {
+    if (!this.district || !this.store.doc.district) return;
+    await this.entities.ready();
+    this.district.sync(this.store.doc);
+    const { collide, navigate } = this.district.geometry(this.store.doc, this.entities.objects);
+    const nav = await Navigation.build(navigate);
+    navigate.dispose();
+    const old = this.collision;
+    this.collision = new CollisionWorld(collide);
+    old?.debugMesh.removeFromParent(); old?.geometry.dispose();
+    this.nav?.dispose(); this.nav = nav;
+    this.cameras.collision = this.collision;
+    if (this.actor) this.actor.collision = this.collision;
+    this.engine.scene.add(this.collision.debugMesh, nav.debugObject());
+    this.engine.shadowsDirty = true;
+  }
+
+  private districtKey() {
+    const d = this.store.doc;
+    return JSON.stringify([d.district, d.entities.filter((e) => e.capabilities.includes('collidable') && e.type !== 'ACTOR').map((e) => [e.id, e.transform.position, e.transform.rotation, e.transform.scale])]);
+  }
+
   private onDocChange(source: string) {
     this.entities.sync(this.store.doc);
+    const env = this.store.doc.environment, sunKey = JSON.stringify([env.sun, env.exposure]);
+    if (sunKey !== this.appliedSun) {
+      this.appliedSun = sunKey;
+      this.engine.setSun(env.sun.azimuth, env.sun.elevation, env.sun.intensity);
+      this.engine.renderer.toneMappingExposure = env.exposure;
+    }
+    if (this.district && source !== 'sequence') {
+      const key = this.districtKey();
+      if (key !== this.districtSignature) {
+        this.districtSignature = key;
+        clearTimeout(this.geometryTimer);
+        const generation = ++this.geometryGeneration;
+        this.geometryTimer = window.setTimeout(() => {
+          if (generation === this.geometryGeneration) this.rebuildDistrictGeometry().catch((e) => this.toast(`Navigation : ${e instanceof Error ? e.message : String(e)}`));
+        }, 300);
+      }
+    }
     const signature = JSON.stringify(this.store.doc.entities.filter((e) => e.type === 'BUILDING' || e.type === 'ROAD').map((e) => [e.id, e.transform]));
     if (this.store.doc.composition && signature !== this.geometrySignature) {
       this.geometrySignature = signature;

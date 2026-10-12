@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { closedDoorBoxes } from '../world/district/DistrictOps';
 import { uid } from '../core/emitter';
 import type { AssetCategory, CameraShot, Capability, Entity, Vec3, WorldState } from '../core/types';
 import type { CameraMode } from '../runtime/CameraDirector';
@@ -149,6 +150,16 @@ export function createOps(studio: Studio) {
       if (!target.every(Number.isFinite)) return Promise.resolve(fail('invalid destination'));
       const path = studio.nav.path(a.position, new THREE.Vector3(...target));
       if (!path) return Promise.resolve(fail('no walkable path to target'));
+      // a closed door is a real obstacle: refuse paths that would cross it (open it first)
+      const doors = closedDoorBoxes(studio.store.doc);
+      for (let i = 1; i < path.length && doors.length; i++) {
+        const seg = new THREE.Ray(path[i - 1].clone().setY(path[i - 1].y + 1), path[i].clone().sub(path[i - 1]).setY(0).normalize());
+        const len = path[i].clone().sub(path[i - 1]).setY(0).length();
+        for (const d of doors) {
+          const hit = seg.intersectBox(d.box.clone().expandByScalar(0.05), new THREE.Vector3());
+          if (hit && hit.distanceTo(seg.origin) <= len) return Promise.resolve(fail(`${studio.store.entity(d.id)?.name ?? 'La porte'} est fermée — ouvre-la d’abord`));
+        }
+      }
       a.cancelPath();
       const points = path.filter((p, i) => i > 0 || p.distanceTo(a.position) > 0.15);
       if (!points.length) return Promise.resolve(ok(a.position.toArray() as Vec3));
