@@ -1,4 +1,5 @@
 import { planWorld } from '../world/WorldCreator';
+import { matchesDistrictKit, planDistrict } from '../world/district/Commands';
 import { compileWorldIntent } from '../world/WorldIntent';
 import type { Studio } from '../runtime/Studio';
 
@@ -30,6 +31,14 @@ export class StudioToolRegistry {
           compile_brief: { description: 'Turn a natural-language world brief into structured asset-search intent.', run: (a) => compileWorldIntent(String(a?.brief ?? '')) },
           plan: { description: 'Prepare an editable composition plan from a brief using the authored kit.', run: (a) => planWorld(String(a?.brief ?? ''), studio.registry.manifest.assets) },
           create: { description: 'Compose the available Bistro kit when the brief has no missing content; reject unsupported locations or interiors.', run: (a) => studio.createWorld(a.plan) },
+          plan_district: { description: 'Brief → district plan (needs, spatial plan, asset resolution, gaps) with the Yaba 2003 kit.', run: (a) => matchesDistrictKit(String(a?.brief ?? '')) ? planDistrict(String(a.brief), studio.registry.manifest.assets) : { error: 'Brief hors du kit Yaba 2003 (Lagos / cybercafé)' } },
+          create_district: { description: 'Compose, save and open a district world from plan_district output (rejected when content is missing).', run: (a) => studio.createDistrictWorld(a.plan) },
+          command: { description: 'Targeted French edit command → validated operation (enlarge room, add workstations, seat chair at workstation, time of day, lights, door).', run: (a) => ops.command(String(a?.text ?? '')) },
+          enlarge_room: { description: 'Extend a room backward without touching the street facade.', run: (a) => ops.enlargeRoom(a?.room, a?.metres) },
+          add_workstations: { description: 'Add CRT workstations along a wall of a room (left/right/back/auto).', run: (a) => ops.addWorkstations(a?.room, a?.count, a?.wall) },
+          place_chair_at: { description: 'Move a chair to a workstation seat zone, facing the screen.', run: (a) => ops.placeChairAt(String(a.chair), String(a.target)) },
+          set_time_of_day: { description: 'Change sun/exposure only (morning, midday, late_afternoon, dusk).', run: (a) => ops.setTimeOfDay(a.time) },
+          relations: { description: 'Read the semantic graph (in, seatFor, onSurface, connects, faces).', run: () => studio.store.doc.relations ?? [] },
           list: { description: 'List bundled and user-created worlds.', run: () => studio.worlds },
           import_asset: { description: 'Use a loaded authored scene as a full world and derive collision/navigation from its actual geometry.', run: (a) => studio.importWorldAsset(String(a.id)) },
           import_url: { description: 'Acquire a complete GLB/glTF world, cache its dependencies, validate navigation and open it.', run: (a) => studio.importWorldURL(String(a.url), a.unitsToMetres ?? 1) },
@@ -71,6 +80,19 @@ export class StudioToolRegistry {
           delete: { description: 'Delete an editable entity.', run: (a) => ops.deleteEntity(String(a.id)) },
           undo: { description: 'Undo the last world edit.', run: () => ops.undo() },
           redo: { description: 'Redo the last undone world edit.', run: () => ops.redo() },
+        },
+      },
+      direction: {
+        description: 'Shots → sequences on one directing clock (actions + camera cuts), playback, seek, export.',
+        tools: {
+          create_reference: { description: 'Create shots + the reference sequence (walk to café, open door, enter, sit) and rehearse its timing.', run: (a) => ops.createReferenceSequence(a?.chair) },
+          list: { description: 'List sequences with beats, cuts and timing.', run: () => studio.store.doc.sequences ?? [] },
+          rehearse: { description: 'Re-measure beat times by fixed-step simulation.', run: (a) => ops.rehearseSequence(String(a.id)) },
+          play: { description: 'Restore the start state and play actions + cuts.', run: (a) => ops.playSequence(String(a.id)) },
+          stop: { description: 'Stop playback.', run: () => ops.stopSequence() },
+          seek: { description: 'Restore and re-simulate up to time t (seconds).', run: (a) => ops.seekSequence(String(a.id), Number(a.t)) },
+          set_cut: { description: 'Change which shot a cut uses, its beat anchor or offset.', run: (a) => ops.setCut(String(a.sequence), String(a.cut), a.patch ?? {}) },
+          export: { description: 'Render the sequence frame by frame (fixed step) and encode a video file.', run: (a) => ops.exportSequence(String(a.id)) },
         },
       },
       camera: {

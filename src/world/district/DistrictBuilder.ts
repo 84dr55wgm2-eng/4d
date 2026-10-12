@@ -267,6 +267,21 @@ function buildBuilding(b: BuildingSpec, sink: Sink, collide: THREE.BufferGeometr
       if (az === z1 && bz === z1) { lower.dispose(); continue; }
       add('interior_dado', lower);
     }
+    // period notices on the cybercafé walls (canvas-painted, fictional wording)
+    if (r.kind === 'cybercafe') {
+      const notices: [number, number, number, number, string, string, string, string][] = [
+        [(x0 + x1) / 2 - 2.2, z0, 0, 1.6, 'BROWSING ₦150 / HR', 'Night browsing 10pm–6am ₦500 • Printing ₦20', '#fdf6e3', '#0d3b66'],
+        [(x0 + x1) / 2 + 2.0, z0, 0, 1.3, 'NO FOOD • NO DRINKS', 'Pay before you browse — Management', '#ffffff', '#b00020'],
+        [x0, (z0 + z1) / 2, Math.PI / 2, 1.4, 'E-MAIL • CHAT • SCAN', 'CV typing • Lamination • Passport photos', '#ffd23f', '#3a0ca3'],
+        [x1, (z0 + z1) / 2 + 1.5, -Math.PI / 2, 1.3, 'NEPA OFF = GEN ON', 'Generator surcharge ₦50 / hr', '#fff4d6', '#202060'],
+      ];
+      for (const [nx, nz, ry, w, text, sub, c0, c1] of notices) {
+        const h = w * 0.62;
+        const g = new THREE.PlaneGeometry(w, h); g.translate(0, y0 + 1.95, 0); g.rotateY(ry);
+        g.translate(nx + Math.sin(ry) * 0.03, 0, nz + Math.cos(ry) * 0.03);
+        add(`sign|${text}|${sub}|${c0}|${c1}|${(w / h).toFixed(2)}`, g);
+      }
+    }
     // fluorescent tubes on the ceiling, real light is runtime-owned (toggle)
     const tubes: THREE.Vector3[] = [];
     for (let x = x0 + 1.5; x < x1 - 0.8; x += 2.6) for (let z = z0 + 1.6; z < z1 - 0.8; z += 2.8) tubes.push(new THREE.Vector3(x, y0 + FH - 0.29, z));

@@ -12,8 +12,9 @@ export const LAGOS_MATERIALS: Record<string, MaterialDef> = {
   pavers: { tex: 'interlocking_concrete_pavers', tile: 1.6 },
   laterite: { tex: 'red_laterite_soil_stones', tile: 3 },
   floor_tile: { tex: 'terrazzo_tiles', tile: 1.4 },
-  ceiling: { tex: 'white_plaster_02', tile: 2.5, color: [0.92, 0.92, 0.9] },
-  interior_dado: { tex: 'painted_concrete', tile: 2, color: [0.78, 0.86, 0.9], side: THREE.DoubleSide },
+  ceiling: { tex: 'white_plaster_02', tile: 2.5, color: [1.85, 1.85, 1.78] },
+  // gloss-painted lower wall (pale blue oil paint): the painted_concrete scan averages green, so it is not used here
+  interior_dado: { tex: 'white_plaster_02', tile: 1.6, color: [0.82, 1.08, 1.3], roughness: 0.5, side: THREE.DoubleSide },
   interior_wall: { tex: 'grey_plaster', tile: 2 },
   shutter: { tex: 'rusty_metal_shutter', tile: 1.6 },
   roof_metal: { tex: 'rusty_corrugated_iron', tile: 1.5, side: THREE.DoubleSide },

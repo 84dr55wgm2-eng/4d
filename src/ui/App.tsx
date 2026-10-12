@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { AssetCategory } from '../core/types';
 import type { RemoteAssetResult } from '../assets/AssetRegistry';
 import { planWorld, type WorldPlan } from '../world/WorldCreator';
+import { matchesDistrictKit, planDistrict, type DistrictBriefPlan } from '../world/district/Commands';
 import type { Studio } from '../runtime/Studio';
 import { LENSES } from '../runtime/CameraDirector';
 import { Icon, type IconName } from './icons';
@@ -17,8 +18,9 @@ export function App({ studio }: { studio: Studio }) {
           <TopIsland studio={studio} />
           {!!studio.store.doc.composition?.missing.length && <div className="glass incomplete-world" role="status">Assemblage incomplet : ce décor ne respecte pas tout le brief. Ouvre le menu des mondes pour voir le contenu manquant.</div>}
           <LibraryRail studio={studio} />
-          <Inspector studio={studio} />
+          <div className={ui.mode === 'direct' && ui.sequencePanel ? 'seq-open' : undefined}><Inspector studio={studio} /></div>
           <ActionDock studio={studio} />
+          {ui.mode === 'direct' && ui.sequencePanel && <SequencePanel studio={studio} />}
           {ui.diagnostics && <Diagnostics studio={studio} />}
           <Toast studio={studio} />
         </>
@@ -86,7 +88,8 @@ function TopIsland({ studio }: { studio: Studio }) {
                   {w.name}{w.id === studio.store.doc.id && <Icon name="check" size={16} />}
                 </button>
               ))}
-              <div className="pop-title">Assembler le kit Bistro</div>
+              {studio.store.doc.district && <><div className="pop-title">Modifier ce monde</div><WorldCommand studio={studio} /></>}
+              <div className="pop-title">Créer un monde à partir d’une intention</div>
               <WorldBrief studio={studio} />
               <WorldImport studio={studio} />
             </div>
@@ -133,14 +136,55 @@ function TopIsland({ studio }: { studio: Studio }) {
   );
 }
 
+function WorldCommand({ studio }: { studio: Studio }) {
+  const [text, setText] = useState('');
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const run = (t: string) => { const r = studio.ops.command(t); setMsg(r.ok ? { ok: true, text: r.value } : { ok: false, text: r.error }); };
+  const examples = ['Agrandis le cybercafé de 3 m en conservant la rue', 'Ajoute deux postes le long du mur du fond', 'Déplace cette chaise devant cet ordinateur', 'Passe en fin d’après-midi sans changer les bâtiments'];
+  return <div className="world-brief">
+    <div className="search"><input id="world-command" value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && text.trim() && run(text)} placeholder="Modification ciblée" aria-label="Modification ciblée du monde" /></div>
+    <div className="chips">{examples.map((x) => <button key={x} onClick={() => { setText(x); run(x); }}>{x}</button>)}</div>
+    <button className="world-discover" disabled={!text.trim()} onClick={() => run(text)}>Appliquer</button>
+    {msg && <div className={msg.ok ? 'world-note' : 'world-error'} role="status">{msg.text}</div>}
+    <div className="world-note">Analyseur de commandes déterministe (pas un modèle de langue) : chaque phrase reconnue devient une opération validée et annulable. « Cette chaise / cet ordinateur » = les deux dernières sélections en mode ÉDITION.</div>
+  </div>;
+}
+
+function DistrictBrief({ studio, brief }: { studio: Studio; brief: string }) {
+  const [plan, setPlan] = useState<DistrictBriefPlan | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  useEffect(() => { setPlan(null); }, [brief]);
+  if (!plan) return <button className="world-discover" onClick={() => { try { setPlan(planDistrict(brief, studio.registry.manifest.assets)); setError(''); } catch (e) { setError(String(e)); } }}>Préparer le plan de quartier</button>;
+  const name = (id: string) => studio.registry.manifest.assets.find((a) => a.id === id)?.name ?? id;
+  return <div className="world-plan">
+    <div className="pop-title">1 · Besoins de contenu</div>
+    {plan.needs.map((n) => <div key={n.label} className={n.missing ? 'world-error' : 'world-note'}>{n.missing ? '✗' : '✓'} {n.label}{n.satisfiedBy.length && n.satisfiedBy[0] !== 'district-builder' ? ` — ${n.satisfiedBy.map(name).join(', ')}` : ''}</div>)}
+    <div className="pop-title">2 · Plan spatial</div>
+    <div className="world-note">Rue de {plan.spatial.streetLength} m, {plan.spatial.buildings} bâtiments (deux fronts + fonds de rue), pièce accessible : {plan.spatial.accessibleRooms.join(', ')}. Porte vers la rue, seuil continu, navigation reconstruite à chaque modification.</div>
+    <div className="pop-title">3 · Paramètres</div>
+    <label>Nom<input value={plan.name} onChange={(e) => setPlan({ ...plan, name: e.target.value })} /></label>
+    <label>Postes informatiques<input type="number" min="2" max="8" value={plan.workstations} onChange={(e) => setPlan({ ...plan, workstations: Math.max(2, Math.min(8, Number(e.target.value))) })} /></label>
+    <label>Lumière<select value={plan.time} onChange={(e) => setPlan({ ...plan, time: e.target.value as DistrictBriefPlan['time'] })}><option value="morning">Matin</option><option value="midday">Midi</option><option value="late_afternoon">Fin d’après-midi</option><option value="dusk">Crépuscule</option></select></label>
+    {plan.missing.map((m) => <div className="world-error" key={m}>{m}</div>)}
+    <button className="world-discover" disabled={busy || plan.missing.length > 0} onClick={async () => {
+      setBusy(true); setError('');
+      try { await studio.createDistrictWorld(plan); } catch (e) { setError(e instanceof Error ? e.message : String(e)); setBusy(false); }
+    }}>{busy ? 'Composition, assets et navigation…' : plan.missing.length ? 'Contenu manquant pour ce brief' : 'Composer et ouvrir ce quartier'}</button>
+    {error && <div className="world-error" role="alert">{error}</div>}
+  </div>;
+}
+
 function WorldBrief({ studio }: { studio: Studio }) {
-  const [brief, setBrief] = useState('Une cour arborée avec quatre immeubles, des chaises et des lumières, au coucher du soleil');
+  const [brief, setBrief] = useState('Une rue commerçante de Yaba, Lagos, vers 2003, avec un cybercafé de 6 postes, en fin d’après-midi');
   const [plan, setPlan] = useState<WorldPlan | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const patch = (p: Partial<WorldPlan>) => setPlan((old) => old ? { ...old, ...p } : old);
   return <div className="world-brief">
     <textarea value={brief} onChange={(e) => { setBrief(e.target.value); setPlan(null); }} aria-label="Décrire le nouveau monde" />
+    {matchesDistrictKit(brief) ? <DistrictBrief studio={studio} brief={brief} /> : <>
+    <div className="world-note">Hors du kit Yaba 2003, ce mode assemble le kit Bistro (rues et cours européennes).</div>
     <button className="world-discover" disabled={busy || brief.trim().length < 3} onClick={() => {
       try { setPlan(planWorld(brief, studio.registry.manifest.assets)); setError(''); } catch (e) { setError(String(e)); }
     }}>Préparer le plan</button>
@@ -159,6 +203,7 @@ function WorldBrief({ studio }: { studio: Studio }) {
         try { await studio.createWorld(plan); } catch (e) { setError(e instanceof Error ? e.message : String(e)); setBusy(false); }
       }}>{busy ? 'Composition et navigation…' : plan.missing.length ? 'Contenu manquant pour ce brief' : 'Assembler et ouvrir ce décor'}</button>
     </div>}
+    </>}
     {error && <div className="world-error" role="alert">{error}</div>}
   </div>;
 }
@@ -421,7 +466,7 @@ function ActionDock({ studio }: { studio: Studio }) {
     </>;
   } else if (ui.walkTargeting) {
     content = <>
-      <span className="hint">Click a destination for the actor</span>
+      <span className="hint">Touche une destination pour le personnage</span>
       <Btn text="Cancel" label="Cancel (Esc)" onClick={() => studio.set({ walkTargeting: false })} />
     </>;
   } else if (sel && ui.mode !== 'explore') {
@@ -450,6 +495,7 @@ function ActionDock({ studio }: { studio: Studio }) {
       <Btn icon="walk" text="Walk to…" label="Direct the actor to walk to a point" onClick={() => studio.set({ walkTargeting: true })} />
       <div className="sep" />
       <Btn icon="plus" text="Save shot" label="Save the current camera as a shot" onClick={() => studio.ops.saveShot()} />
+      <Btn icon="pulse" text="Séquence" label="Ouvrir la séquence (plans + actions)" active={!!ui.sequencePanel} onClick={() => studio.set({ sequencePanel: !ui.sequencePanel })} />
       <div className="shots">
         {studio.store.doc.shots.map((s) => (
           <button key={s.id} className="shot" onClick={() => studio.ops.recallShot(s.id)} title={`Recall ${s.name} (${s.focalLength}mm)`}>{s.name}</button>
@@ -462,7 +508,7 @@ function ActionDock({ studio }: { studio: Studio }) {
     const actorSelected = ui.selection === studio.actorEntityId;
     content = <>
       <span className={`state-pill s-${ui.actorState}`}>{ui.actorState.toUpperCase()}</span>
-      <span className="hint">{actorSelected ? 'Actor selected · tap the ground to move · tap an object to interact' : 'Touche le personnage puis une destination · caméra automatique'}</span>
+      <span className="hint">{actorSelected ? 'Personnage sélectionné · touche le sol pour marcher · touche un objet pour agir' : 'Touche le personnage puis une destination · caméra automatique'}</span>
       {contextId && <span className="context-actions">{studio.interactions.actionsFor(contextId).map((action) => <Btn key={action.id} text={action.label} label={action.label} onClick={async () => { const r = await studio.interactions.execute(contextId, action.id); if (!r.ok) studio.toast(r.error); else studio.toast(action.label); }} />)}</span>}
       {actorSelected && <Btn text="Stop" label="Arrêter le personnage" onClick={() => studio.ops.stopActor()} />}
       {actorSelected && <Btn text="Done" label="Stop directing actor" onClick={() => studio.select(null)} />}
@@ -473,7 +519,7 @@ function ActionDock({ studio }: { studio: Studio }) {
 
 // ------------------------------------------------------------------ diagnostics + toast
 function Diagnostics({ studio }: { studio: Studio }) {
-  const s = usePoll(() => ({ ...studio.engine.stats, q: studio.engine.effective, cache: { ...studio.registry.cache.stats } }), 500);
+  const s = usePoll(() => ({ ...studio.engine.stats, q: studio.engine.effective, cache: { ...studio.registry.cache.stats }, stream: { ...studio.entities.stats } }), 500);
   const assets = usePoll(() => studio.registry.manifest.assets.filter((a) => studio.registry.status(a.id) === 'cached').length, 1000);
   return (
     <div className="glass diag mono" aria-label="Diagnostics">
@@ -481,6 +527,7 @@ function Diagnostics({ studio }: { studio: Studio }) {
       <div>{s.calls} draws · {(s.triangles / 1e6).toFixed(2)}M tris</div>
       <div>{s.geometries} geo · {s.textures} tex · {s.q}</div>
       <div>cached {assets} assets · OPFS {s.cache.opfs ? 'on' : 'off'}</div>
+      <div>secteurs : {s.stream.resident}/{s.stream.total} entités chargées{Number.isFinite(studio.entities.radius) ? ` · rayon ${studio.entities.radius} m` : ''}</div>
       <div>net {(s.cache.bytesFromNetwork / 1e6).toFixed(0)}MB · cache {(s.cache.bytesFromCache / 1e6).toFixed(0)}MB</div>
     </div>
   );
@@ -496,4 +543,59 @@ function Toast({ studio }: { studio: Studio }) {
     return () => clearTimeout(id);
   }, [ui.toast]);
   return <div className={`glass toast ${visible ? 'show' : ''}`} role="status">{ui.toast?.text}</div>;
+}
+
+// ------------------------------------------------------------------ sequence (shots + actions on one clock)
+function SequencePanel({ studio }: { studio: Studio }) {
+  useDocVersion(studio);
+  const seqs = studio.store.doc.sequences ?? [];
+  const [id, setId] = useState<string | null>(seqs.at(-1)?.id ?? null);
+  const [tick, setTick] = useState({ time: 0, duration: 0, playing: false, beat: -1 });
+  const [busy, setBusy] = useState('');
+  const [msg, setMsg] = useState('');
+  const [video, setVideo] = useState<{ url: string; filename: string; bytes: number } | null>(null);
+  useEffect(() => studio.sequences.on('tick', setTick), [studio]);
+  const seq = seqs.find((x) => x.id === id) ?? seqs.at(-1) ?? null;
+  const shotName = (sid: string) => sid === 'follow' ? 'Suivi (3e personne)' : studio.store.doc.shots.find((x) => x.id === sid)?.name ?? '—';
+  const dur = seq?.timing?.duration ?? 0;
+  const run = async (label: string, f: () => Promise<{ ok: boolean; error?: string } | unknown>) => {
+    setBusy(label); setMsg('');
+    try { const r = await f() as { ok?: boolean; error?: string }; if (r && r.ok === false) setMsg(r.error ?? 'Échec'); } finally { setBusy(''); }
+  };
+  return <aside className="glass sequence" aria-label="Séquence">
+    <div className="seq-head">
+      <strong>Séquence</strong>
+      {seqs.length > 0 && <select value={seq?.id} onChange={(e) => setId(e.target.value)} aria-label="Séquence">{seqs.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</select>}
+      <button className="row-btn" disabled={!!busy} onClick={() => run('Création et répétition…', async () => { const r = await studio.ops.createReferenceSequence(); if (r.ok) setId(r.value); return r; })}>Créer la scène de référence</button>
+    </div>
+    {!seq && <div className="world-note">Crée la scène « marche vers le cybercafé, ouvre la porte, entre, rejoint un poste et s’assoit ». Les plans sont enregistrés et la séquence est répétée pour mesurer son minutage.</div>}
+    {seq && <>
+      <div className="timeline" aria-label="Chronologie">
+        {seq.beats.map((b, i) => { const t0 = seq.timing?.beatStarts[i] ?? 0, t1 = seq.timing?.beatStarts[i + 1] ?? dur; return <div key={b.id} className={`beat ${tick.playing && tick.beat === i ? 'on' : ''}`} style={{ left: `${(100 * t0) / (dur || 1)}%`, width: `${(100 * (t1 - t0)) / (dur || 1)}%` }} title={b.label}>{b.label}</div>; })}
+        {studio.sequences.cutTimes(seq).map((c) => <div key={c.id} className="cut" style={{ left: `${(100 * c.at) / (dur || 1)}%` }} title={`${shotName(c.shotId)} @ ${c.at.toFixed(1)} s`}><span>{shotName(c.shotId).split(' — ')[0]}</span></div>)}
+        <div className="playhead" style={{ left: `${(100 * Math.min(tick.time, dur)) / (dur || 1)}%` }} />
+      </div>
+      <input type="range" min={0} max={dur} step={0.1} value={Math.min(tick.time, dur)} aria-label="Position dans la séquence" disabled={!!busy || tick.playing}
+        onChange={(e) => { const t = Number(e.target.value); setTick({ ...tick, time: t }); }}
+        onPointerUp={(e) => run('Positionnement…', () => studio.ops.seekSequence(seq.id, Number((e.target as HTMLInputElement).value)))} />
+      <div className="seq-controls">
+        {tick.playing ? <button className="row-btn" onClick={() => studio.ops.stopSequence()}>■ Arrêter</button> : <button className="row-btn" disabled={!!busy} onClick={() => studio.ops.playSequence(seq.id)}>▶ Lire</button>}
+        <span className="mono">{tick.time.toFixed(1)} / {dur.toFixed(1)} s</span>
+        <button className="row-btn" disabled={!!busy} onClick={() => run('Répétition…', () => studio.ops.rehearseSequence(seq.id))}>Re-minuter</button>
+        <button className="row-btn" disabled={!!busy} onClick={() => run('Export vidéo…', async () => { setVideo(null); const r = await studio.ops.exportSequence(seq.id, (f) => setBusy(`Export vidéo… ${Math.round(f * 100)} %`)); if (r.ok) setVideo(r.value); return r; })}>Exporter la vidéo</button>
+        {video && <a className="row-btn" href={video.url} download={video.filename}>Télécharger ({(video.bytes / 1e6).toFixed(1)} Mo)</a>}
+      </div>
+      <div className="cuts">{seq.cuts.map((c) => <div key={c.id} className="cut-row">
+        <select value={c.shotId} onChange={(e) => studio.ops.setCut(seq.id, c.id, { shotId: e.target.value })} aria-label="Cadrage">
+          <option value="follow">Suivi (3e personne)</option>
+          {studio.store.doc.shots.map((s2) => <option key={s2.id} value={s2.id}>{s2.name}</option>)}
+        </select>
+        <select value={c.beat} onChange={(e) => studio.ops.setCut(seq.id, c.id, { beat: Number(e.target.value) })} aria-label="Action d’ancrage">{seq.beats.map((b, i) => <option key={b.id} value={i}>{b.label}</option>)}</select>
+        <label>+<input type="number" step={0.5} value={c.offset} onChange={(e) => studio.ops.setCut(seq.id, c.id, { offset: Number(e.target.value) })} aria-label="Décalage en secondes" />s</label>
+      </div>)}</div>
+      {<div className="world-note">Les plans sont ancrés sur les actions : si une action dure plus longtemps, le plan suit. « Re-minuter » après une modification du décor.</div>}
+    </>}
+    {busy && <div className="world-note" role="status">{busy}</div>}
+    {msg && <div className="world-error" role="alert">{msg}</div>}
+  </aside>;
 }

@@ -18,6 +18,44 @@ export class EntityRuntime {
   /** procedural entity kinds (district doors, light banks) — data in entity.metadata.procedural */
   factories = new Map<string, (e: Entity) => THREE.Object3D>();
 
+  /**
+   * Sector streaming: entities (and therefore their asset bytes) are only fetched/instantiated within
+   * `radius` of the focus points; objects beyond radius × 1.5 are released. Doors, lights, the actor and
+   * anything flagged `metadata.resident` stay loaded. radius = Infinity disables streaming.
+   */
+  radius = Infinity;
+  focus: THREE.Vector3[] = [];
+  stats = { resident: 0, total: 0, deferred: 0 };
+
+  private inRange(e: Entity, scale = 1) {
+    if (!Number.isFinite(this.radius) || !this.focus.length || e.type === 'ACTOR' || e.type === 'DOOR' || e.type === 'LIGHT' || e.metadata?.resident || e.metadata?.surface) return true;
+    const p = e.transform.position;
+    return this.focus.some((f) => Math.hypot(f.x - p[0], f.z - p[2]) <= this.radius * scale);
+  }
+
+  /** re-evaluate streaming against the current focus (cheap; called a few times per second) */
+  stream() {
+    if (!Number.isFinite(this.radius) || !this.doc) return false;
+    let changed = false;
+    for (const e of this.doc.entities) {
+      const obj = this.objects.get(e.id);
+      if (!obj && this.inRange(e) && !this.pending.has(e.id) && (e.assetId || e.metadata?.procedural)) { this.spawn(e); changed = true; }
+      else if (obj && !this.external.has(e.id) && !this.inRange(e, 1.5)) { obj.removeFromParent(); this.objects.delete(e.id); changed = true; this.onRelease?.(e.id); }
+    }
+    this.count();
+    return changed;
+  }
+
+  onRelease?: (id: string) => void;
+
+  private count() {
+    const d = this.doc;
+    if (!d) return;
+    this.stats.total = d.entities.length;
+    this.stats.resident = d.entities.filter((e) => this.objects.has(e.id)).length;
+    this.stats.deferred = this.stats.total - this.stats.resident - this.pending.size;
+  }
+
   constructor(private registry: AssetRegistry) {
     this.group.name = 'entities';
   }
@@ -42,8 +80,9 @@ export class EntityRuntime {
       if (obj) {
         applyTransform(obj, e);
         applySemanticState(obj, e);
-      } else if ((e.assetId || e.metadata?.surface || e.metadata?.procedural) && !this.pending.has(e.id)) this.spawn(e);
+      } else if ((e.assetId || e.metadata?.surface || e.metadata?.procedural) && !this.pending.has(e.id) && this.inRange(e)) this.spawn(e);
     }
+    this.count();
   }
 
   private async spawn(e: Entity) {
@@ -77,7 +116,7 @@ export class EntityRuntime {
       }
       // An async asset load must not resurrect an entity deleted while it was downloading.
       const current = this.doc.entities.find((x) => x.id === e.id);
-      if (!current) return;
+      if (!current || !this.inRange(current, 1.5)) return;
       e = current;
       obj.name = e.name;
       obj.userData.entityId = e.id;

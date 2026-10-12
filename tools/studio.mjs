@@ -11,7 +11,10 @@ fs.mkdirSync(outDir, { recursive: true });
 // Pass the proxy as a raw flag: Playwright's `proxy` option adds <-loopback>, which would proxy the local dev server.
 const proxyArgs = process.env.HTTPS_PROXY ? [`--proxy-server=${process.env.HTTPS_PROXY}`] : [];
 const browser = await chromium.launch({ args: [...proxyArgs, '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
-const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+// VIEWPORT=390x844 emulates a touch phone viewport (layout + touch events only; says nothing about real device speed)
+const [vw, vh] = (process.env.VIEWPORT ?? '1280x720').split('x').map(Number);
+const touch = !!process.env.VIEWPORT;
+const ctx = await browser.newContext({ viewport: { width: vw, height: vh }, ...(touch ? { hasTouch: true, isMobile: true, deviceScaleFactor: 2 } : {}) });
 const page = await ctx.newPage();
 page.on('console', (m) => { if (['error', 'warning'].includes(m.type()) && !/GPU stall|swiftshader|Automatic fallback/i.test(m.text())) console.log(`[${m.type()}]`, m.text().slice(0, 240)); });
 page.on('requestfailed', (r) => console.log('[reqfail]', r.url().slice(0, 160), r.failure()?.errorText));

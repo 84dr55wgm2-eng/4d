@@ -162,7 +162,15 @@ export function seatChairAt(doc: WorldDocument, chairId: string, targetId: strin
   const p = new THREE.Vector3(0, 0, -0.85).applyQuaternion(q).add(new THREE.Vector3(...desk.transform.position));
   // another chair already in that seat zone?
   const clash = doc.entities.find((e) => e.id !== chairId && e.type === 'CHAIR' && new THREE.Vector3(...e.transform.position).distanceTo(p) < 0.45);
-  if (clash) throw new Error(`${clash.name} occupe déjà ce poste`);
+  if (clash) {
+    // the seat is taken by an empty chair: swap places (and seat roles) rather than stacking two chairs
+    if ((clash.metadata?.interaction as { occupiedBy?: string })?.occupiedBy) throw new Error(`${clash.name} est occupée`);
+    const prev = doc.relations?.find((r) => r.kind === 'seatFor' && r.from === chairId)?.to;
+    clash.transform.position = [...chair.transform.position] as Vec3;
+    clash.transform.rotation = [...chair.transform.rotation] as Entity['transform']['rotation'];
+    doc.relations = (doc.relations ?? []).filter((r) => !(r.kind === 'seatFor' && r.from === clash.id));
+    if (prev) doc.relations.push({ kind: 'seatFor', from: clash.id, to: prev });
+  }
   chair.transform.position = p.toArray() as Vec3;
   chair.transform.rotation = q.clone().toArray() as Entity['transform']['rotation'];
   doc.relations = (doc.relations ?? []).filter((r) => !(r.kind === 'seatFor' && r.from === chairId));

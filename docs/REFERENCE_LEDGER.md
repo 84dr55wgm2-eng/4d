@@ -1,50 +1,52 @@
 # Reference ledger
 
-REFERENCE → exact component/pattern used → our module → status
+Format: **source** → component taken / adapted → project file → usable effect → **status**.
+Status vocabulary: **INTÉGRÉ** (code executed or content loaded in the product) · **CONCEPT APPLIQUÉ** (pattern
+re-implemented here, no code transplanted) · **IDÉE RETENUE** (planned contribution, not in the product yet) ·
+**NON APPLICABLE** (explained) · **BLOQUÉ** (explained).
 
-- **luckeyfaraday/claude-of-duty** → offline-baked serialized MeshBVH + capsule shapecast (`.tools/bake_collision_bvh.mjs`, `export/web/collision-world.js`); offline Recast navmesh bake (`.tools/bake_navmesh.mjs`) → `tools/prepare/bake_world.mjs`, `src/runtime/CollisionWorld.ts`, `src/runtime/Navigation.ts` → USED
-- **shadany7824/playgta5** → content-as-data (manifest → world catalog → assets → persistent cache → runtime), package selection instead of a hardcoded scene, same-world quality budgets → `public/content/manifest.json`, dynamic world lookup in `Studio`, `src/storage/ContentCache.ts`, `Engine` budgets → USED (browser-native subset; block/range streaming still deferred)
-- **joncodeofficial/gta-vice-city-wasm** → remote content → background storage (OPFS) → normal runtime; persistence separate from app code → `src/storage/ContentCache.ts` (OPFS bytes + IndexedDB metadata) → USED
-- **playcanvas/supersplat-viewer / engine assets** → splat lane evaluated with Spark (`@sparkjsdev/spark`, .sog); not V1-verifiable in software GL (2M splats ≫ 10 min/frame) → content model keeps `format: 'sog'` open → DEFERRED
-- **arielshad/3d-asset-server** → SEARCH→FETCH→NORMALIZE→CACHE→PLACE plus live multi-provider discovery → `src/assets/AssetRegistry.ts` local + remote search/registration, Library PROJECT/WEB source tabs, persistent external records in IndexedDB → USED (live HTTP provider; actual GLB/glTF file discovery and companion resources)
-- **pascalorg/editor** → semantic serializable entities, commands + undo/redo, headless ops → `src/core/types.ts`, `src/world/WorldStore.ts`, `src/ops/operations.ts` → USED (concepts only)
-- **EpicGames/unreal-engine-skills-for-claude-code-plugin** → small-context tool discovery (`listToolsets` → `describeToolset` → `callTool`) instead of registering every operation in model context → `src/ops/ToolRegistry.ts` / `window.studio.tools` → USED
-- **HeroicSwan/after-effects-mcp** → ACTION → CAPTURE → INSPECT → REPAIR loop → `tools/studio.mjs` + `tools/scenarios/*` → USED
-- **nanocle/Charakuru** → staged character data (body/head/hair/outfit/rig/motion) → `AssetRecord.runtime.parts/clips/rigProfile` → DESIGN ONLY
-- **kino-der-toten** → "prepare content for runtime" principle → `tools/prepare/*` → NOT INTEGRATED (repository returned 404 on October 12, 2026)
-- **morluto/rea, marvelous-designer-mcp, image-blaster, webXash, diablo_web, webwars** → NOT INTEGRATED
+## Mondes, chargement, navigation
+- **luckeyfaraday/claude-of-duty** → offline-baked serialized MeshBVH + capsule shapecast; Recast navmesh → `CollisionWorld.ts`, `Navigation.ts`, `tools/prepare/bake_world.mjs`; Yaba derives BVH + tiled Recast from the semantic plan (`DistrictRuntime.geometry`) → actor never crosses walls, 1.2 m doorway passable → **INTÉGRÉ**
+- **shadany7824/playgta5** → content-as-data (manifest → assets → cache), quality budgets, sector-scoped loading → `manifest.json`, `ContentCache.ts`, `Engine` budgets, `EntityRuntime.stream()` (entities + their bytes load only within 34 m of actor/camera, released beyond 51 m; HUD shows resident/total) → **INTÉGRÉ** (browser-native subset). The repo excludes the 19.7 GB `.mirror` data: no GTA map is available or used.
+- **joncodeofficial/gta-vice-city-wasm** → remote content → OPFS storage → normal runtime → `ContentCache.ts` → **INTÉGRÉ**
+- **luckeyfaraday/kino-der-toten** → "prepare content for runtime" → `tools/prepare/*`, `tools/acquire/*` → **CONCEPT APPLIQUÉ**; repository returned 404 (Oct 12, 2026), not re-searched.
+- **x8BitRain/webXash** → packaged content import + IndexedDB persistence → `AssetResources.ts` (GLB/ZIP import), `idb.ts` → **CONCEPT APPLIQUÉ** (no webXash code)
+- **JohnImril/diablo_web** → UI separate from engine, workers → `Studio`/React split, meshopt workers → **CONCEPT APPLIQUÉ**
+- **apmlabs/webwars** → browser Hedgewars/WASM port → **NON APPLICABLE** (not a world/asset source)
+- **morluto/rea** → evidence-driven reverse engineering → **NON APPLICABLE** this pass (no opaque bundle to analyse)
 
-## Content sources
-- Amazon Lumberyard Bistro (CC-BY 4.0) via `NVIDIA-RTX/RTXPT-Assets` (glTF + BC7 DDS, Git LFS) → `tools/prepare/bistro_materials.py` + `optimize.mjs` + `bake_world.mjs`
-- Ready Player Me avatar (three.js examples) + RPM Animation Library → fetched at runtime from pinned upstream commits (license forbids redistribution)
-- Khronos glTF-Sample-Assets, three.js example models → fetched at runtime from pinned commits
-- Poly Haven HDRIs (CC0, via three.js examples) → `public/content/env`
+## Acquisition et construction sémantique
+- **arielshad/3d-asset-server** → live search + `/files` discovery with companion resources → `AssetRegistry.ts`, `AssetResources.ts` (WEB tab) → **INTÉGRÉ**. Bulk acquisition for Yaba uses the same SEARCH→FETCH→NORMALIZE→CACHE→PLACE idea in `tools/acquire/acquire.mjs` (Poly Haven API, Objaverse) run in GitHub Actions (the build sandbox cannot reach those hosts).
+- **pascalorg/editor** → rooms as polygons/rects, openings attached to walls, semantic hierarchy, undo → `DistrictBuilder.ts` (walls with door/window/shopfront openings, slabs, rooms), `WorldStore` → **CONCEPT APPLIQUÉ** (its house generator uses templates; ours composes one authored street kit, not an arbitrary city)
+- **wy51ai/floorplan-3d** → plan ↔ 3D coherence → one `DistrictPlan` drives render, collision and navigation; edits (enlarge room) rebuild all three → **CONCEPT APPLIQUÉ**
+- **amirmushichge/unreal-home-wizard** → furniture placed by use → workstation = desk + CRT + chair with seat zone, approach point, facing (`DistrictOps.workstation`, relations seatFor/onSurface/faces) → **CONCEPT APPLIQUÉ**
+- **iamtechartist** (home-sweet-home, coastal-simulation, ocean-simulation, tideglass-cove, human-cell-visualizer, Architectural X-Ray) → interior layers / x-ray visibility, construction states, environment quality → **IDÉE RETENUE** (not inspected this pass; next: cut-away/x-ray toggle for interiors)
 
+## Environnements capturés
+- **superspl.at / playcanvas/supersplat-viewer** → splat lane (Spark `.sog`) → content model keeps `format: 'sog'` → **IDÉE RETENUE**. Blocker: no verifiable splat of Lagos; a splat needs navigation/collision proxies (same plan as district collision) before it can be staged.
 
-## Product pass — touch + interaction
-- Pointer/touch is the primary actor control: tap actor → tap navmesh destination; tapping a semantic object while the actor is selected approaches it and executes its default supported action.
-- Semantic interaction state is document data, not an animation trick. V1 proof: LIGHT assets carry toggle state and runtime light/emissive response; DOOR open/close is supported when an authored door asset provides interaction metadata.
-- Keyboard locomotion is no longer part of the EXPLORE product path.
-- The checked-in manifest is no longer the full asset universe: WEB search queries the public 3d-asset-server and selected records persist locally before passing through the same cache/normalize/place path.
+## Personnage, mouvements, fabrication d'assets (le personnage actuel est conservé)
+- **met4citizen/TalkingHead** → gaze/look-at, gesture layering → **IDÉE RETENUE** (head look-at toward target object)
+- **lhupyn/motion-engine** → transitions, interruptions, layers → **CONCEPT APPLIQUÉ** partially: interruptible beats (`SequencePlayer` tokens, `cancelPath`), seated pose layered on the existing rig → full motion layering **IDÉE RETENUE**
+- **nanocle/Charakuru** → staged character data → `AssetRecord.runtime.parts/clips/materialTints` → **CONCEPT APPLIQUÉ** (data model only)
+- **neilsonnn/image-blaster**, **aldegad/image-gen**, **aldegad/artkit**, **aldegad/sprite-gen**, **idlerunner00/procedural-pixel-creatures**, **thebuggeddev** → references/variants generation → **IDÉE RETENUE** (signboards are canvas-generated text, not image generation)
+- **shinshin86/aituber-onair** → presenter/avatar pipeline → **NON APPLICABLE** to scene direction (studio must not become a presenter app)
+- **Tripo (spatialinsiders article, developers.tripo3d.com)** → rigging / text-to-motion → **BLOQUÉ** (requires API key; must not be exposed in a GitHub Pages frontend; a server-side relay is needed)
+- **ysk424/marvelous-designer-mcp** → clothing via an external pro tool → **IDÉE RETENUE**
 
-## World composition and regression fixes — October 11, 2026
+## Trajectoires, réalisation, montage, export
+- **HeroicSwan/after-effects-mcp** → ACTION → CAPTURE → INSPECT → REPAIR → `tools/studio.mjs`, `tools/scenarios/*` → **INTÉGRÉ** (dev loop)
+- **buildwithhanif/claude-animation-skill**, **JohnHeibel/ClaudeAnimationBase**, **JohnHeibel/PDoomVideo**, **WinterArc21/AE-MCP** → frame-indexed, reproducible rendering on a shared clock → `SequencePlayer` (fixed-step rehearse/seek/export, WebCodecs + mp4/webm muxers) → **CONCEPT APPLIQUÉ** (not inspected; no code taken)
+- **veedstudio/open-edit** → editable sequence/timeline → sequence panel (beats + cuts anchored to beats, editable shot/offset) → **CONCEPT APPLIQUÉ**
+- **anmarw38-ops/Pathvision**, **amirmushichge/machine-vision** → trajectories & orientation → navmesh paths + heading-following camera → **IDÉE RETENUE** for camera paths (cuts only in this pass)
+- **guanmo-ai/awesome-ai-motion**, **KumachanSteps/trpg-web-tools**, x.com/0xmovez motion reference → **IDÉE RETENUE**
 
-- **playgta5 content/spatial principle** → each user-created package now owns its brief, dependencies, spatial cells, semantic entities and state; cells update after edits. `WorldCreator.ts`, `WorldStore.prepare`, `Studio.createWorld/loadWorldDocument`. No GTA formats or proprietary content are imported. All cells remain resident in V1.
-- **Pascal semantic construction principle** → road surface and building envelopes are editable document entities; building footprints, levels and exterior-only access are explicit data. Authored building nodes are selected from the existing licensed Bistro package through `AssetRegistry.runtime.sourceNodes`; visible buildings are never primitive substitutes.
-- **Epic tool discovery** → `world.plan/create/list/open` now execute the same creation/persistence path as the UI. Brief compilation is still deterministic, not an LLM.
-- **Existing Recast/BVH pipeline** → newly composed worlds build navigation in the browser from ground with footprint holes. Invisible exterior envelopes provide collision. Architecture edits validate bounds/overlaps before committing and rebuild navigation; native Bistro keeps its existing baked data.
-- **Interaction state** → compatible chairs expose sit/stand, lanterns toggle isolated light/material state, configured props support pickup/putdown. Existing document entities receive their asset's interaction defaults without losing saved state. Seated poses and held-object state restore after reload. The actor model, rig and original locomotion clips remain unchanged.
-- **Camera/input fixes** → heading and position drive the follow camera; editor navigation uses touch/mouse OrbitControls rather than keyboard flight. Movement cancellation resolves superseded operations. Pointer cancellation and multi-touch cannot trigger accidental destinations. Thin interactable objects receive expanded screen hit targets.
+## Outils et organisation
+- **EpicGames/unreal-engine-skills-for-claude-code-plugin** → progressive tool discovery → `ToolRegistry.ts` (`world.*`, `direction.*` …) → **INTÉGRÉ**
+- **yugo-ibuki/unitmux**, **zenn.dev/nana** (scrap dddb68d6c192fe) → light docs, separated spec/impl/journal, explicit resume state → `CLAUDE.md`, `docs/RESUME.md`, `docs/JOURNAL.md` → **CONCEPT APPLIQUÉ**
 
-Limits: the creation kit is European exterior architecture derived from Bistro, not a Lagos-specific asset library. Native Bistro scenery remains baked geometry; it is not automatically split into interactive doors/chairs. Doors need an authored individual object with hinge metadata and are not included in the tested kit. Remote discovery remains an optional asset source and is not required for world creation. No new claim of using Kino/REA/webXash is made in this pass.
-
-
-## Reference verification and import correction — October 12, 2026
-
-- **shadany7824/playgta5**, README and `ENGINE_INVESTIGATION.md` at `c47078e1e1f66032ade08eb491a8681b97aa6044`: the code repository excludes the `.mirror` game data. Its README requires a separate 19.7 GB data bundle. No GTA map data or RAGE runtime has been imported here. Earlier “USED” labels above refer only to architectural inspiration, not reuse of a complete playable GTA world.
-- **arielshad/3d-asset-server** `/v1/assets/{id}/files`: real format discovery plus root/buffer/texture dependencies → `AssetResources.ts`, `AssetRegistry.ts` → IMPLEMENTED and live Poly Haven glTF tested. This fixes the former unconditional `/download?format=glb` assumption.
-- **pascalorg/editor** actual `create-room.ts` and `create-house-from-brief.ts` reviewed: polygon rooms, wall-edge openings and templates. No Pascal source code was transplanted into this pass; its house template selector is not an arbitrary city generator.
-- **apmlabs/webwars**: browser Hedgewars/WASM game port, not a 3D urban asset pack. **morluto/rea**: application/binary reverse-engineering tools, not city data. Reviewed, not integrated.
-- **Actual supplied glTF scene geometry** → `SceneWorld.ts` → preserved visible scene, collision-only simplification, instances, tiled navigation and persistence → IMPLEMENTED. The full-import test deliberately uses the already licensed Bistro scene. It does not demonstrate new Lagos content.
-
-The requested Lagos result is still missing. This pass removes the misleading substitution and opens a usable full-scene content path; it does not claim to have delivered the requested dense district.
+## Content sources (provenance)
+- Amazon Lumberyard Bistro (CC-BY 4.0) via NVIDIA-RTX/RTXPT-Assets.
+- Yaba: Poly Haven CC0 models and PBR scans (35 models, 20 materials) + Objaverse CC-BY models (retro PC set by dr.badass2142, Peugeot 504 break by medraphc, Toyota Corolla E70 by ditovirnantio, …) — per-file record in `public/content/lagos/provenance.json`.
+- Ready Player Me avatar + RPM Animation Library — fetched at runtime (license forbids redistribution).
+- Khronos glTF-Sample-Assets, three.js example models — fetched at runtime.

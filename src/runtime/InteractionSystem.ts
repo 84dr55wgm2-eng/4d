@@ -88,6 +88,34 @@ export class InteractionSystem {
     return { ok: true, action: chosen.id };
   }
 
+  /** Apply a door/light state change directly (editing / sequence restore) — no approach walk. */
+  applyState(id: string, action: 'open' | 'close' | 'toggle', enabled?: boolean) {
+    const current = this.studio.store.entity(id);
+    if (!current) return { ok: false as const, error: 'Objet introuvable' };
+    const cfg = (current.metadata?.interaction ?? {}) as Config;
+    if (action === 'toggle') {
+      if (!current.capabilities.includes('toggleable')) return { ok: false as const, error: `${current.name} ne s’allume pas` };
+      this.commit(id, enabled === false ? 'Éteindre' : 'Allumer', (inter) => { inter.enabled = enabled ?? inter.enabled === false; });
+      return { ok: true as const, action };
+    }
+    if (!current.capabilities.includes('openable') || !cfg.hinge) return { ok: false as const, error: `${current.name} ne s’ouvre pas` };
+    if ((cfg.state === 'open') === (action === 'open')) return { ok: true as const, action };
+    const yaw = new THREE.Euler().setFromQuaternion(new THREE.Quaternion(...current.transform.rotation), 'YXZ').y * 180 / Math.PI;
+    const closed = cfg.closedYaw ?? yaw, open = cfg.openYaw ?? closed + 90;
+    this.studio.store.commit(action === 'open' ? 'Ouvrir' : 'Fermer', (d) => {
+      const t = d.entities.find((x) => x.id === id)!;
+      const closedPosition = cfg.closedPosition ?? current.transform.position;
+      const closedRotation = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), closed * Math.PI / 180);
+      const newRotation = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (action === 'open' ? open : closed) * Math.PI / 180);
+      const hinge = new THREE.Vector3(...cfg.hinge!).multiply(new THREE.Vector3(...current.transform.scale));
+      const pivot = hinge.clone().applyQuaternion(closedRotation).add(new THREE.Vector3(...closedPosition));
+      t.transform.position = pivot.sub(hinge.applyQuaternion(newRotation)).toArray() as Vec3;
+      t.transform.rotation = newRotation.toArray() as Entity['transform']['rotation'];
+      Object.assign(((t.metadata ??= {}).interaction ??= {}) as Config, { state: action === 'open' ? 'open' : 'closed', closedYaw: closed, openYaw: open, closedPosition });
+    });
+    return { ok: true as const, action };
+  }
+
   private commit(id: string, label: string, change: (cfg: Config) => void) {
     this.studio.store.commit(label, (d) => {
       const target = d.entities.find((x) => x.id === id)!;

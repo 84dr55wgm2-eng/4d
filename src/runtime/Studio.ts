@@ -20,7 +20,9 @@ import { worldGeometry } from '../world/WorldGeometry';
 import { importedDocument, sceneGeometry, sceneSpawn } from '../world/SceneWorld';
 import { createToolRegistry } from '../ops/ToolRegistry';
 import { DistrictRuntime, doorObject, lightBankObject } from '../world/district/DistrictRuntime';
-import { closedDoorBoxes } from '../world/district/DistrictOps';
+import { closedDoorBoxes, setTimeOfDay } from '../world/district/DistrictOps';
+import { composeYabaWorld } from '../world/district/YabaWorld';
+import type { DistrictBriefPlan } from '../world/district/Commands';
 import { SequencePlayer } from './SequencePlayer';
 
 export type AppMode = 'explore' | 'edit' | 'direct';
@@ -47,6 +49,7 @@ export interface StudioUI {
   placing: string | null;
   walkTargeting: boolean;
   interactionTarget?: string | null;
+  sequencePanel?: boolean;
   toast?: { text: string; at: number };
 }
 
@@ -73,6 +76,8 @@ export class Studio extends Emitter<Events> {
   environment: THREE.Object3D | null = null;
   thumbnails!: Thumbnails;
   district: DistrictRuntime | null = null;
+  /** recent selections (chair, then computer…) for commands like « déplace cette chaise devant cet ordinateur » */
+  selectionHistory: string[] = [];
   sequences!: SequencePlayer;
   private districtSignature = '';
   private appliedSun = '';
@@ -132,7 +137,7 @@ export class Studio extends Emitter<Events> {
       this.registry.setRenderer(this.engine.renderer);
       await this.registry.init();
       const localWorlds = await idb.all<WorldDocument>('worlds');
-      this.worlds = [...this.registry.manifest.worlds.map(({id, name}) => ({id, name})), ...localWorlds.filter((d) => d.composition || d.imported).map(({id, name}) => ({id, name}))];
+      this.worlds = [...this.registry.manifest.worlds.map(({id, name}) => ({id, name})), ...localWorlds.filter((d) => (d.composition || d.imported || d.district) && !this.registry.manifest.worlds.some((w) => w.id === d.id)).map(({id, name}) => ({id, name}))];
       const doc = await this.loadWorldDocument();
       for (const e of doc.entities) {
         const rec = e.assetId ? this.registry.manifest.assets.find((a) => a.id === e.assetId) : undefined;
@@ -179,6 +184,9 @@ export class Studio extends Emitter<Events> {
         this.engine.scene.add(this.district.group);
         const fixture = await this.registry.loadGLTF('lagos.fluorescent').then((a) => a.template, () => null);
         const mats = this.district.mats;
+        // sector streaming: a district only instantiates what is near the actor / camera
+        this.entities.radius = 34;
+        this.entities.focus = [new THREE.Vector3(...(doc.entities.find((e) => e.type === 'ACTOR')?.transform.position ?? doc.spawn.position))];
         this.entities.factories.set('door', (e) => doorObject(e, mats));
         this.entities.factories.set('light_bank', (e) => lightBankObject(e, fixture, mats));
       }
@@ -224,7 +232,8 @@ export class Studio extends Emitter<Events> {
         this.engine.scene.add(actor.actor.root);
       }
       this.entities.onLoadError = (e) => this.toast(`Could not load ${e.name}`);
-      this.entities.onSpawn = () => (this.engine.shadowsDirty = true);
+      this.entities.onSpawn = () => { this.engine.shadowsDirty = true; this.scheduleDistrictRebuild(); };
+      this.entities.onRelease = () => this.scheduleDistrictRebuild();
       this.entities.sync(this.store.doc);
       this.placeActorFromDoc();
       this.interactions.restoreSeat();
@@ -252,7 +261,7 @@ export class Studio extends Emitter<Events> {
     const wanted = new URLSearchParams(location.search).get('world');
     if (wanted) {
       const saved = await idb.get<WorldDocument>('worlds', wanted);
-      if ((saved?.composition || saved?.imported) && saved.format === 'cws-world') return saved;
+      if ((saved?.composition || saved?.imported || saved?.district) && saved.format === 'cws-world' && !this.registry.manifest.worlds.some((w) => w.id === wanted)) return saved;
     }
     const entry = this.registry.manifest.worlds.find((w) => w.id === wanted) ?? this.registry.manifest.worlds[0];
     if (!entry) throw new Error('content manifest has no worlds');
@@ -342,6 +351,11 @@ export class Studio extends Emitter<Events> {
     }
     this.interactions.update();
     this.cameras.update(dt);
+    if (Number.isFinite(this.entities.radius) && (this.streamTimer += dt) > 0.5) {
+      this.streamTimer = 0;
+      this.entities.focus = [this.actor?.position.clone() ?? new THREE.Vector3(), this.cameras.camera.position.clone()];
+      this.entities.stream();
+    }
   }
 
   // ---------------------------------------------------------------- modes
@@ -387,6 +401,7 @@ export class Studio extends Emitter<Events> {
     this.gizmo.setMode(this.ui.gizmo);
     this.actorMarker.visible = id === this.actorEntityId;
     if (this.actorMarker.visible && this.actor) this.actorMarker.position.set(this.actor.position.x, this.actor.position.y + 0.025, this.actor.position.z);
+    if (id && this.selectionHistory.at(-1) !== id) this.selectionHistory = [...this.selectionHistory, id].slice(-6);
     this.set({ selection: id });
   }
 
@@ -431,6 +446,16 @@ export class Studio extends Emitter<Events> {
     if (this.actor) this.actor.collision = this.collision;
     this.engine.scene.add(this.collision.debugMesh, nav.debugObject());
     this.engine.shadowsDirty = true;
+  }
+
+  private streamTimer = 0;
+  private scheduleDistrictRebuild() {
+    if (!this.district || this.ui.phase !== 'ready') return;
+    clearTimeout(this.geometryTimer);
+    const generation = ++this.geometryGeneration;
+    this.geometryTimer = window.setTimeout(() => {
+      if (generation === this.geometryGeneration) this.rebuildDistrictGeometry().catch((e) => this.toast(`Navigation : ${e instanceof Error ? e.message : String(e)}`));
+    }, 600);
   }
 
   private districtKey() {
@@ -535,6 +560,24 @@ export class Studio extends Emitter<Events> {
     await idb.put('worlds', doc.id, doc);
     const back = await idb.get<WorldDocument>('worlds', doc.id);
     if (!back || back.entities.length !== doc.entities.length) throw new Error('Échec de sauvegarde du nouveau monde');
+    this.worlds.push({ id: doc.id, name: doc.name });
+    await this.switchWorld(doc.id);
+    return doc.id;
+  }
+
+  /** Brief → district plan → authored assets → composed, saved, navigable world (Yaba 2003 kit). */
+  async createDistrictWorld(p: DistrictBriefPlan) {
+    if (p.missing.length) throw new Error(p.missing.join(' '));
+    const actor = this.store.doc.entities.find((e) => e.type === 'ACTOR');
+    if (!actor) throw new Error('Acteur de référence absent');
+    const doc = composeYabaWorld(p.plan, actor, this.registry.manifest.assets, { id: `world.${crypto.randomUUID()}`, name: p.name, workstations: p.workstations });
+    setTimeOfDay(doc, p.time);
+    if (doc.district!.missing.length) throw new Error(`Assets introuvables : ${doc.district!.missing.join(', ')}`);
+    await Promise.all(doc.district!.requires.map((id) => this.registry.loadGLTF(id)));
+    if (!await this.save()) throw new Error('Le monde actuel ne peut pas être sauvegardé');
+    await idb.put('worlds', doc.id, doc);
+    const back = await idb.get<WorldDocument>('worlds', doc.id);
+    if (!back?.district) throw new Error('Échec de sauvegarde du nouveau monde');
     this.worlds.push({ id: doc.id, name: doc.name });
     await this.switchWorld(doc.id);
     return doc.id;
@@ -661,7 +704,7 @@ export class Studio extends Emitter<Events> {
       if (p.entity === this.actorEntityId) {
         this.select(this.actorEntityId);
         this.set({ interactionTarget: null });
-        this.toast('Actor selected · tap the ground or an object');
+        this.toast('Personnage sélectionné · touche le sol ou un objet');
         return;
       }
       if (this.ui.selection === this.actorEntityId) {

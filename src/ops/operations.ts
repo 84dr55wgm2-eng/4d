@@ -1,7 +1,8 @@
 import * as THREE from 'three';
-import { closedDoorBoxes } from '../world/district/DistrictOps';
+import { addWorkstations, closedDoorBoxes, enlargeRoom, seatChairAt, setTimeOfDay, type TimeOfDay } from '../world/district/DistrictOps';
+import { parseCommand } from '../world/district/Commands';
 import { uid } from '../core/emitter';
-import type { AssetCategory, CameraShot, Capability, Entity, Vec3, WorldState } from '../core/types';
+import type { AssetCategory, CameraShot, Capability, Entity, Vec3, WorldDocument, WorldState } from '../core/types';
 import type { CameraMode } from '../runtime/CameraDirector';
 import type { Studio } from '../runtime/Studio';
 
@@ -22,6 +23,12 @@ export function createOps(studio: Studio) {
     if (!e) return `no entity ${id}`;
     if (e.locked) return `${e.name} is locked`;
     return e;
+  };
+
+  const edit = <T,>(label: string, fn: (d: WorldDocument) => T): OpResult<T> => {
+    let out: T | undefined, err = '';
+    const committed = store().commit(label, (d) => { try { out = fn(d); } catch (e) { err = e instanceof Error ? e.message : String(e); return false; } });
+    return committed ? ok(out as T) : fail(err || 'Modification refusée');
   };
 
   const ops = {
@@ -243,6 +250,125 @@ export function createOps(studio: Studio) {
     setWorldState(patch: Partial<WorldState>): OpResult<WorldState> {
       store().commit('World state', (d) => { Object.assign(d.worldState, patch); });
       return ok(store().doc.worldState);
+    },
+
+    // ------------------------------------------------------------ district edits (targeted, one undo step each)
+    enlargeRoom(roomId = 'room.cafe', metres = 3): OpResult<unknown> {
+      return edit(`Agrandir la pièce de ${metres} m`, (d) => enlargeRoom(d, roomId, metres));
+    },
+    addWorkstations(roomId = 'room.cafe', count = 2, wall: 'left' | 'right' | 'back' | 'auto' = 'auto'): OpResult<string[]> {
+      const walls = wall === 'auto' ? (['left', 'right', 'back'] as const) : [wall];
+      let last = '';
+      for (const w of walls) {
+        const r = edit(`Ajouter ${count} poste(s)`, (d) => addWorkstations(d, roomId, count, w, studio.registry.manifest.assets));
+        if (r.ok) return r;
+        last = r.error;
+      }
+      return fail(last);
+    },
+    placeChairAt(chairId: string, targetId: string): OpResult<string> {
+      return edit('Placer la chaise au poste', (d) => seatChairAt(d, chairId, targetId));
+    },
+    setTimeOfDay(time: TimeOfDay): OpResult<TimeOfDay> {
+      if (!store().doc.district) return fail('Le changement d’heure ciblé est disponible pour les mondes de quartier');
+      return edit(`Heure : ${time}`, (d) => { setTimeOfDay(d, time); return time; });
+    },
+    /** Deterministic French command → validated operation (see Commands.ts). */
+    command(text: string): OpResult<string> {
+      const intent = parseCommand(text);
+      if ('error' in intent) return fail(intent.error);
+      const hist = studio.selectionHistory;
+      switch (intent.op) {
+        case 'enlargeRoom': { const r = ops.enlargeRoom(intent.room, intent.metres); return r.ok ? ok(`Cybercafé agrandi de ${intent.metres} m vers l’arrière ; la façade et la rue sont inchangées.`) : r; }
+        case 'addWorkstations': { const r = ops.addWorkstations(intent.room, intent.count, intent.wall); return r.ok ? ok(`${intent.count} poste(s) ajouté(s) : ${r.value.join(', ')}`) : r; }
+        case 'seatChairAt': {
+          const chair = [...hist].reverse().find((id) => store().entity(id)?.type === 'CHAIR');
+          const target = [...hist].reverse().find((id) => id !== chair && store().entity(id)?.metadata?.workstation && store().entity(id)?.type !== 'CHAIR');
+          if (!chair || !target) return fail('Sélectionne d’abord la chaise, puis l’ordinateur ou la table du poste (mode ÉDITION), puis relance la commande.');
+          const before = store().doc.entities.filter((e) => e.type === 'CHAIR').map((e) => e.transform.position.join());
+          const r = ops.placeChairAt(chair, target);
+          if (!r.ok) return r;
+          const moved = store().doc.entities.filter((e) => e.type === 'CHAIR' && e.id !== chair && !before.includes(e.transform.position.join()));
+          return ok(`${store().entity(chair)?.name} placée au poste ${store().entity(r.value)?.metadata?.workstation}` + (moved.length ? ` ; ${moved[0].name} prend son ancienne place` : ''));
+        }
+        case 'setTimeOfDay': { const r = ops.setTimeOfDay(intent.time); return r.ok ? ok('Lumière modifiée ; bâtiments et objets inchangés.') : r; }
+        case 'toggleLights': { const r = studio.interactions.applyState('light.cafe', 'toggle', intent.on); return r.ok ? ok(intent.on === false ? 'Néons éteints' : 'Néons allumés') : fail(r.error); }
+        case 'openDoor': { const r = studio.interactions.applyState('door.cafe', intent.open ? 'open' : 'close'); return r.ok ? ok(intent.open ? 'Porte ouverte' : 'Porte fermée') : fail(r.error); }
+      }
+    },
+
+    // ------------------------------------------------------------ direction: shots → sequence
+    /** « Le personnage marche vers le cybercafé, ouvre la porte, entre, rejoint un poste et s'assoit. » */
+    async createReferenceSequence(chairId = 'ws.1.chair'): Promise<OpResult<string>> {
+      const d = store().doc;
+      const door = d.entities.find((e) => e.type === 'DOOR'), chair = store().entity(chairId);
+      if (!door || !chair) return fail('Ce monde n’a pas de porte et de poste pour la scène de référence');
+      const seq = studio.sequences;
+      const v = (p: Vec3) => new THREE.Vector3(...p);
+      const doorP = v(door.transform.position), chairP = v(chair.transform.position);
+      const shot = (name: string, position: THREE.Vector3, target: THREE.Vector3, focalLength: number): CameraShot =>
+        ({ id: uid('shot'), name, position: position.toArray() as Vec3, target: target.toArray() as Vec3, focalLength });
+      // exterior establishing shot from across the street, a human-height interior shot at the workstation
+      const outward = new THREE.Vector3(0, 0, Math.sign(-doorP.z) || 1);
+      const shots = [
+        shot('PLAN_A — ensemble rue', doorP.clone().add(new THREE.Vector3(9, 1.55, 0)).add(outward.clone().multiplyScalar(11.5)), doorP.clone().add(new THREE.Vector3(-1.5, 1.6, 0)), 24),
+        shot('PLAN_C — poste intérieur', chairP.clone().add(new THREE.Vector3(2.4, 1.45, 2.1)), chairP.clone().add(new THREE.Vector3(-0.3, 0.95, -0.2)), 35),
+      ];
+      store().commit('Plans de la séquence', (dd) => { dd.shots.push(...shots); });
+      const beats = [
+        { id: uid('beat'), kind: 'interact' as const, label: 'Marche vers le cybercafé et ouvre la porte', target: door.id, action: 'open' },
+        { id: uid('beat'), kind: 'interact' as const, label: 'Entre, rejoint le poste et s’assoit', target: chair.id, action: 'sit' },
+        { id: uid('beat'), kind: 'wait' as const, label: 'Regarde l’écran', seconds: 2.5 },
+      ];
+      const sq = seq.create('Arrivée au cybercafé', beats, [
+        { id: uid('cut'), shotId: shots[0].id, beat: 0, offset: 0 },
+        { id: uid('cut'), shotId: 'follow', beat: 0, offset: 3.2 },
+        { id: uid('cut'), shotId: shots[1].id, beat: 1, offset: 1.2 },
+      ]);
+      try { await seq.rehearse(sq); } catch (e) { return fail(`Répétition impossible : ${e instanceof Error ? e.message : String(e)}`); }
+      store().commit('Séquence de référence', (dd) => { (dd.sequences ??= []).push(sq); });
+      return ok(sq.id);
+    },
+    sequence(id?: string) {
+      const list = store().doc.sequences ?? [];
+      return id ? list.find((x) => x.id === id) ?? null : list.at(-1) ?? null;
+    },
+    async rehearseSequence(id: string): Promise<OpResult<unknown>> {
+      const sq = structuredClone(ops.sequence(id));
+      if (!sq) return fail('Séquence introuvable');
+      try { const timing = await studio.sequences.rehearse(sq); store().commit('Minutage de la séquence', (d) => { const x = d.sequences!.find((y) => y.id === id)!; x.timing = timing; }); return ok(timing); }
+      catch (e) { return fail(e instanceof Error ? e.message : String(e)); }
+    },
+    playSequence(id: string): OpResult<string> {
+      const sq = ops.sequence(id);
+      if (!sq) return fail('Séquence introuvable');
+      studio.sequences.play(structuredClone(sq));
+      return ok(sq.id);
+    },
+    stopSequence() { studio.sequences.stop(); return ok(undefined); },
+    async seekSequence(id: string, t: number): Promise<OpResult<number>> {
+      const sq = ops.sequence(id);
+      if (!sq) return fail('Séquence introuvable');
+      await studio.sequences.seek(structuredClone(sq), t);
+      return ok(t);
+    },
+    async exportSequence(id: string, onProgress?: (f: number) => void): Promise<OpResult<{ url: string; filename: string; bytes: number; frames: number }>> {
+      const sq = ops.sequence(id);
+      if (!sq) return fail('Séquence introuvable');
+      try {
+        const { blob, mime, frames } = await studio.sequences.export(structuredClone(sq), { onProgress });
+        const filename = `${sq.name.replace(/[^\p{L}\p{N}]+/gu, '_')}.${mime === 'video/mp4' ? 'mp4' : 'webm'}`;
+        return ok({ url: URL.createObjectURL(blob), filename, bytes: blob.size, frames });
+      } catch (e) { return fail(e instanceof Error ? e.message : String(e)); }
+    },
+    setCut(seqId: string, cutId: string, patch: { shotId?: string; beat?: number; offset?: number }): OpResult<undefined> {
+      return edit('Modifier un plan de la séquence', (d) => {
+        const c = d.sequences?.find((x) => x.id === seqId)?.cuts.find((x) => x.id === cutId);
+        if (!c) throw new Error('Plan introuvable');
+        if (patch.shotId && patch.shotId !== 'follow' && !d.shots.some((x) => x.id === patch.shotId)) throw new Error('Cadrage inconnu');
+        Object.assign(c, patch);
+        return undefined;
+      });
     },
 
     undo() { store().undo(); return ok(store().canUndo); },

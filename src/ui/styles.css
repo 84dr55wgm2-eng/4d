@@ -255,3 +255,21 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .import-candidate button { background: rgba(255,255,255,.12); border-radius: 10px; min-height: 40px; }
 .incomplete-world { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); width: min(650px, calc(100vw - 28px)); border-radius: 14px; padding: 10px 14px; font-size: 12px; background: rgba(33,28,19,.90); color: #ffe5ad; }
 @media(max-width:720px) { .incomplete-world { top: 125px; } }
+
+/* --- sequence panel */
+.sequence { position: fixed; left: 50%; transform: translateX(-50%); bottom: 78px; width: min(760px, calc(100vw - 28px)); border-radius: 20px; padding: 12px; display: flex; flex-direction: column; gap: 8px; animation: rise 0.3s var(--spring); max-height: 46vh; overflow: auto; }
+.seq-head { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.seq-head select, .cut-row select, .cut-row input { background: rgba(0,0,0,0.3); color: var(--text); border: 0.5px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 5px 8px; font: inherit; min-width: 0; }
+.row-btn { padding: 7px 12px; border-radius: 999px; background: rgba(255,255,255,0.12); font-weight: 600; font-size: 12px; text-decoration: none; color: var(--text); white-space: nowrap; }
+.row-btn:hover:not(:disabled) { background: rgba(255,255,255,0.2); }
+.timeline { position: relative; height: 54px; border-radius: 10px; background: rgba(0,0,0,0.3); overflow: hidden; }
+.beat { position: absolute; top: 4px; height: 22px; padding: 3px 6px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: rgba(48,209,88,0.25); border-right: 1px solid rgba(255,255,255,0.25); }
+.beat.on { background: rgba(48,209,88,0.55); }
+.cut { position: absolute; bottom: 0; top: 28px; border-left: 2px solid #ffd60a; padding-left: 4px; font-size: 10.5px; color: #ffd60a; white-space: nowrap; }
+.playhead { position: absolute; top: 0; bottom: 0; width: 2px; background: #fff; box-shadow: 0 0 6px #fff; }
+.sequence input[type=range] { width: 100%; accent-color: var(--accent); }
+.seq-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.cuts { display: flex; flex-direction: column; gap: 6px; }
+.cut-row { display: grid; grid-template-columns: 1.2fr 1.6fr auto; gap: 6px; align-items: center; font-size: 12px; }
+.cut-row input { width: 56px; }
+@media (max-width: 720px) { .cut-row { grid-template-columns: 1fr; } .sequence { bottom: 138px; max-height: 50vh; } .seq-open .inspector { display: none; } }
