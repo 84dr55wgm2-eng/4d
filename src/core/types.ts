@@ -58,6 +58,8 @@ export interface WorldState {
 }
 
 export interface WorldDocument {
+  /** content revision of a published package; a saved copy from an older revision is kept aside, not reused */
+  revision?: string;
   format: 'cws-world';
   version: number;
   id: string;
@@ -102,6 +104,8 @@ export interface WorldDocument {
 export type AssetCategory = 'ARCHITECTURE' | 'PROPS' | 'FURNITURE' | 'VEHICLES' | 'CHARACTERS' | 'VEGETATION' | 'MATERIALS' | 'ANIMATIONS' | 'ENVIRONMENT';
 
 export interface AssetRecord {
+  /** measured bounds of the normalized model (metres, pivot bottom-centre): obstacles without loading it */
+  footprint?: { min: Vec3; max: Vec3 };
   id: string;
   name: string;
   category: AssetCategory;
@@ -133,7 +137,9 @@ export interface ContentManifest {
 export type CacheStatus = 'remote' | 'downloading' | 'cached' | 'error';
 
 // ---------------------------------------------------------------- district (Pascal-style semantic construction)
-export interface Opening { id: string; kind: 'door' | 'shopfront' | 'window'; wall: 'front' | 'back' | 'left' | 'right'; offset: number; width: number; height: number; sill?: number; level: number }
+/** What a shopfront sells: drives how its recess is dressed with authored objects. */
+export type Trade = 'provisions' | 'phones' | 'chemist' | 'business' | 'electricals' | 'fashion' | 'barber' | 'photo' | 'canteen' | 'books' | 'general';
+export interface Opening { id: string; kind: 'door' | 'shopfront' | 'window'; wall: 'front' | 'back' | 'left' | 'right'; offset: number; width: number; height: number; sill?: number; level: number; trade?: Trade }
 export interface RoomSpec { id: string; name: string; kind: 'cybercafe' | 'shop' | 'office'; level: number; /** local rect inside the building [x0,z0,x1,z1] */ rect: [number, number, number, number] }
 export interface BuildingSpec {
   id: string; name: string;
@@ -145,8 +151,20 @@ export interface BuildingSpec {
   rooms: RoomSpec[];
   signs: { text: string; sub?: string; colors: [string, string]; level: number; kind: 'board' | 'painted' | 'blade' }[];
 }
+/** Parameters a district plan is generated from (brief + preparation panel); stored with the plan. */
+export interface DistrictParams {
+  place: string; era: string; text: string;
+  seed: string;
+  street: { length: number; carriageway: number; sidewalk: number };
+  /** storey range of the shop-houses */
+  storeys: [number, number];
+  cafe: { side: 'south' | 'north'; /** 0 = street start (west), 1 = end (east) */ position: number; width: number; depth: number; workstations: number; layout: 'sides' | 'back' | 'sides+back' };
+  /** trades of the other shops, used in order (cycled) */
+  trades: Trade[];
+}
 export interface DistrictPlan {
   brief: { place: string; era: string; mood: string; text: string };
+  params?: DistrictParams;
   street: { length: number; carriageway: number; sidewalk: number; drain: boolean };
   buildings: BuildingSpec[];
   /** asset ids the plan requires; resolution report lists any that are missing */
@@ -179,5 +197,5 @@ export interface Sequence {
   cuts: SequenceCut[];
   start: SequenceStart;
   /** measured by rehearsal (deterministic fixed-step simulation) */
-  timing?: { beatStarts: number[]; duration: number; dt: number };
+  timing?: { beatStarts: number[]; duration: number; dt: number; /** what the timing was measured against (SequencePlayer.timingKey) */ key?: string };
 }

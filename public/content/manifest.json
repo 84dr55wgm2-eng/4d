@@ -1,6 +1,6 @@
 {
  "format": "cws-manifest",
- "version": "2026.10.12-yaba",
+ "version": "2026.10.12-yaba-shops",
  "assets": [
   {
    "id": "env.bistro",
@@ -13,7 +13,7 @@
    "bytes": 71467344,
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "Amazon Lumberyard Bistro, \u00a9 2017 Amazon Lumberyard, CC-BY 4.0",
+    "attribution": "Amazon Lumberyard Bistro, © 2017 Amazon Lumberyard, CC-BY 4.0",
     "verified": true,
     "notes": "Prepared by tools/prepare (spec/gloss->metal/rough, BC7->WebP 1024, meshopt, instancing)"
    },
@@ -89,7 +89,7 @@
   },
   {
    "id": "actor.rpm-civilian",
-   "name": "Civilian \u2014 Bearded Man",
+   "name": "Civilian — Bearded Man",
    "category": "CHARACTERS",
    "source": "Ready Player Me avatar (three.js examples)",
    "sourceUrl": "https://github.com/mrdoob/three.js/tree/dev/examples/models/gltf",
@@ -142,7 +142,7 @@
   },
   {
    "id": "anim.rpm.idle",
-   "name": "Motion \u2014 Standing Idle",
+   "name": "Motion — Standing Idle",
    "category": "ANIMATIONS",
    "source": "Ready Player Me Animation Library",
    "sourceUrl": "https://github.com/readyplayerme/animation-library",
@@ -162,7 +162,7 @@
   },
   {
    "id": "anim.rpm.walk",
-   "name": "Motion \u2014 Walk",
+   "name": "Motion — Walk",
    "category": "ANIMATIONS",
    "source": "Ready Player Me Animation Library",
    "sourceUrl": "https://github.com/readyplayerme/animation-library",
@@ -181,7 +181,7 @@
   },
   {
    "id": "anim.rpm.jog",
-   "name": "Motion \u2014 Jog Run",
+   "name": "Motion — Jog Run",
    "category": "ANIMATIONS",
    "source": "Ready Player Me Animation Library",
    "sourceUrl": "https://github.com/readyplayerme/animation-library",
@@ -201,7 +201,7 @@
   },
   {
    "id": "anim.rpm.run",
-   "name": "Motion \u2014 Sprint Run",
+   "name": "Motion — Sprint Run",
    "category": "ANIMATIONS",
    "source": "Ready Player Me Animation Library",
    "sourceUrl": "https://github.com/readyplayerme/animation-library",
@@ -341,7 +341,7 @@
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "\u00a9 2021 Wayfair",
+    "attribution": "© 2021 Wayfair",
     "verified": true
    },
    "scale": {
@@ -419,7 +419,7 @@
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "\u00a9 2021 Wayfair",
+    "attribution": "© 2021 Wayfair",
     "verified": true
    },
    "scale": {
@@ -443,7 +443,7 @@
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "\u00a9 2023 Wayfair",
+    "attribution": "© 2023 Wayfair",
     "verified": true
    },
    "scale": {
@@ -491,7 +491,7 @@
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "\u00a9 2024 Darmstadt Graphics Group",
+    "attribution": "© 2024 Darmstadt Graphics Group",
     "verified": true
    },
    "scale": {
@@ -584,13 +584,13 @@
    "id": "kit.shop",
    "name": "Maison de briques",
    "category": "ARCHITECTURE",
-   "source": "Amazon Lumberyard Bistro \u2014 kit authored",
+   "source": "Amazon Lumberyard Bistro — kit authored",
    "sourceUrl": "https://developer.nvidia.com/orca/amazon-lumberyard-bistro",
    "url": "content/worlds/bistro/bistro.glb",
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "Amazon Lumberyard Bistro, \u00a9 2017 Amazon Lumberyard, CC-BY 4.0",
+    "attribution": "Amazon Lumberyard Bistro, © 2017 Amazon Lumberyard, CC-BY 4.0",
     "verified": true,
     "notes": "Prepared by tools/prepare (spec/gloss->metal/rough, BC7->WebP 1024, meshopt, instancing)"
    },
@@ -624,15 +624,15 @@
   },
   {
    "id": "kit.house",
-   "name": "Immeuble r\u00e9sidentiel",
+   "name": "Immeuble résidentiel",
    "category": "ARCHITECTURE",
-   "source": "Amazon Lumberyard Bistro \u2014 kit authored",
+   "source": "Amazon Lumberyard Bistro — kit authored",
    "sourceUrl": "https://developer.nvidia.com/orca/amazon-lumberyard-bistro",
    "url": "content/worlds/bistro/bistro.glb",
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "Amazon Lumberyard Bistro, \u00a9 2017 Amazon Lumberyard, CC-BY 4.0",
+    "attribution": "Amazon Lumberyard Bistro, © 2017 Amazon Lumberyard, CC-BY 4.0",
     "verified": true,
     "notes": "Prepared by tools/prepare (spec/gloss->metal/rough, BC7->WebP 1024, meshopt, instancing)"
    },
@@ -666,15 +666,15 @@
   },
   {
    "id": "kit.building",
-   "name": "Immeuble \u00e0 auvents",
+   "name": "Immeuble à auvents",
    "category": "ARCHITECTURE",
-   "source": "Amazon Lumberyard Bistro \u2014 kit authored",
+   "source": "Amazon Lumberyard Bistro — kit authored",
    "sourceUrl": "https://developer.nvidia.com/orca/amazon-lumberyard-bistro",
    "url": "content/worlds/bistro/bistro.glb",
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "Amazon Lumberyard Bistro, \u00a9 2017 Amazon Lumberyard, CC-BY 4.0",
+    "attribution": "Amazon Lumberyard Bistro, © 2017 Amazon Lumberyard, CC-BY 4.0",
     "verified": true,
     "notes": "Prepared by tools/prepare (spec/gloss->metal/rough, BC7->WebP 1024, meshopt, instancing)"
    },
@@ -709,13 +709,13 @@
    "id": "kit.tree",
    "name": "Arbre feuillu",
    "category": "VEGETATION",
-   "source": "Amazon Lumberyard Bistro \u2014 kit authored",
+   "source": "Amazon Lumberyard Bistro — kit authored",
    "sourceUrl": "https://developer.nvidia.com/orca/amazon-lumberyard-bistro",
    "url": "content/worlds/bistro/bistro.glb",
    "format": "glb",
    "license": {
     "id": "CC-BY-4.0",
-    "attribution": "Amazon Lumberyard Bistro, \u00a9 2017 Amazon Lumberyard, CC-BY 4.0",
+    "attribution": "Amazon Lumberyard Bistro, © 2017 Amazon Lumberyard, CC-BY 4.0",
     "verified": true,
     "notes": "Prepared by tools/prepare (spec/gloss->metal/rough, BC7->WebP 1024, meshopt, instancing)"
    },
@@ -775,6 +775,18 @@
      ],
      "facing": 0
     }
+   },
+   "footprint": {
+    "min": [
+     -0.321,
+     0,
+     -0.314
+    ],
+    "max": [
+     0.321,
+     0.88,
+     0.314
+    ]
    }
   },
   {
@@ -795,11 +807,23 @@
     "cybercafe"
    ],
    "entityType": "FURNITURE",
-   "bytes": 1174868
+   "bytes": 1174868,
+   "footprint": {
+    "min": [
+     -0.567,
+     0,
+     -0.353
+    ],
+    "max": [
+     0.567,
+     0.8,
+     0.353
+    ]
+   }
   },
   {
    "id": "lagos.crt",
-   "name": "Poste CRT (\u00e9cran, tour, clavier)",
+   "name": "Poste CRT (écran, tour, clavier)",
    "category": "PROPS",
    "source": "Objaverse / Sketchfab",
    "sourceUrl": "https://sketchfab.com/3d-models/82eaf2047e0447a1bfea22482f1d1404",
@@ -821,6 +845,18 @@
    "bytes": 419752,
    "scale": {
     "unitsToMetres": 0.01
+   },
+   "footprint": {
+    "min": [
+     -0.484,
+     0,
+     -0.485
+    ],
+    "max": [
+     0.484,
+     0.493,
+     0.485
+    ]
    }
   },
   {
@@ -841,11 +877,23 @@
     "computer"
    ],
    "entityType": "PROP",
-   "bytes": 700668
+   "bytes": 700668,
+   "footprint": {
+    "min": [
+     -0.245,
+     0,
+     -0.107
+    ],
+    "max": [
+     0.245,
+     0.066,
+     0.107
+    ]
+   }
   },
   {
    "id": "lagos.tv",
-   "name": "T\u00e9l\u00e9viseur CRT",
+   "name": "Téléviseur CRT",
    "category": "PROPS",
    "source": "Poly Haven",
    "sourceUrl": "https://polyhaven.com/a/television_02",
@@ -861,11 +909,23 @@
     "electronics"
    ],
    "entityType": "PROP",
-   "bytes": 475552
+   "bytes": 475552,
+   "footprint": {
+    "min": [
+     -0.2,
+     0,
+     -0.175
+    ],
+    "max": [
+     0.2,
+     0.411,
+     0.175
+    ]
+   }
   },
   {
    "id": "lagos.counter",
-   "name": "Comptoir m\u00e9tallique",
+   "name": "Comptoir métallique",
    "category": "FURNITURE",
    "source": "Poly Haven",
    "sourceUrl": "https://polyhaven.com/a/metal_office_desk",
@@ -881,7 +941,19 @@
     "cybercafe"
    ],
    "entityType": "FURNITURE",
-   "bytes": 254124
+   "bytes": 254124,
+   "footprint": {
+    "min": [
+     -1,
+     0,
+     -0.474
+    ],
+    "max": [
+     1,
+     0.787,
+     0.474
+    ]
+   }
   },
   {
    "id": "lagos.smalltable",
@@ -899,11 +971,23 @@
     "table"
    ],
    "entityType": "FURNITURE",
-   "bytes": 193692
+   "bytes": 193692,
+   "footprint": {
+    "min": [
+     -0.458,
+     0,
+     -0.22
+    ],
+    "max": [
+     0.458,
+     0.533,
+     0.22
+    ]
+   }
   },
   {
    "id": "lagos.fluorescent",
-   "name": "R\u00e9glette n\u00e9on",
+   "name": "Réglette néon",
    "category": "PROPS",
    "source": "Poly Haven",
    "sourceUrl": "https://polyhaven.com/a/mounted_fluorescent_lights",
@@ -922,6 +1006,18 @@
    "runtime": {
     "keepNodes": [
      "mounted_fluorescent_lights_d"
+    ]
+   },
+   "footprint": {
+    "min": [
+     -0.455,
+     0,
+     -0.021
+    ],
+    "max": [
+     0.455,
+     0.032,
+     0.021
     ]
    }
   },
@@ -942,7 +1038,19 @@
     "ceiling"
    ],
    "entityType": "PROP",
-   "bytes": 341368
+   "bytes": 341368,
+   "footprint": {
+    "min": [
+     -0.731,
+     0,
+     -0.731
+    ],
+    "max": [
+     0.731,
+     0.516,
+     0.731
+    ]
+   }
   },
   {
    "id": "lagos.clock",
@@ -960,7 +1068,19 @@
     "clock"
    ],
    "entityType": "PROP",
-   "bytes": 225544
+   "bytes": 225544,
+   "footprint": {
+    "min": [
+     -0.16,
+     0,
+     -0.024
+    ],
+    "max": [
+     0.16,
+     0.32,
+     0.024
+    ]
+   }
   },
   {
    "id": "lagos.chalkboard",
@@ -979,11 +1099,23 @@
     "chalkboard"
    ],
    "entityType": "PROP",
-   "bytes": 352304
+   "bytes": 352304,
+   "footprint": {
+    "min": [
+     -0.46,
+     0,
+     -0.379
+    ],
+    "max": [
+     0.46,
+     1.509,
+     0.379
+    ]
+   }
   },
   {
    "id": "lagos.pole",
-   "name": "Poteau \u00e9lectrique",
+   "name": "Poteau électrique",
    "category": "PROPS",
    "source": "Poly Haven",
    "sourceUrl": "https://polyhaven.com/a/modular_electricity_poles",
@@ -1006,6 +1138,18 @@
    },
    "runtime": {
     "keepPrefix": "preset_02_"
+   },
+   "footprint": {
+    "min": [
+     -0.822,
+     0,
+     -0.584
+    ],
+    "max": [
+     0.822,
+     8.4,
+     0.584
+    ]
    }
   },
   {
@@ -1034,11 +1178,23 @@
    },
    "runtime": {
     "keepPrefix": "preset_03_"
+   },
+   "footprint": {
+    "min": [
+     -0.882,
+     0,
+     -0.584
+    ],
+    "max": [
+     0.882,
+     8.4,
+     0.584
+    ]
    }
   },
   {
    "id": "lagos.aircon",
-   "name": "Climatiseur ext\u00e9rieur",
+   "name": "Climatiseur extérieur",
    "category": "PROPS",
    "source": "Poly Haven",
    "sourceUrl": "https://polyhaven.com/a/exterior_aircon_unit",
@@ -1058,11 +1214,23 @@
     "keepNodes": [
      "exterior_aircon_unit_rusted"
     ]
+   },
+   "footprint": {
+    "min": [
+     -0.4,
+     0,
+     -0.187
+    ],
+    "max": [
+     0.4,
+     0.928,
+     0.187
+    ]
    }
   },
   {
    "id": "lagos.powerbox",
-   "name": "Coffret \u00e9lectrique",
+   "name": "Coffret électrique",
    "category": "PROPS",
    "source": "Poly Haven",
    "sourceUrl": "https://polyhaven.com/a/power_box_01",
@@ -1077,7 +1245,19 @@
     "box"
    ],
    "entityType": "PROP",
-   "bytes": 515840
+   "bytes": 515840,
+   "footprint": {
+    "min": [
+     -0.231,
+     0,
+     -0.201
+    ],
+    "max": [
+     0.231,
+     0.503,
+     0.201
+    ]
+   }
   },
   {
    "id": "lagos.utilitybox",
@@ -1096,11 +1276,23 @@
     "box"
    ],
    "entityType": "PROP",
-   "bytes": 292596
+   "bytes": 292596,
+   "footprint": {
+    "min": [
+     -0.26,
+     0,
+     -0.216
+    ],
+    "max": [
+     0.26,
+     1.12,
+     0.216
+    ]
+   }
   },
   {
    "id": "lagos.generator",
-   "name": "Groupe \u00e9lectrog\u00e8ne",
+   "name": "Groupe électrogène",
    "category": "PROPS",
    "source": "Poly Haven",
    "sourceUrl": "https://polyhaven.com/a/portable_generator",
@@ -1116,11 +1308,23 @@
     "street"
    ],
    "entityType": "PROP",
-   "bytes": 1869056
+   "bytes": 1869056,
+   "footprint": {
+    "min": [
+     -0.409,
+     0,
+     -0.282
+    ],
+    "max": [
+     0.409,
+     0.577,
+     0.282
+    ]
+   }
   },
   {
    "id": "lagos.jerrycan",
-   "name": "Jerrican m\u00e9tal",
+   "name": "Jerrican métal",
    "category": "PROPS",
    "source": "Poly Haven",
    "sourceUrl": "https://polyhaven.com/a/metal_jerrycan",
@@ -1140,6 +1344,18 @@
     "interaction": {
      "pickable": true
     }
+   },
+   "footprint": {
+    "min": [
+     -0.175,
+     0,
+     -0.086
+    ],
+    "max": [
+     0.175,
+     0.455,
+     0.086
+    ]
    }
   },
   {
@@ -1164,6 +1380,18 @@
     "interaction": {
      "pickable": true
     }
+   },
+   "footprint": {
+    "min": [
+     -0.134,
+     0,
+     -0.17
+    ],
+    "max": [
+     0.134,
+     0.318,
+     0.17
+    ]
    }
   },
   {
@@ -1183,7 +1411,19 @@
     "drinks"
    ],
    "entityType": "PROP",
-   "bytes": 724820
+   "bytes": 724820,
+   "footprint": {
+    "min": [
+     -0.149,
+     0,
+     -0.204
+    ],
+    "max": [
+     0.149,
+     0.264,
+     0.204
+    ]
+   }
   },
   {
    "id": "lagos.crate2",
@@ -1201,11 +1441,23 @@
     "crate"
    ],
    "entityType": "PROP",
-   "bytes": 311744
+   "bytes": 311744,
+   "footprint": {
+    "min": [
+     -0.253,
+     0,
+     -0.203
+    ],
+    "max": [
+     0.253,
+     0.254,
+     0.203
+    ]
+   }
   },
   {
    "id": "lagos.barrel",
-   "name": "F\u00fbt m\u00e9tallique",
+   "name": "Fût métallique",
    "category": "PROPS",
    "source": "Poly Haven",
    "sourceUrl": "https://polyhaven.com/a/barrel_03",
@@ -1220,11 +1472,23 @@
     "drum"
    ],
    "entityType": "PROP",
-   "bytes": 351148
+   "bytes": 351148,
+   "footprint": {
+    "min": [
+     -0.317,
+     0,
+     -0.319
+    ],
+    "max": [
+     0.317,
+     0.93,
+     0.319
+    ]
+   }
   },
   {
    "id": "lagos.trashcan",
-   "name": "Poubelle m\u00e9tallique",
+   "name": "Poubelle métallique",
    "category": "PROPS",
    "source": "Poly Haven",
    "sourceUrl": "https://polyhaven.com/a/metal_trash_can",
@@ -1238,7 +1502,19 @@
     "trash"
    ],
    "entityType": "PROP",
-   "bytes": 1106188
+   "bytes": 1106188,
+   "footprint": {
+    "min": [
+     -0.923,
+     0,
+     -0.278
+    ],
+    "max": [
+     0.923,
+     0.906,
+     0.278
+    ]
+   }
   },
   {
    "id": "lagos.trashbag",
@@ -1256,7 +1532,19 @@
     "trash"
    ],
    "entityType": "PROP",
-   "bytes": 332232
+   "bytes": 332232,
+   "footprint": {
+    "min": [
+     -0.264,
+     0,
+     -0.231
+    ],
+    "max": [
+     0.264,
+     0.575,
+     0.231
+    ]
+   }
   },
   {
    "id": "lagos.tyre",
@@ -1275,11 +1563,23 @@
     "vulcanizer"
    ],
    "entityType": "PROP",
-   "bytes": 481932
+   "bytes": 481932,
+   "footprint": {
+    "min": [
+     -0.3,
+     0,
+     -0.083
+    ],
+    "max": [
+     0.3,
+     0.6,
+     0.083
+    ]
+   }
   },
   {
    "id": "lagos.covered_car",
-   "name": "Voiture b\u00e2ch\u00e9e",
+   "name": "Voiture bâchée",
    "category": "VEHICLES",
    "source": "Poly Haven",
    "sourceUrl": "https://polyhaven.com/a/covered_car",
@@ -1294,7 +1594,19 @@
     "covered"
    ],
    "entityType": "VEHICLE",
-   "bytes": 1431836
+   "bytes": 1431836,
+   "footprint": {
+    "min": [
+     -0.894,
+     0,
+     -2.19
+    ],
+    "max": [
+     0.894,
+     1.411,
+     2.19
+    ]
+   }
   },
   {
    "id": "lagos.peugeot504",
@@ -1320,6 +1632,18 @@
    "scale": {
     "unitsToMetres": 1,
     "targetHeight": 1.5
+   },
+   "footprint": {
+    "min": [
+     -2.218,
+     0,
+     -0.855
+    ],
+    "max": [
+     2.218,
+     1.5,
+     0.855
+    ]
    }
   },
   {
@@ -1344,6 +1668,18 @@
    "bytes": 1774580,
    "scale": {
     "unitsToMetres": 0.01
+   },
+   "footprint": {
+    "min": [
+     -0.946,
+     0,
+     -2.075
+    ],
+    "max": [
+     0.946,
+     1.426,
+     2.075
+    ]
    }
   },
   {
@@ -1363,7 +1699,19 @@
     "seat"
    ],
    "entityType": "FURNITURE",
-   "bytes": 353684
+   "bytes": 353684,
+   "footprint": {
+    "min": [
+     -0.582,
+     0,
+     -0.248
+    ],
+    "max": [
+     0.582,
+     0.889,
+     0.248
+    ]
+   }
   },
   {
    "id": "lagos.stool",
@@ -1381,7 +1729,19 @@
     "stool"
    ],
    "entityType": "FURNITURE",
-   "bytes": 657492
+   "bytes": 657492,
+   "footprint": {
+    "min": [
+     -0.213,
+     0,
+     -0.221
+    ],
+    "max": [
+     0.213,
+     0.437,
+     0.221
+    ]
+   }
   },
   {
    "id": "lagos.box",
@@ -1404,11 +1764,23 @@
     "interaction": {
      "pickable": true
     }
+   },
+   "footprint": {
+    "min": [
+     -0.194,
+     0,
+     -0.258
+    ],
+    "max": [
+     0.194,
+     0.342,
+     0.258
+    ]
    }
   },
   {
    "id": "lagos.planter",
-   "name": "Bac \u00e0 plantes",
+   "name": "Bac à plantes",
    "category": "VEGETATION",
    "source": "Poly Haven",
    "sourceUrl": "https://polyhaven.com/a/planter_box_01",
@@ -1422,7 +1794,19 @@
     "plant"
    ],
    "entityType": "VEGETATION",
-   "bytes": 478112
+   "bytes": 478112,
+   "footprint": {
+    "min": [
+     -0.456,
+     0,
+     -0.207
+    ],
+    "max": [
+     0.456,
+     0.425,
+     0.207
+    ]
+   }
   },
   {
    "id": "lagos.radio",
@@ -1447,6 +1831,18 @@
     "interaction": {
      "pickable": true
     }
+   },
+   "footprint": {
+    "min": [
+     -0.086,
+     0,
+     -0.02
+    ],
+    "max": [
+     0.086,
+     0.13,
+     0.02
+    ]
    }
   },
   {
@@ -1465,11 +1861,23 @@
     "radio"
    ],
    "entityType": "PROP",
-   "bytes": 606872
+   "bytes": 606872,
+   "footprint": {
+    "min": [
+     -0.362,
+     0,
+     -0.093
+    ],
+    "max": [
+     0.362,
+     0.47,
+     0.093
+    ]
+   }
   },
   {
    "id": "lagos.securitylight",
-   "name": "Projecteur de fa\u00e7ade",
+   "name": "Projecteur de façade",
    "category": "PROPS",
    "source": "Poly Haven",
    "sourceUrl": "https://polyhaven.com/a/security_light",
@@ -1483,11 +1891,23 @@
     "light"
    ],
    "entityType": "PROP",
-   "bytes": 562532
+   "bytes": 562532,
+   "footprint": {
+    "min": [
+     -0.162,
+     0,
+     -0.209
+    ],
+    "max": [
+     0.162,
+     0.531,
+     0.209
+    ]
+   }
   },
   {
    "id": "lagos.barrier",
-   "name": "Barri\u00e8re b\u00e9ton",
+   "name": "Barrière béton",
    "category": "PROPS",
    "source": "Poly Haven",
    "sourceUrl": "https://polyhaven.com/a/concrete_road_barrier",
@@ -1501,7 +1921,19 @@
     "barrier"
    ],
    "entityType": "PROP",
-   "bytes": 955776
+   "bytes": 955776,
+   "footprint": {
+    "min": [
+     -0.773,
+     0,
+     -0.319
+    ],
+    "max": [
+     0.773,
+     0.831,
+     0.319
+    ]
+   }
   },
   {
    "id": "lagos.container",
@@ -1519,7 +1951,897 @@
     "container"
    ],
    "entityType": "PROP",
-   "bytes": 196640
+   "bytes": 196640,
+   "footprint": {
+    "min": [
+     -0.448,
+     0,
+     -0.313
+    ],
+    "max": [
+     0.448,
+     0.43,
+     0.313
+    ]
+   }
+  },
+  {
+   "id": "lagos.shelf_steel",
+   "name": "Étagère métallique",
+   "category": "FURNITURE",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/steel_frame_shelves_01",
+   "url": "content/lagos/models/steel_frame_shelves_01.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Steel Frame Shelves 01 by James Ray Cock (Poly Haven, CC0)"
+   },
+   "tags": [
+    "shelf",
+    "shop"
+   ],
+   "entityType": "FURNITURE",
+   "bytes": 239672,
+   "scale": {
+    "unitsToMetres": 0.1
+   },
+   "footprint": {
+    "min": [
+     -0.549,
+     0,
+     -0.251
+    ],
+    "max": [
+     0.549,
+     2.141,
+     0.251
+    ]
+   }
+  },
+  {
+   "id": "lagos.shelf_steel_narrow",
+   "name": "Étagère métallique étroite",
+   "category": "FURNITURE",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/steel_frame_shelves_02",
+   "url": "content/lagos/models/steel_frame_shelves_02.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Steel Frame Shelves 02 by James Ray Cock (Poly Haven, CC0)"
+   },
+   "tags": [
+    "shelf",
+    "shop"
+   ],
+   "entityType": "FURNITURE",
+   "bytes": 248612,
+   "footprint": {
+    "min": [
+     -0.297,
+     0,
+     -0.251
+    ],
+    "max": [
+     0.297,
+     2.142,
+     0.251
+    ]
+   }
+  },
+  {
+   "id": "lagos.shelf_cubby",
+   "name": "Étagère à casiers",
+   "category": "FURNITURE",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/wooden_display_shelves_01",
+   "url": "content/lagos/models/wooden_display_shelves_01.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Wooden Display Shelves 01 by James Ray Cock (Poly Haven, CC0)"
+   },
+   "tags": [
+    "shelf",
+    "shop"
+   ],
+   "entityType": "FURNITURE",
+   "bytes": 216460,
+   "footprint": {
+    "min": [
+     -0.186,
+     0,
+     -0.539
+    ],
+    "max": [
+     0.186,
+     1.556,
+     0.539
+    ]
+   }
+  },
+  {
+   "id": "lagos.shelf_wall",
+   "name": "Étagère murale peinte",
+   "category": "FURNITURE",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/painted_wooden_shelves",
+   "url": "content/lagos/models/painted_wooden_shelves.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Painted Wooden Shelves by Kirill Sannikov (Poly Haven, CC0)"
+   },
+   "tags": [
+    "shelf",
+    "shop"
+   ],
+   "entityType": "FURNITURE",
+   "bytes": 396800,
+   "footprint": {
+    "min": [
+     -0.256,
+     0,
+     -0.184
+    ],
+    "max": [
+     0.256,
+     1.125,
+     0.184
+    ]
+   }
+  },
+  {
+   "id": "lagos.food_cans",
+   "name": "Conserves et brique de lait",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/long_life_food",
+   "url": "content/lagos/models/long_life_food.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Long Life Food by Mia Pecina Zorko (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "provisions"
+   ],
+   "entityType": "PROP",
+   "bytes": 426972,
+   "footprint": {
+    "min": [
+     -0.262,
+     0,
+     -0.057
+    ],
+    "max": [
+     0.262,
+     0.238,
+     0.057
+    ]
+   }
+  },
+  {
+   "id": "lagos.oil_tin",
+   "name": "Bidon d’huile",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/oil_tin",
+   "url": "content/lagos/models/oil_tin.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Oil Tin by Niklas (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "provisions"
+   ],
+   "entityType": "PROP",
+   "bytes": 394180,
+   "footprint": {
+    "min": [
+     -0.057,
+     0,
+     -0.077
+    ],
+    "max": [
+     0.057,
+     0.205,
+     0.077
+    ]
+   }
+  },
+  {
+   "id": "lagos.gallon",
+   "name": "Bidon plastique",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/plastic_bottle_gallon",
+   "url": "content/lagos/models/plastic_bottle_gallon.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Plastic Bottle Gallon by Rahul Chaudhary (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "provisions"
+   ],
+   "entityType": "PROP",
+   "bytes": 211880,
+   "footprint": {
+    "min": [
+     -0.083,
+     0,
+     -0.063
+    ],
+    "max": [
+     0.083,
+     0.274,
+     0.063
+    ]
+   }
+  },
+  {
+   "id": "lagos.cleaner_tin",
+   "name": "Boîte de produit",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/cleaner_tin_01",
+   "url": "content/lagos/models/cleaner_tin_01.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Cleaner Tin 01 by Tom Phillips (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "provisions"
+   ],
+   "entityType": "PROP",
+   "bytes": 368156,
+   "footprint": {
+    "min": [
+     -0.044,
+     0,
+     -0.044
+    ],
+    "max": [
+     0.044,
+     0.13,
+     0.044
+    ]
+   }
+  },
+  {
+   "id": "lagos.bleach",
+   "name": "Javel",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/bleach_bottle",
+   "url": "content/lagos/models/bleach_bottle.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Bleach Bottle by James Ray Cock (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "provisions"
+   ],
+   "entityType": "PROP",
+   "bytes": 162872,
+   "footprint": {
+    "min": [
+     -0.044,
+     0,
+     -0.031
+    ],
+    "max": [
+     0.044,
+     0.294,
+     0.031
+    ]
+   }
+  },
+  {
+   "id": "lagos.cleaner_bottle",
+   "name": "Nettoyant",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/multi_cleaner_bottle",
+   "url": "content/lagos/models/multi_cleaner_bottle.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Multi Cleaner Bottle by James Ray Cock (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "provisions"
+   ],
+   "entityType": "PROP",
+   "bytes": 204996,
+   "footprint": {
+    "min": [
+     -0.044,
+     0,
+     -0.045
+    ],
+    "max": [
+     0.044,
+     0.229,
+     0.045
+    ]
+   }
+  },
+  {
+   "id": "lagos.medical_box",
+   "name": "Boîte de premiers secours",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/medical_box",
+   "url": "content/lagos/models/medical_box.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Medical Box by Ulan Cabanilla (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "chemist"
+   ],
+   "entityType": "PROP",
+   "bytes": 364844,
+   "footprint": {
+    "min": [
+     -0.263,
+     0,
+     -0.175
+    ],
+    "max": [
+     0.263,
+     0.098,
+     0.175
+    ]
+   }
+  },
+  {
+   "id": "lagos.medical_tape",
+   "name": "Rouleau de sparadrap",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/medical_tape",
+   "url": "content/lagos/models/medical_tape.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Medical Tape by Miroslav Turura (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "chemist"
+   ],
+   "entityType": "PROP",
+   "bytes": 255220,
+   "footprint": {
+    "min": [
+     -0.023,
+     0,
+     -0.023
+    ],
+    "max": [
+     0.023,
+     0.025,
+     0.023
+    ]
+   }
+  },
+  {
+   "id": "lagos.basket",
+   "name": "Panier en osier",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/wicker_basket_01",
+   "url": "content/lagos/models/wicker_basket_01.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Wicker Basket 01 by Kuutti Siitonen (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "market"
+   ],
+   "entityType": "PROP",
+   "bytes": 637196,
+   "footprint": {
+    "min": [
+     -0.192,
+     0,
+     -0.148
+    ],
+    "max": [
+     0.192,
+     0.117,
+     0.148
+    ]
+   }
+  },
+  {
+   "id": "lagos.onion",
+   "name": "Oignon",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/yellow_onion",
+   "url": "content/lagos/models/yellow_onion.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Yellow Onion by Kuutti Siitonen (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "food"
+   ],
+   "entityType": "PROP",
+   "bytes": 279456,
+   "footprint": {
+    "min": [
+     -0.036,
+     0,
+     -0.034
+    ],
+    "max": [
+     0.036,
+     0.086,
+     0.034
+    ]
+   }
+  },
+  {
+   "id": "lagos.sweet_potato",
+   "name": "Patate douce",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/sweet_potato",
+   "url": "content/lagos/models/sweet_potato.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Sweet Potato by Jan Martens (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "food"
+   ],
+   "entityType": "PROP",
+   "bytes": 274884,
+   "footprint": {
+    "min": [
+     -0.029,
+     0,
+     -0.03
+    ],
+    "max": [
+     0.029,
+     0.1,
+     0.03
+    ]
+   }
+  },
+  {
+   "id": "lagos.crate3",
+   "name": "Casier plastique",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/plastic_crate_03",
+   "url": "content/lagos/models/plastic_crate_03.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Plastic Crate 03 by Pacific Penguin (Poly Haven, CC0)"
+   },
+   "tags": [
+    "crate"
+   ],
+   "entityType": "PROP",
+   "bytes": 769176,
+   "footprint": {
+    "min": [
+     -0.241,
+     0,
+     -0.132
+    ],
+    "max": [
+     0.241,
+     0.266,
+     0.132
+    ]
+   }
+  },
+  {
+   "id": "lagos.binders",
+   "name": "Carnets",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/binder_notebook",
+   "url": "content/lagos/models/binder_notebook.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Binder Notebook by DaDrood (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "stationery"
+   ],
+   "entityType": "PROP",
+   "bytes": 366212,
+   "footprint": {
+    "min": [
+     -0.292,
+     0,
+     -0.1
+    ],
+    "max": [
+     0.292,
+     0.025,
+     0.1
+    ]
+   }
+  },
+  {
+   "id": "lagos.transceiver",
+   "name": "Poste radio ancien",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/vintage_radio_transceiver",
+   "url": "content/lagos/models/vintage_radio_transceiver.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Vintage Radio Transceiver by Mateusz Sadek (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "electricals"
+   ],
+   "entityType": "PROP",
+   "bytes": 1528212,
+   "footprint": {
+    "min": [
+     -0.309,
+     0,
+     -0.209
+    ],
+    "max": [
+     0.309,
+     0.434,
+     0.209
+    ]
+   }
+  },
+  {
+   "id": "lagos.toolbox",
+   "name": "Caisse à outils",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/metal_toolbox",
+   "url": "content/lagos/models/metal_toolbox.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Metal Toolbox by Mateusz Sadek (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "electricals"
+   ],
+   "entityType": "PROP",
+   "bytes": 616412,
+   "footprint": {
+    "min": [
+     -0.2,
+     0,
+     -0.146
+    ],
+    "max": [
+     0.2,
+     0.347,
+     0.146
+    ]
+   }
+  },
+  {
+   "id": "lagos.cement",
+   "name": "Sac de ciment",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/cement_bag",
+   "url": "content/lagos/models/cement_bag.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Cement Bag by PierreB3D (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "hardware"
+   ],
+   "entityType": "PROP",
+   "bytes": 157596,
+   "footprint": {
+    "min": [
+     -0.231,
+     0,
+     -0.35
+    ],
+    "max": [
+     0.231,
+     0.18,
+     0.35
+    ]
+   }
+  },
+  {
+   "id": "lagos.gas",
+   "name": "Bouteille de gaz",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/propane_tank",
+   "url": "content/lagos/models/propane_tank.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Propane Tank by Slinc (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "canteen"
+   ],
+   "entityType": "PROP",
+   "bytes": 353756,
+   "footprint": {
+    "min": [
+     -0.169,
+     0,
+     -0.169
+    ],
+    "max": [
+     0.169,
+     0.554,
+     0.169
+    ]
+   }
+  },
+  {
+   "id": "lagos.paint_tin",
+   "name": "Pot rouillé",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/can_rusted",
+   "url": "content/lagos/models/can_rusted.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Can Rusted by Rahul Chaudhary (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "electricals"
+   ],
+   "entityType": "PROP",
+   "bytes": 448748,
+   "footprint": {
+    "min": [
+     -0.062,
+     0,
+     -0.062
+    ],
+    "max": [
+     0.062,
+     0.151,
+     0.062
+    ]
+   }
+  },
+  {
+   "id": "lagos.wood_crate",
+   "name": "Caisse en bois",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/wooden_crate_01",
+   "url": "content/lagos/models/wooden_crate_01.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Wooden Crate 01 by James Ray Cock (Poly Haven, CC0)"
+   },
+   "tags": [
+    "crate"
+   ],
+   "entityType": "PROP",
+   "bytes": 440284,
+   "footprint": {
+    "min": [
+     -0.413,
+     0,
+     -0.204
+    ],
+    "max": [
+     0.413,
+     0.35,
+     0.204
+    ]
+   }
+  },
+  {
+   "id": "lagos.spray",
+   "name": "Bombes de peinture",
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/spray_paint_bottles",
+   "url": "content/lagos/models/spray_paint_bottles.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "attribution": "Spray Paint Bottles by James Ray Cock (Poly Haven, CC0)"
+   },
+   "tags": [
+    "goods",
+    "electricals"
+   ],
+   "entityType": "PROP",
+   "bytes": 322068,
+   "footprint": {
+    "min": [
+     -0.079,
+     0,
+     -0.033
+    ],
+    "max": [
+     0.079,
+     0.229,
+     0.033
+    ]
+   }
+  },
+  {
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/modular_electric_cables",
+   "url": "content/lagos/models/modular_electric_cables.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "entityType": "PROP",
+   "bytes": 1364344,
+   "id": "lagos.socket4",
+   "name": "Prise quadruple murale",
+   "tags": [
+    "socket",
+    "electric",
+    "cybercafe"
+   ],
+   "runtime": {
+    "keepNodes": [
+     "cable_plug_4x"
+    ]
+   },
+   "footprint": {
+    "min": [
+     -0.05,
+     0,
+     -0.02
+    ],
+    "max": [
+     0.05,
+     0.16,
+     0.02
+    ]
+   }
+  },
+  {
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/modular_electric_cables",
+   "url": "content/lagos/models/modular_electric_cables.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "entityType": "PROP",
+   "bytes": 1364344,
+   "id": "lagos.conduit",
+   "name": "Goulotte électrique",
+   "tags": [
+    "conduit",
+    "electric"
+   ],
+   "runtime": {
+    "keepNodes": [
+     "cable_straight_long"
+    ]
+   },
+   "footprint": {
+    "min": [
+     -0.02,
+     0,
+     -0.015
+    ],
+    "max": [
+     0.02,
+     0.61,
+     0.015
+    ]
+   }
+  },
+  {
+   "category": "PROPS",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/modular_electric_cables",
+   "url": "content/lagos/models/modular_electric_cables.glb",
+   "format": "glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "entityType": "PROP",
+   "bytes": 1364344,
+   "id": "lagos.lightswitch",
+   "name": "Interrupteur double",
+   "tags": [
+    "switch",
+    "electric"
+   ],
+   "runtime": {
+    "keepNodes": [
+     "cable_lightswitch_double"
+    ]
+   },
+   "footprint": {
+    "min": [
+     -0.045,
+     0,
+     -0.025
+    ],
+    "max": [
+     0.045,
+     0.21,
+     0.025
+    ]
+   }
   }
  ],
  "worlds": [
@@ -1530,7 +2852,7 @@
   },
   {
    "id": "yaba",
-   "name": "Yaba, Lagos \u2014 2003",
+   "name": "Yaba, Lagos — 2003",
    "url": "content/worlds/yaba/world.json"
   }
  ]

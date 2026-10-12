@@ -27,8 +27,14 @@ export class EntityRuntime {
   focus: THREE.Vector3[] = [];
   stats = { resident: 0, total: 0, deferred: 0 };
 
+  /** ids that must stay instantiated whatever the distance (interaction target, held object, sequence targets) */
+  protect: () => Iterable<string> = () => [];
+  /** entity id → asset id it holds a reference on (AssetRegistry retain/release) */
+  private retained = new Map<string, string>();
+
   private inRange(e: Entity, scale = 1) {
     if (!Number.isFinite(this.radius) || !this.focus.length || e.type === 'ACTOR' || e.type === 'DOOR' || e.type === 'LIGHT' || e.metadata?.resident || e.metadata?.surface) return true;
+    for (const id of this.protect()) if (id === e.id) return true;
     const p = e.transform.position;
     return this.focus.some((f) => Math.hypot(f.x - p[0], f.z - p[2]) <= this.radius * scale);
   }
@@ -40,13 +46,20 @@ export class EntityRuntime {
     for (const e of this.doc.entities) {
       const obj = this.objects.get(e.id);
       if (!obj && this.inRange(e) && !this.pending.has(e.id) && (e.assetId || e.metadata?.procedural)) { this.spawn(e); changed = true; }
-      else if (obj && !this.external.has(e.id) && !this.inRange(e, 1.5)) { obj.removeFromParent(); this.objects.delete(e.id); changed = true; this.onRelease?.(e.id); }
+      else if (obj && !this.external.has(e.id) && !this.inRange(e, 1.5)) { this.remove(e.id, obj); changed = true; this.onRelease?.(e.id); }
     }
     this.count();
     return changed;
   }
 
   onRelease?: (id: string) => void;
+
+  private remove(id: string, obj: THREE.Object3D) {
+    obj.removeFromParent();
+    this.objects.delete(id);
+    const asset = this.retained.get(id);
+    if (asset) { this.retained.delete(id); this.registry.release(asset); }
+  }
 
   private count() {
     const d = this.doc;
@@ -64,10 +77,7 @@ export class EntityRuntime {
     this.doc = doc;
     const live = new Set(doc.entities.map((e) => e.id));
     for (const [id, obj] of this.objects) {
-      if (!live.has(id)) {
-        obj.removeFromParent();
-        this.objects.delete(id);
-      }
+      if (!live.has(id)) this.remove(id, obj);
     }
     for (const e of doc.entities) {
       const ext = this.external.get(e.id);
@@ -113,10 +123,12 @@ export class EntityRuntime {
       } else {
         const asset = await this.registry.loadGLTF(e.assetId!);
         obj = this.registry.instantiate(asset);
+        this.registry.retain(e.assetId!);
+        this.retained.set(e.id, e.assetId!);
       }
       // An async asset load must not resurrect an entity deleted while it was downloading.
       const current = this.doc.entities.find((x) => x.id === e.id);
-      if (!current || !this.inRange(current, 1.5)) return;
+      if (!current || !this.inRange(current, 1.5)) { const a = this.retained.get(e.id); if (a) { this.retained.delete(e.id); this.registry.release(a); } return; }
       e = current;
       obj.name = e.name;
       obj.userData.entityId = e.id;
@@ -165,17 +177,37 @@ function applySemanticState(obj: THREE.Object3D, e: Entity) {
   if (e.type !== 'LIGHT') return;
   const cfg = (e.metadata?.interaction ?? {}) as { enabled?: boolean; color?: string; intensity?: number; distance?: number };
   const enabled = cfg.enabled !== false;
+  // A ceiling bank (light_bank) sits at ceiling height: its light must hang below the ceiling plane so the ceiling
+  // and walls receive it, and a dim fill near the floor stands for the light the floor bounces back up. Both follow
+  // the switch, so a room with its lights off really goes dark.
+  const bank = (e.metadata?.procedural as { kind?: string } | undefined)?.kind === 'light_bank';
+  const ceilingH = (e.metadata?.procedural as { ceilingHeight?: number } | undefined)?.ceilingHeight ?? 3.1;
   let light = obj.getObjectByName('__cws_semantic_light') as THREE.PointLight | undefined;
   if (!light) {
     light = new THREE.PointLight(cfg.color ?? '#ffd7a3', cfg.intensity ?? 28, cfg.distance ?? 7, 2);
     light.name = '__cws_semantic_light';
-    light.position.set(0, 0.45, 0);
+    light.position.set(0, bank ? -0.6 : 0.45, 0);
     obj.add(light);
+    if (bank) {
+      const fill = new THREE.PointLight(cfg.color ?? '#ffd7a3', 1, cfg.distance ?? 7, 2);
+      fill.name = '__cws_semantic_fill';
+      fill.position.set(0, -ceilingH * 0.55, 0); // mid-height: no specular hotspot on the floor
+      obj.add(fill);
+    }
   }
-  light.visible = enabled;
-  light.intensity = cfg.intensity ?? 28;
+  // switching keeps the light in the scene and only zeroes its intensity: the number of lights is part of every
+  // shader's program key, so hiding it would recompile all materials (a visible hitch on each toggle)
+  light.visible = true;
+  light.intensity = enabled ? cfg.intensity ?? 28 : 0;
   light.distance = cfg.distance ?? 7;
   if (cfg.color) light.color.set(cfg.color);
+  const fill = obj.getObjectByName('__cws_semantic_fill') as THREE.PointLight | undefined;
+  if (fill) {
+    fill.visible = true;
+    fill.intensity = (cfg.intensity ?? 28) * 0.22 * (enabled ? 1 : 0);
+    fill.distance = light.distance;
+    fill.color.copy(light.color).lerp(new THREE.Color('#d8c6a8'), 0.4); // floor-tinted bounce
+  }
   obj.traverse((o) => {
     const mesh = o as THREE.Mesh;
     if (!mesh.isMesh) return;

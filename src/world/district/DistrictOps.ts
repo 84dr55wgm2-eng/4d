@@ -36,27 +36,55 @@ function ent(id: string, name: string, type: Entity['type'], assetId: string, p:
   return { id, name, type, assetId, transform: { position: p.toArray() as Vec3, rotation: quatArr(yaw), scale: [1, 1, 1] }, tags, capabilities: caps, metadata };
 }
 
+/** Real model sizes from the manifest footprints (measured with the app's loader); fallbacks are the measured values. */
+export function workstationGeometry(assets: AssetRecord[]) {
+  const fp = (id: string) => assets.find((a) => a.id === id)?.footprint;
+  const size = (id: string, def: Vec3): Vec3 => { const f = fp(id); return f ? [f.max[0] - f.min[0], f.max[1] - f.min[1], f.max[2] - f.min[2]] : def; };
+  const desk = size(WORKSTATION.desk, [1.134, 0.8, 0.706]), crt = size(WORKSTATION.monitor, [0.968, 0.493, 0.97]), chair = size(WORKSTATION.chair, [0.642, 0.88, 0.628]);
+  const deskDepth = desk[2] * DESK_DEPTH_SCALE;
+  /** distances along the user's view axis (+ = toward the wall), from the workstation point */
+  const deskBack = WALL_GAP_FROM_SLOT - 0.03;
+  const deskCentre = deskBack - deskDepth / 2;
+  const deskFront = deskBack - deskDepth;
+  return {
+    deskHeight: desk[1], deskWidth: desk[0], deskCentre,
+    // the CRT set (monitor + tower + keyboard + mouse in one model) sits with its back 2 cm from the desk's back edge
+    crtCentre: deskBack - 0.02 - crt[2] / 2,
+    // chair front tucked 8 cm under the desk edge
+    chairCentre: deskFront - chair[2] / 2 + 0.08,
+  };
+}
+/** top of a room's tiled floor in building-local metres (DistrictBuilder: 6 cm tile on the slab) */
+export const ROOM_FLOOR = 0.06;
+/** desks are stretched in depth so the CRT set (0.97 m deep with its keyboard) fits */
+const DESK_DEPTH_SCALE = 1.4;
+/** wall slots are this far from the wall lining */
+const WALL_GAP_FROM_SLOT = 0.38;
+
 /**
- * One workstation = desk + CRT + keyboard + tower + chair, with relations.
- * Local frame: (x, z) in building coordinates is the desk centre against a wall; `face` is the yaw the
+ * One workstation = desk + CRT set (monitor, tower, keyboard and mouse are one authored model — no separate
+ * keyboard is added) + chair + wall socket + power cable, with relations. Positions come from the models' real
+ * sizes. Local frame: (x, z) in building coordinates is the workstation point near a wall; `face` is the yaw the
  * seated user looks at (toward the wall / screen).
  */
 export function workstation(doc: WorldDocument, roomId: string, idx: string, x: number, z: number, face: number, assets: AssetRecord[]) {
   const { b, r } = roomOf(doc, roomId);
-  const y = r.level * b.floorHeight + 0.21; // floor slab top (front at kerb level 0.15 + tile)
+  const y = r.level * b.floorHeight + ROOM_FLOOR; // tiled floor top, building-local (the building origin is at kerb level)
   const yaw = b.yaw + face;
   const fwd = new THREE.Vector3(Math.sin(THREE.MathUtils.degToRad(face)), 0, Math.cos(THREE.MathUtils.degToRad(face)));
   const right = new THREE.Vector3(fwd.z, 0, -fwd.x);
-  const deskH = (assets.find((a) => a.id === WORKSTATION.desk)?.bounds?.[1] ?? 0.75);
+  const g = workstationGeometry(assets);
   const at = (dx: number, dy: number, dz: number) => toWorld(b, x + right.x * dx + fwd.x * dz, y + dy, z + right.z * dx + fwd.z * dz);
   const id = (k: string) => `ws.${idx}.${k}`;
-  const seat = -0.75; // chair centre behind the desk edge
+  // the tower is on the model's +x side; the CRT is turned 180° to face the user, so it ends up at −right
+  const towerSide = -0.3;
+  const wallZ = WALL_GAP_FROM_SLOT - 0.01;
+  const socketZ = wallZ - 0.02;
   const list: Entity[] = [
-    { ...ent(id('desk'), `Table du poste ${idx}`, 'FURNITURE', WORKSTATION.desk, at(0, 0, 0.1), yaw, ['selectable', 'movable', 'rotatable', 'collidable'], ['cybercafe', 'desk', 'surface'], { workstation: idx, worksurface: { height: deskH } }),
-      transform: { position: at(0, 0, 0.1).toArray() as Vec3, rotation: quatArr(yaw), scale: [1, 1, 1.4] } },
-    // one authored mesh: beige CRT monitor, tower, keyboard and mouse (screen faces the seated user)
-    ent(id('crt'), `Ordinateur ${idx}`, 'PROP', WORKSTATION.monitor, at(0, deskH, 0.12), yaw + 180, ['selectable', 'movable', 'rotatable'], ['cybercafe', 'computer', 'crt'], { workstation: idx }),
-    ent(id('chair'), `Chaise ${idx}`, 'CHAIR', WORKSTATION.chair, at(0, 0, seat), yaw, ['selectable', 'movable', 'rotatable', 'interactable', 'sittable'], ['cybercafe', 'chair'], {
+    { ...ent(id('desk'), `Table du poste ${idx}`, 'FURNITURE', WORKSTATION.desk, at(0, 0, g.deskCentre), yaw, ['selectable', 'movable', 'rotatable', 'collidable'], ['cybercafe', 'desk', 'surface'], { workstation: idx, worksurface: { height: g.deskHeight } }),
+      transform: { position: at(0, 0, g.deskCentre).toArray() as Vec3, rotation: quatArr(yaw), scale: [1, 1, DESK_DEPTH_SCALE] } },
+    ent(id('crt'), `Ordinateur ${idx}`, 'PROP', WORKSTATION.monitor, at(0, g.deskHeight, g.crtCentre), yaw + 180, ['selectable', 'movable', 'rotatable'], ['cybercafe', 'computer', 'crt'], { workstation: idx }),
+    ent(id('chair'), `Chaise ${idx}`, 'CHAIR', WORKSTATION.chair, at(0, 0, g.chairCentre), yaw, ['selectable', 'movable', 'rotatable', 'interactable', 'sittable'], ['cybercafe', 'chair'], {
       workstation: idx,
       // anchors in the chair's own frame (+z = where a seated person looks)
       interaction: { seat: [0, 0.43, -0.02], approach: [0.62, 0, -0.25], facing: 0, occupiedBy: null },
@@ -68,6 +96,16 @@ export function workstation(doc: WorldDocument, roomId: string, idx: string, x: 
     { kind: 'seatFor', from: id('chair'), to: id('desk'), data: { useYaw: yaw } },
     { kind: 'faces', from: id('chair'), to: id('crt') },
   ];
+  if (assets.some((a) => a.id === 'lagos.socket4')) {
+    // wall socket at skirting height behind the tower side, power cable from the tower down the wall to it
+    list.push(ent(id('socket'), `Prise du poste ${idx}`, 'PROP', 'lagos.socket4', at(towerSide - 0.25, 0.3, socketZ), yaw + 180, ['selectable'], ['cybercafe', 'socket', 'electric'], { workstation: idx }));
+    const pts = [[towerSide, g.deskHeight + 0.12, g.crtCentre + 0.25], [towerSide, g.deskHeight - 0.02, wallZ - 0.06], [towerSide - 0.05, 0.05, wallZ - 0.04], [towerSide - 0.2, 0.03, wallZ - 0.04], [towerSide - 0.25, 0.32, socketZ - 0.03]]
+      .map(([dx, dy, dz]) => at(dx, dy, dz).toArray() as Vec3);
+    const origin = pts[0];
+    list.push({ id: id('cable'), name: `Câble d’alimentation ${idx}`, type: 'PROP', transform: { position: origin, rotation: [0, 0, 0, 1], scale: [1, 1, 1] }, tags: ['cybercafe', 'cable'], capabilities: [],
+      metadata: { workstation: idx, procedural: { kind: 'cable', radius: 0.0045, points: pts.map((p) => [p[0] - origin[0], p[1] - origin[1], p[2] - origin[2]]) } } });
+    rel.push({ kind: 'partOf', from: id('socket'), to: id('desk') }, { kind: 'connects', from: id('cable'), to: id('socket'), data: { other: id('crt') } });
+  }
   return { entities: list, relations: rel, footprint: rectAround(x, z, fwd, right, r.rect) };
 }
 
@@ -149,7 +187,7 @@ export function enlargeRoom(doc: WorldDocument, roomId: string, metres: number) 
 }
 
 /** « Déplace cette chaise devant cet ordinateur. » — chair goes to the workstation's seat zone, facing it. */
-export function seatChairAt(doc: WorldDocument, chairId: string, targetId: string) {
+export function seatChairAt(doc: WorldDocument, chairId: string, targetId: string, assets: AssetRecord[] = []) {
   const chair = doc.entities.find((e) => e.id === chairId);
   if (!chair || !chair.capabilities.includes('sittable')) throw new Error('Choisis une chaise');
   const target = doc.entities.find((e) => e.id === targetId);
@@ -159,7 +197,8 @@ export function seatChairAt(doc: WorldDocument, chairId: string, targetId: strin
   if (!desk) throw new Error('Cet objet n’appartient à aucun poste');
   if ((chair.metadata?.interaction as { occupiedBy?: string })?.occupiedBy) throw new Error('La chaise est occupée');
   const q = new THREE.Quaternion(...desk.transform.rotation);
-  const p = new THREE.Vector3(0, 0, -0.85).applyQuaternion(q).add(new THREE.Vector3(...desk.transform.position));
+  const g = workstationGeometry(assets);
+  const p = new THREE.Vector3(0, 0, g.chairCentre - g.deskCentre).applyQuaternion(q).add(new THREE.Vector3(...desk.transform.position));
   // another chair already in that seat zone?
   const clash = doc.entities.find((e) => e.id !== chairId && e.type === 'CHAIR' && new THREE.Vector3(...e.transform.position).distanceTo(p) < 0.45);
   if (clash) {

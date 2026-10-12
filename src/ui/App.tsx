@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { AssetCategory } from '../core/types';
+import type { AssetCategory, DistrictParams, DistrictPlan } from '../core/types';
 import type { RemoteAssetResult } from '../assets/AssetRegistry';
 import { planWorld, type WorldPlan } from '../world/WorldCreator';
 import { matchesDistrictKit, planDistrict, type DistrictBriefPlan } from '../world/district/Commands';
+import { PARAM_LIMITS } from '../world/district/YabaPlan';
 import type { Studio } from '../runtime/Studio';
 import { LENSES } from '../runtime/CameraDirector';
 import { Icon, type IconName } from './icons';
@@ -154,25 +155,67 @@ function DistrictBrief({ studio, brief }: { studio: Studio; brief: string }) {
   const [plan, setPlan] = useState<DistrictBriefPlan | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  useEffect(() => { setPlan(null); }, [brief]);
-  if (!plan) return <button className="world-discover" onClick={() => { try { setPlan(planDistrict(brief, studio.registry.manifest.assets)); setError(''); } catch (e) { setError(String(e)); } }}>Préparer le plan de quartier</button>;
-  const name = (id: string) => studio.registry.manifest.assets.find((a) => a.id === id)?.name ?? id;
+  const [acceptKit, setAcceptKit] = useState(false);
+  useEffect(() => { setPlan(null); setAcceptKit(false); }, [brief]);
+  const assets = studio.registry.manifest.assets;
+  const replan = (params: DistrictParams, accept = acceptKit) => setPlan((old) => old ? { ...planDistrict(brief, assets, params, { acceptKitPlace: accept }), name: old.name, time: old.time } : old);
+  if (!plan) return <button className="world-discover" onClick={() => { try { setPlan(planDistrict(brief, assets)); setError(''); } catch (e) { setError(String(e)); } }}>Préparer le plan de quartier</button>;
+  const P = plan.params;
+  const set = (f: (p: DistrictParams) => void) => { const n = structuredClone(P); f(n); replan(n); };
+  const num = (label: string, value: number, [min, max]: readonly [number, number], step: number, f: (p: DistrictParams, v: number) => void) =>
+    <label>{label}<input type="number" min={min} max={max} step={step} value={value} onChange={(e) => set((p) => f(p, Number(e.target.value)))} /></label>;
+  const r = plan.reading;
   return <div className="world-plan">
-    <div className="pop-title">1 · Besoins de contenu</div>
-    {plan.needs.map((n) => <div key={n.label} className={n.missing ? 'world-error' : 'world-note'}>{n.missing ? '✗' : '✓'} {n.label}{n.satisfiedBy.length && n.satisfiedBy[0] !== 'district-builder' ? ` — ${n.satisfiedBy.map(name).join(', ')}` : ''}</div>)}
-    <div className="pop-title">2 · Plan spatial</div>
-    <div className="world-note">Rue de {plan.spatial.streetLength} m, {plan.spatial.buildings} bâtiments (deux fronts + fonds de rue), pièce accessible : {plan.spatial.accessibleRooms.join(', ')}. Porte vers la rue, seuil continu, navigation reconstruite à chaque modification.</div>
-    <div className="pop-title">3 · Paramètres</div>
-    <label>Nom<input value={plan.name} onChange={(e) => setPlan({ ...plan, name: e.target.value })} /></label>
-    <label>Postes informatiques<input type="number" min="2" max="8" value={plan.workstations} onChange={(e) => setPlan({ ...plan, workstations: Math.max(2, Math.min(8, Number(e.target.value))) })} /></label>
-    <label>Lumière<select value={plan.time} onChange={(e) => setPlan({ ...plan, time: e.target.value as DistrictBriefPlan['time'] })}><option value="morning">Matin</option><option value="midday">Midi</option><option value="late_afternoon">Fin d’après-midi</option><option value="dusk">Crépuscule</option></select></label>
-    {plan.missing.map((m) => <div className="world-error" key={m}>{m}</div>)}
-    <button className="world-discover" disabled={busy || plan.missing.length > 0} onClick={async () => {
+    <div className="pop-title">1 · Lecture du brief</div>
+    <div className="world-note">Lieu : {r.place ?? '— (non précisé)'}{r.place && !r.placeSupported ? ' — non couvert par le kit' : ''} · Époque : {r.era ?? '— (non précisée)'}{r.era && !r.eraSupported ? ' — hors période du kit' : ''}<br />
+      Contraintes reconnues : {r.constraints.length ? r.constraints.join(', ') : 'aucune (valeurs par défaut du kit)'}</div>
+    <div className="pop-title">2 · Besoins</div>
+    {plan.needs.map((n) => <div key={n.label} className={n.satisfied ? 'world-note' : n.required ? 'world-error' : 'world-note'}>
+      {n.satisfied ? '✓' : n.required ? '✗' : '△'} {n.label}{n.mode === 'any' ? '' : ''} : {n.items.map((i) => `${i.present ? '✓' : '✗'} ${i.label}`).join(' · ')}</div>)}
+    <div className="pop-title">3 · Plan spatial (modifiable)</div>
+    <PlanMap plan={plan.plan} />
+    <div className="param-grid">
+      {num('Longueur de rue (m)', P.street.length, PARAM_LIMITS.length, 4, (p, v) => { p.street.length = v; })}
+      {num('Chaussée (m)', P.street.carriageway, PARAM_LIMITS.carriageway, 0.5, (p, v) => { p.street.carriageway = v; })}
+      {num('Trottoirs (m)', P.street.sidewalk, PARAM_LIMITS.sidewalk, 0.2, (p, v) => { p.street.sidewalk = v; })}
+      <label>Côté du café<select value={P.cafe.side} onChange={(e) => set((p) => { p.cafe.side = e.target.value as 'south' | 'north'; })}><option value="south">Sud</option><option value="north">Nord</option></select></label>
+      <label>Position du café<input type="range" min={0} max={1} step={0.05} value={P.cafe.position} onChange={(e) => set((p) => { p.cafe.position = Number(e.target.value); })} /></label>
+      {num('Largeur du café (m)', P.cafe.width, PARAM_LIMITS.cafeWidth, 0.5, (p, v) => { p.cafe.width = v; })}
+      {num('Profondeur du café (m)', P.cafe.depth, PARAM_LIMITS.cafeDepth, 0.5, (p, v) => { p.cafe.depth = v; })}
+      {num('Postes', P.cafe.workstations, PARAM_LIMITS.workstations, 1, (p, v) => { p.cafe.workstations = v; })}
+      <label>Disposition des postes<select value={P.cafe.layout} onChange={(e) => set((p) => { p.cafe.layout = e.target.value as DistrictParams['cafe']['layout']; })}><option value="sides">Murs latéraux</option><option value="back">Mur du fond</option><option value="sides+back">Trois murs</option></select></label>
+      {num('Étages min.', P.storeys[0], PARAM_LIMITS.storeys, 1, (p, v) => { p.storeys = [v, Math.max(v, p.storeys[1])]; })}
+      {num('Étages max.', P.storeys[1], PARAM_LIMITS.storeys, 1, (p, v) => { p.storeys = [Math.min(v, p.storeys[0]), v]; })}
+      <label>Lumière<select value={plan.time} onChange={(e) => setPlan({ ...plan, time: e.target.value as DistrictBriefPlan['time'] })}><option value="morning">Matin</option><option value="midday">Midi</option><option value="late_afternoon">Fin d’après-midi</option><option value="dusk">Crépuscule</option></select></label>
+      <label>Nom<input value={plan.name} onChange={(e) => setPlan({ ...plan, name: e.target.value })} /></label>
+    </div>
+    <div className="world-note">{plan.spatial.buildings} bâtiments, rue de {plan.spatial.streetLength} m. Chaque réglage régénère le plan (géométrie, collisions et navigation viennent de ce même plan).</div>
+    {plan.blockers.map((m) => <div className="world-error" key={m}>{m}</div>)}
+    {!r.placeSupported && <label className="world-note"><input type="checkbox" checked={acceptKit} onChange={(e) => { setAcceptKit(e.target.checked); replan(P, e.target.checked); }} /> Composer quand même une rue de Lagos (le monde restera nommé et décrit comme Lagos)</label>}
+    {plan.missing.map((m) => <div className="world-note" key={m}>△ {m}</div>)}
+    <button className="world-discover" disabled={busy || plan.blockers.length > 0} onClick={async () => {
       setBusy(true); setError('');
       try { await studio.createDistrictWorld(plan); } catch (e) { setError(e instanceof Error ? e.message : String(e)); setBusy(false); }
-    }}>{busy ? 'Composition, assets et navigation…' : plan.missing.length ? 'Contenu manquant pour ce brief' : 'Composer et ouvrir ce quartier'}</button>
+    }}>{busy ? 'Composition et navigation…' : plan.blockers.length ? 'Brief non composable tel quel' : 'Composer et ouvrir ce quartier'}</button>
     {error && <div className="world-error" role="alert">{error}</div>}
   </div>;
+}
+
+/** Top view of a district plan: street, buildings, the café and its room (updates with every parameter). */
+function PlanMap({ plan }: { plan: DistrictPlan }) {
+  const L = plan.street.length + 20, fz = plan.street.carriageway / 2 + 0.7 + plan.street.sidewalk, H = 2 * (fz + 17);
+  const rect = (b: DistrictPlan['buildings'][number]) => {
+    const r = (b.yaw * Math.PI) / 180, c = Math.cos(r), s = Math.sin(r);
+    const pts = [[-b.width / 2, 0], [b.width / 2, 0], [b.width / 2, -b.depth], [-b.width / 2, -b.depth]].map(([x, z]) => [b.front[0] + x * c + z * s, b.front[2] - x * s + z * c]);
+    return pts.map((p) => p.join(',')).join(' ');
+  };
+  // world +z is north: flip vertically so north is up on the map
+  return <svg className="plan-map" viewBox={`${-L / 2} ${-H / 2} ${L} ${H}`} role="img" aria-label="Plan du quartier vu du dessus (nord en haut)"><g transform="scale(1,-1)">
+    <rect x={-plan.street.length / 2} y={-plan.street.carriageway / 2} width={plan.street.length} height={plan.street.carriageway} fill="#4a4d55" />
+    <rect x={-plan.street.length / 2} y={-fz} width={plan.street.length} height={fz - plan.street.carriageway / 2} fill="#9c8a74" opacity={0.6} />
+    <rect x={-plan.street.length / 2} y={plan.street.carriageway / 2} width={plan.street.length} height={fz - plan.street.carriageway / 2} fill="#9c8a74" opacity={0.6} />
+    {plan.buildings.map((b) => <polygon key={b.id} points={rect(b)} fill={b.rooms.length ? '#e9c46a' : '#d9d4c7'} stroke="#333" strokeWidth={0.15} />)}
+  </g><text x={L / 2 - 4} y={-H / 2 + 5} fontSize={4} fill="#ddd">N ↑</text></svg>;
 }
 
 function WorldBrief({ studio }: { studio: Studio }) {
@@ -184,7 +227,7 @@ function WorldBrief({ studio }: { studio: Studio }) {
   return <div className="world-brief">
     <textarea value={brief} onChange={(e) => { setBrief(e.target.value); setPlan(null); }} aria-label="Décrire le nouveau monde" />
     {matchesDistrictKit(brief) ? <DistrictBrief studio={studio} brief={brief} /> : <>
-    <div className="world-note">Hors du kit Yaba 2003, ce mode assemble le kit Bistro (rues et cours européennes).</div>
+    <div className="world-note">Sans cybercafé ni rue de Lagos dans le brief, ce mode assemble le kit Bistro (rues et cours européennes, sans intérieur accessible).</div>
     <button className="world-discover" disabled={busy || brief.trim().length < 3} onClick={() => {
       try { setPlan(planWorld(brief, studio.registry.manifest.assets)); setError(''); } catch (e) { setError(String(e)); }
     }}>Préparer le plan</button>
@@ -558,17 +601,25 @@ function SequencePanel({ studio }: { studio: Studio }) {
   const seq = seqs.find((x) => x.id === id) ?? seqs.at(-1) ?? null;
   const shotName = (sid: string) => sid === 'follow' ? 'Suivi (3e personne)' : studio.store.doc.shots.find((x) => x.id === sid)?.name ?? '—';
   const dur = seq?.timing?.duration ?? 0;
+  const stale = seq ? studio.sequences.isStale(seq) : false;
+  const targets = studio.ops.beatTargets();
   const run = async (label: string, f: () => Promise<{ ok: boolean; error?: string } | unknown>) => {
     setBusy(label); setMsg('');
     try { const r = await f() as { ok?: boolean; error?: string }; if (r && r.ok === false) setMsg(r.error ?? 'Échec'); } finally { setBusy(''); }
+  };
+  const report = (r: { ok: boolean; error?: string }) => { setMsg(r.ok ? '' : r.error ?? 'Échec'); };
+  const labelFor = (target: string, action?: string) => {
+    const t = targets.find((x) => x.id === target);
+    return `${t?.actions.find((a) => a.id === action)?.label ?? 'Agir'} — ${t?.name ?? target}`;
   };
   return <aside className="glass sequence" aria-label="Séquence">
     <div className="seq-head">
       <strong>Séquence</strong>
       {seqs.length > 0 && <select value={seq?.id} onChange={(e) => setId(e.target.value)} aria-label="Séquence">{seqs.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</select>}
-      <button className="row-btn" disabled={!!busy} onClick={() => run('Création et répétition…', async () => { const r = await studio.ops.createReferenceSequence(); if (r.ok) setId(r.value); return r; })}>Créer la scène de référence</button>
+      <button className="row-btn" disabled={!!busy} onClick={() => { const r = studio.ops.createSequence(); if (r.ok) setId(r.value); report(r); }}>Nouvelle</button>
+      <button className="row-btn" disabled={!!busy} onClick={() => run('Création et répétition…', async () => { const r = await studio.ops.createReferenceSequence(); if (r.ok) setId(r.value); return r; })}>Scène de référence</button>
     </div>
-    {!seq && <div className="world-note">Crée la scène « marche vers le cybercafé, ouvre la porte, entre, rejoint un poste et s’assoit ». Les plans sont enregistrés et la séquence est répétée pour mesurer son minutage.</div>}
+    {!seq && <div className="world-note">« Scène de référence » crée : marche vers le cybercafé, ouvre la porte, entre, rejoint un poste et s’assoit — avec trois plans. « Nouvelle » part de l’état actuel du monde ; ajoute ensuite tes actions et tes plans.</div>}
     {seq && <>
       <div className="timeline" aria-label="Chronologie">
         {seq.beats.map((b, i) => { const t0 = seq.timing?.beatStarts[i] ?? 0, t1 = seq.timing?.beatStarts[i + 1] ?? dur; return <div key={b.id} className={`beat ${tick.playing && tick.beat === i ? 'on' : ''}`} style={{ left: `${(100 * t0) / (dur || 1)}%`, width: `${(100 * (t1 - t0)) / (dur || 1)}%` }} title={b.label}>{b.label}</div>; })}
@@ -579,21 +630,60 @@ function SequencePanel({ studio }: { studio: Studio }) {
         onChange={(e) => { const t = Number(e.target.value); setTick({ ...tick, time: t }); }}
         onPointerUp={(e) => run('Positionnement…', () => studio.ops.seekSequence(seq.id, Number((e.target as HTMLInputElement).value)))} />
       <div className="seq-controls">
-        {tick.playing ? <button className="row-btn" onClick={() => studio.ops.stopSequence()}>■ Arrêter</button> : <button className="row-btn" disabled={!!busy} onClick={() => studio.ops.playSequence(seq.id)}>▶ Lire</button>}
+        {tick.playing ? <button className="row-btn" onClick={() => studio.ops.stopSequence()}>■ Arrêter</button> : <button className="row-btn" disabled={!!busy} onClick={() => run(stale ? 'Répétition puis lecture…' : 'Lecture…', () => studio.ops.playSequence(seq.id))}>▶ Lire</button>}
         <span className="mono">{tick.time.toFixed(1)} / {dur.toFixed(1)} s</span>
         <button className="row-btn" disabled={!!busy} onClick={() => run('Répétition…', () => studio.ops.rehearseSequence(seq.id))}>Re-minuter</button>
         <button className="row-btn" disabled={!!busy} onClick={() => run('Export vidéo…', async () => { setVideo(null); const r = await studio.ops.exportSequence(seq.id, (f) => setBusy(`Export vidéo… ${Math.round(f * 100)} %`)); if (r.ok) setVideo(r.value); return r; })}>Exporter la vidéo</button>
         {video && <a className="row-btn" href={video.url} download={video.filename}>Télécharger ({(video.bytes / 1e6).toFixed(1)} Mo)</a>}
       </div>
+      {stale && <div className="world-note" role="status">Minutage à refaire : le décor ou les actions ont changé. Il sera refait automatiquement avant la lecture ou l’export.</div>}
+
+      <div className="pop-title">Actions</div>
+      <div className="beats">{seq.beats.map((b, i) => <div key={b.id} className="beat-row">
+        <span className="mono">{i + 1}</span>
+        <select value={b.kind} aria-label="Type d’action" onChange={(e) => {
+          const kind = e.target.value as 'wait' | 'interact';
+          const t = targets[0];
+          report(kind === 'wait' ? studio.ops.updateBeat(seq.id, b.id, { kind, seconds: b.seconds ?? 2, label: 'Pause', target: undefined, action: undefined })
+            : studio.ops.updateBeat(seq.id, b.id, { kind, target: t?.id, action: t?.actions[0]?.id, label: t ? labelFor(t.id, t.actions[0]?.id) : 'Agir' }));
+        }}>
+          <option value="interact">Agir sur…</option><option value="wait">Pause</option>
+          {b.kind !== 'interact' && b.kind !== 'wait' && <option value={b.kind}>{b.kind === 'moveTo' ? 'Marcher' : 'Se tourner'}</option>}
+        </select>
+        {b.kind === 'interact' && <>
+          <select value={b.target} aria-label="Cible" onChange={(e) => { const t = targets.find((x) => x.id === e.target.value); report(studio.ops.updateBeat(seq.id, b.id, { target: e.target.value, action: t?.actions[0]?.id, label: labelFor(e.target.value, t?.actions[0]?.id) })); }}>
+            {targets.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+          </select>
+          <select value={b.action} aria-label="Action" onChange={(e) => report(studio.ops.updateBeat(seq.id, b.id, { action: e.target.value, label: labelFor(b.target!, e.target.value) }))}>
+            {(targets.find((t) => t.id === b.target)?.actions ?? []).map((a) => <option key={a.id} value={a.id}>{a.label}</option>)}
+          </select>
+        </>}
+        {b.kind === 'wait' && <label><input type="number" min={0.2} max={60} step={0.5} value={b.seconds ?? 1} aria-label="Durée en secondes" onChange={(e) => report(studio.ops.updateBeat(seq.id, b.id, { seconds: Number(e.target.value), label: `Pause ${Number(e.target.value)} s` }))} /> s</label>}
+        <span className="beat-tools">
+          <button className="icon-mini" disabled={i === 0} aria-label="Monter" onClick={() => report(studio.ops.moveBeat(seq.id, b.id, -1))}>↑</button>
+          <button className="icon-mini" disabled={i === seq.beats.length - 1} aria-label="Descendre" onClick={() => report(studio.ops.moveBeat(seq.id, b.id, 1))}>↓</button>
+          <button className="icon-mini" disabled={seq.beats.length === 1} aria-label="Supprimer l’action" onClick={() => report(studio.ops.removeBeat(seq.id, b.id))}>✕</button>
+        </span>
+      </div>)}</div>
+      <div className="seq-controls">
+        <button className="row-btn" onClick={() => { const t = targets[0]; if (!t) return setMsg('Aucun objet interactif dans ce monde'); report(studio.ops.addBeat(seq.id, { kind: 'interact', target: t.id, action: t.actions[0]?.id, label: labelFor(t.id, t.actions[0]?.id) })); }}>+ Action</button>
+        <button className="row-btn" onClick={() => report(studio.ops.addBeat(seq.id, { kind: 'wait', seconds: 2, label: 'Pause 2 s' }))}>+ Pause</button>
+      </div>
+
+      <div className="pop-title">Plans</div>
       <div className="cuts">{seq.cuts.map((c) => <div key={c.id} className="cut-row">
-        <select value={c.shotId} onChange={(e) => studio.ops.setCut(seq.id, c.id, { shotId: e.target.value })} aria-label="Cadrage">
+        <select value={c.shotId} onChange={(e) => report(studio.ops.setCut(seq.id, c.id, { shotId: e.target.value }))} aria-label="Cadrage">
           <option value="follow">Suivi (3e personne)</option>
           {studio.store.doc.shots.map((s2) => <option key={s2.id} value={s2.id}>{s2.name}</option>)}
         </select>
-        <select value={c.beat} onChange={(e) => studio.ops.setCut(seq.id, c.id, { beat: Number(e.target.value) })} aria-label="Action d’ancrage">{seq.beats.map((b, i) => <option key={b.id} value={i}>{b.label}</option>)}</select>
-        <label>+<input type="number" step={0.5} value={c.offset} onChange={(e) => studio.ops.setCut(seq.id, c.id, { offset: Number(e.target.value) })} aria-label="Décalage en secondes" />s</label>
+        <select value={c.beat} onChange={(e) => report(studio.ops.setCut(seq.id, c.id, { beat: Number(e.target.value) }))} aria-label="Action d’ancrage">{seq.beats.map((b, i) => <option key={b.id} value={i}>{i + 1}. {b.label}</option>)}</select>
+        <label>+<input type="number" step={0.5} value={c.offset} onChange={(e) => report(studio.ops.setCut(seq.id, c.id, { offset: Number(e.target.value) }))} aria-label="Décalage en secondes" />s</label>
+        <button className="icon-mini" disabled={seq.cuts.length === 1} aria-label="Retirer le plan" onClick={() => report(studio.ops.removeCut(seq.id, c.id))}>✕</button>
       </div>)}</div>
-      {<div className="world-note">Les plans sont ancrés sur les actions : si une action dure plus longtemps, le plan suit. « Re-minuter » après une modification du décor.</div>}
+      <div className="seq-controls">
+        <button className="row-btn" onClick={() => report(studio.ops.addCut(seq.id, studio.store.doc.shots.at(-1)?.id ?? 'follow', Math.max(0, seq.beats.length - 1), 0))}>+ Plan (dernier cadrage enregistré)</button>
+      </div>
+      <div className="world-note">Les plans sont ancrés sur les actions : si une action dure plus longtemps, le plan suit. Enregistre un cadrage avec « Save shot » puis ajoute-le ici.</div>
     </>}
     {busy && <div className="world-note" role="status">{busy}</div>}
     {msg && <div className="world-error" role="alert">{msg}</div>}

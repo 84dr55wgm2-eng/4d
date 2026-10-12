@@ -88,6 +88,9 @@ export class InteractionSystem {
     return { ok: true, action: chosen.id };
   }
 
+  /** Abandon the action in progress (its approach walk is cancelled by the caller via actor.cancelPath). */
+  cancel() { this.active++; }
+
   /** Apply a door/light state change directly (editing / sequence restore) — no approach walk. */
   applyState(id: string, action: 'open' | 'close' | 'toggle', enabled?: boolean) {
     const current = this.studio.store.entity(id);

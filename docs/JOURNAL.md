@@ -27,3 +27,25 @@
 - **Touch check (390×844, emulated touch, Chromium):** tap actor → tap ground walks with follow camera; tap door →
   « Ouvrir » walks to the door and opens it (« Fermer » offered after); world menu and sequence panel fit without
   horizontal scroll; on narrow screens the inspector hides while the sequence panel is open. Not a device test.
+
+## 2026-10-12 — pass 3 (camera, causes, content, parametric creator, sequences, loading)
+- **Follow camera:** one framing function for live follow and reset (`snapFollow`); exterior profile 5.4 m / 35 mm,
+  interior 3.6 m / 24 mm higher; yaw candidates probed now and 0.6 s ahead, room rectangle respected, segment
+  look→camera re-checked after interpolation. Pinch/wheel became a zoom factor on the automatic distance.
+- **Real causes fixed:** room ceiling/dado planes had 0–1 UVs under metre tiling (now metre UVs); the café light hung
+  0.45 m *above* its ceiling plane (it lit the back face); the global IBL lit interiors like the street. Interiors now
+  have their own painted lining cut around openings and a reduced sky share (`INTERIOR_ENV`); the emissive ceiling
+  patch was removed. Lights switch by intensity (hiding a light recompiled every shader: 5.5 s in software GL).
+- **Furniture height bug:** workstations and counter were 15 cm above the tiled floor (floor offset added twice).
+  Positions now come from measured footprints (desk, CRT set incl. keyboard/mouse, chair).
+- **Signs:** awnings moved above the shutter box; boards hang on the balcony front or above the awnings; canvas text
+  is measured, wrapped, fitted to width and height; weathering is seeded.
+- **Shops:** goods boxes replaced by Poly Haven CC0 shelving + goods chosen by trade; shelf levels measured on the
+  model; everything instanced (≈30 draw calls for all stocked shops), dressed only near the camera once ready.
+- **Creator:** `districtPlan(params)` generates the street; brief reading keeps place/era/constraints, refuses to
+  relabel another city, reads « marché » vs « marche vers » in context; capacity measured by trial composition.
+- **Sequences:** stop cancels the walk/approach/waits; seek/export report failures; stale timing detected by key;
+  held objects in the start state; actions editable (add/remove/reorder/retarget/re-time), cuts follow their action.
+- **Loading:** obstacles from manifest footprints (routes independent of streaming); instance refcounts and
+  eviction of unused models; protected ids (interaction target, held objects, sequence targets).
+- Published Yaba package carries `revision`; an older saved copy is kept as « … (avant mise à jour) ».

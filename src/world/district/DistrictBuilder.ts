@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import type { BuildingSpec, DistrictPlan, Opening } from '../../core/types';
+import type { BuildingSpec, DistrictPlan, Opening, Trade } from '../../core/types';
 import type { MaterialLibrary } from './Materials';
 
 /**
@@ -14,15 +14,22 @@ export interface DistrictBuild {
   render: THREE.Group;
   collide: THREE.BufferGeometry;
   navigate: THREE.BufferGeometry;
+  /** shop recesses (world matrix at the floor/front-centre of the recess, +Z toward the street) for dressing */
+  shops: { id: string; buildingId: string; trade: Trade; matrix: THREE.Matrix4; width: number; depth: number; height: number }[];
   /** interior rooms in world space, for relations and the creator */
   rooms: { id: string; buildingId: string; name: string; kind: string; corners: THREE.Vector3[]; floorY: number; ceilingY: number; tubes: THREE.Vector3[]; yaw: number; door?: { position: THREE.Vector3; yaw: number; width: number } }[];
 }
 
 type Sink = { add(mat: string, g: THREE.BufferGeometry): void };
 const NAV_TOP = 2.4;
+/** top of a room's tiled floor (building-local) */
+const ROOM_FLOOR_LOCAL = 0.06;
+/** awning sheet centre above its opening (above the roll-up shutter box) and its wall edge (14° over 1.5 m) */
+const AWNING_Y = 0.36;
+const AWNING_RISE = AWNING_Y + 0.75 * Math.sin(THREE.MathUtils.degToRad(14)) + 0.03;
 
 // ---------------------------------------------------------------- primitives with metre UVs
-function metricBox(w: number, h: number, d: number) {
+export function metricBox(w: number, h: number, d: number) {
   const g = new THREE.BoxGeometry(w, h, d);
   const uv = g.getAttribute('uv') as THREE.BufferAttribute;
   // face order: px nx py ny pz nz, 4 vertices each
@@ -35,6 +42,14 @@ function metricBox(w: number, h: number, d: number) {
 }
 
 /** Wall panel in local XY (x along wall, y up), outer face at z=0, thickness toward -z. */
+/** Plane with UVs in metres (textured architecture). Signs keep PlaneGeometry's 0–1 UVs on purpose. */
+export function metricPlane(w: number, h: number) {
+  const g = new THREE.PlaneGeometry(w, h);
+  const uv = g.getAttribute('uv') as THREE.BufferAttribute;
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * w, uv.getY(i) * h);
+  return g;
+}
+
 function wallPanel(width: number, height: number, thick: number, holes: { x0: number; y0: number; x1: number; y1: number }[]) {
   const s = new THREE.Shape([new THREE.Vector2(0, 0), new THREE.Vector2(width, 0), new THREE.Vector2(width, height), new THREE.Vector2(0, height)]);
   for (const h of holes) {
@@ -74,7 +89,7 @@ export function buildDistrict(plan: DistrictPlan, mats: MaterialLibrary): Distri
   const collide: THREE.BufferGeometry[] = [];
   const navigate: THREE.BufferGeometry[] = [];
   const sink: Sink = { add: (m, g) => { let a = byMat.get(m); if (!a) byMat.set(m, (a = [])); a.push(g); } };
-  const out: DistrictBuild = { render: new THREE.Group(), collide: null!, navigate: null!, rooms: [] };
+  const out: DistrictBuild = { render: new THREE.Group(), collide: null!, navigate: null!, rooms: [], shops: [] };
   out.render.name = 'district';
 
   buildStreet(plan, sink, collide, navigate);
@@ -157,11 +172,11 @@ function buildStreet(plan: DistrictPlan, sink: Sink, collide: THREE.BufferGeomet
   for (const p of poles) for (const side of [-1, 1]) {
     // service drop across the street and to the near facade
     const from = new THREE.Vector3(p[0], p[1] + 6.9, p[2]);
-    const to = new THREE.Vector3(p[0] + side * 2.5, 5.2, side === 1 ? 7.45 : -7.45);
+    const to = new THREE.Vector3(p[0] + side * 2.5, 5.2, side * (half + dw + sw + 0.05));
     sag(from, to, 0.35, 0.009);
   }
   // back-lots ground so the scene never ends in a void behind buildings
-  const back = metricBox(L + 30, 0.1, 50); back.translate(0, -0.1, 0);
+  const back = metricBox(L + 30, 0.1, Math.max(50, 2 * (half + dw + sw + 22))); back.translate(0, -0.1, 0);
   sink.add('laterite', back);
 }
 
@@ -195,7 +210,9 @@ function buildBuilding(b: BuildingSpec, sink: Sink, collide: THREE.BufferGeometr
       const g = wallPanel(w.len, FH, T, holes);
       g.applyMatrix4(new THREE.Matrix4().makeTranslation(0, y0, 0).multiply(w.m));
       add(f === 0 ? paint : paint, g, { collide: true, nav: f === 0 });
-      for (const o of ops) buildOpening(o, w.len, y0, w.m, b, add, accessible.size > 0);
+      const shop = (local: THREE.Matrix4, o: Opening, depth: number) =>
+        out.shops.push({ id: `${b.id}.${o.id}`, buildingId: b.id, trade: (o.trade ?? 'general') as Trade, matrix: local.clone().premultiply(M), width: o.width, depth, height: o.height });
+      for (const o of ops) buildOpening(o, w.len, y0, w.m, b, add, accessible.size > 0, shop);
     }
     // floor slab edge (drip band) + slab
     const slab = metricBox(W + 0.24, 0.24, D + 0.24); slab.translate(0, y0 + FH - 0.02 + 0.12 - 0.12, -D / 2);
@@ -235,34 +252,43 @@ function buildBuilding(b: BuildingSpec, sink: Sink, collide: THREE.BufferGeometr
     for (let x = -bw / 2 + 0.1; x <= bw / 2 - 0.1; x += 0.22) { const p = metricBox(0.07, 0.84, 0.07); p.translate(x, y0 + 0.58, bd - 0.05); add('concrete', p); }
     for (const sx of [-1, 1]) { const r = metricBox(0.1, 0.08, bd); r.translate(sx * (bw / 2 - 0.05), y0 + 1.0, bd / 2); add(paint, r); }
   }
-  // signs
+  // signs: a board hangs on the balcony front when there is one (as on many Yaba shop-houses), otherwise it
+  // sits on the wall above the awnings; it never overlaps the shopfronts, shutters or awnings below it
+  const openTop = Math.max(2.25, ...b.openings.filter((o) => o.level === 0 && o.wall === 'front').map((o) => (o.kind === 'window' ? (o.sill ?? 0.9) : 0) + o.height));
+  const balcony = b.style.balcony && b.floors > 1 ? { bw: Math.min(W - 1.2, 6), bd: 1.1 } : null;
   for (const s of b.signs) {
-    const y = s.level * FH + (s.level === 0 ? FH - 0.15 : FH * 0.55);
     if (s.kind === 'blade') {
-      const g = metricBox(0.06, 0.9, 1.4); g.translate(W / 2 - 0.4, y - 0.4, 0.75);
+      const g = metricBox(0.06, 0.9, 1.4); g.translate(W / 2 - 0.4, openTop + AWNING_RISE + 0.55, 0.75);
       add(`sign|${s.text}|${s.sub ?? ''}|${s.colors[0]}|${s.colors[1]}|1.56`, g);
       continue;
     }
-    const sw = Math.min(W - 0.6, 7), sh = s.kind === 'painted' ? 0.9 : 1.1;
-    const g = new THREE.PlaneGeometry(sw, sh); g.translate(0, y - sh / 2, s.kind === 'painted' ? 0.012 : 0.09);
+    let sw: number, sh: number, bottom: number, z: number;
+    if (s.level === 0 && s.kind === 'board' && balcony) {
+      sw = balcony.bw - 0.1; sh = 0.86; bottom = FH + 0.16; z = balcony.bd + 0.07;
+    } else if (s.level === 0) {
+      sw = Math.min(W - 0.6, 7); bottom = openTop + AWNING_RISE + 0.1; sh = Math.min(1.1, FH + 0.85 - bottom); z = s.kind === 'painted' ? 0.012 : 0.09;
+    } else {
+      sw = Math.min(W - 0.6, 7); sh = 0.9; bottom = s.level * FH + FH * 0.55 - sh; z = 0.012;
+    }
+    const g = new THREE.PlaneGeometry(sw, sh); g.translate(0, bottom + sh / 2, z);
     add(`sign|${s.text}|${s.sub ?? ''}|${s.colors[0]}|${s.colors[1]}|${(sw / sh).toFixed(2)}`, g);
-    if (s.kind === 'board') { const back = metricBox(sw + 0.08, sh + 0.08, 0.06); back.translate(0, y - sh / 2, 0.05); add('steel_painted', back); }
+    if (s.kind === 'board') { const back = metricBox(sw + 0.08, sh + 0.08, 0.06); back.translate(0, bottom + sh / 2, z - 0.04); add('steel_painted', back); }
   }
   // AC unit on a side of the upper floor + satellite dish on the parapet
   if (b.floors > 1) {
     const ac = metricBox(0.8, 0.55, 0.32); ac.translate(-W / 2 + 0.9, FH + 0.8, 0.18); add('ac_unit', ac);
-    const dish = new THREE.SphereGeometry(0.45, 18, 8, 0, Math.PI * 2, 0, 0.6); dish.rotateX(-Math.PI / 2.4); dish.translate(-W / 2 + 0.8, H + 1.3, -0.3); add('steel_painted', dish);
+    const dish = new THREE.SphereGeometry(0.45, 18, 8, 0, Math.PI * 2, 0, 0.6); scaleUV(dish, Math.PI * 2 * 0.45, 0.6 * 0.45); dish.rotateX(-Math.PI / 2.4); dish.translate(-W / 2 + 0.8, H + 1.3, -0.3); add('steel_painted', dish);
   }
 
   // rooms: interior lining, tiled floor, ceiling, fixtures, light
   for (const r of b.rooms) {
     const [x0, z0, x1, z1] = r.rect, y0 = r.level * FH;
     const floor = metricBox(x1 - x0, 0.06, z1 - z0); floor.translate((x0 + x1) / 2, y0 + 0.03, (z0 + z1) / 2); add('floor_tile', floor, { nav: true, collide: true });
-    const ceil = new THREE.PlaneGeometry(x1 - x0, z1 - z0); ceil.rotateX(Math.PI / 2); ceil.translate((x0 + x1) / 2, y0 + FH - 0.25, (z0 + z1) / 2); add('ceiling', ceil);
+    const ceil = metricPlane(x1 - x0, z1 - z0); ceil.rotateX(Math.PI / 2); ceil.translate((x0 + x1) / 2, y0 + FH - 0.25, (z0 + z1) / 2); add('ceiling', ceil);
     const lining: [number, number, number, number, number][] = [[x0, z1, x1, z1, Math.PI], [x0, z0, x1, z0, 0], [x0, z0, x0, z1, Math.PI / 2], [x1, z0, x1, z1, -Math.PI / 2]];
     for (const [ax, az, bx, bz, ry] of lining) {
       const len = Math.hypot(bx - ax, bz - az);
-      const lower = new THREE.PlaneGeometry(len, 1.1); lower.translate(0, 0.55 + y0 + 0.06, 0); lower.rotateY(ry); lower.translate((ax + bx) / 2 + Math.sin(ry) * 0.012, 0, (az + bz) / 2 + Math.cos(ry) * 0.012);
+      const lower = metricPlane(len, 1.1); lower.translate(0, 0.55 + y0 + 0.06, 0); lower.rotateY(ry); lower.translate((ax + bx) / 2 + Math.sin(ry) * 0.012, 0, (az + bz) / 2 + Math.cos(ry) * 0.012);
       // the front lining would cover the door; interior dado only on side/back walls
       if (az === z1 && bz === z1) { lower.dispose(); continue; }
       add('interior_dado', lower);
@@ -282,6 +308,42 @@ function buildBuilding(b: BuildingSpec, sink: Sink, collide: THREE.BufferGeometr
         add(`sign|${text}|${sub}|${c0}|${c1}|${(w / h).toFixed(2)}`, g);
       }
     }
+    // painted interior lining above the dado (and full height on the front wall), with the openings cut out: the
+    // room has its own paint and its own (reduced) sky light, independent from the facade
+    const T2 = 0.012;
+    const wallOps = (side: Opening['wall']) => b.openings.filter((o) => o.wall === side && o.level === r.level);
+    const holesFor = (side: Opening['wall']): [number, number, number, number][] => wallOps(side).map((o) => {
+      const sill = o.kind === 'window' ? (o.sill ?? 0.9) : 0;
+      // opening centre along the room wall, in building coordinates (x for front/back, z for left/right)
+      const c = side === 'front' ? o.offset : side === 'back' ? -o.offset : side === 'left' ? o.offset - D / 2 : -(o.offset + D / 2);
+      return [c - o.width / 2, c + o.width / 2, sill, sill + o.height];
+    });
+    const touches = { front: Math.abs(z1 + 0.25) < 0.05, back: Math.abs(z0 + D - 0.25) < 0.05, left: Math.abs(x0 + W / 2 - 0.25) < 0.05, right: Math.abs(x1 - W / 2 + 0.25) < 0.05 };
+    const lineWall = (side: Opening['wall'], v0: number) => {
+      const along = side === 'front' || side === 'back' ? [x0, x1] : [z0, z1];
+      const holes = touches[side] ? holesFor(side) : [];
+      const top = FH - 0.25, a0 = along[0], a1 = along[1];
+      const cut = holes.map(([u0, u1, h0, h1]) => [Math.max(a0 + 0.02, u0), Math.min(a1 - 0.02, u1), h0, Math.min(top - 0.02, h1)] as const).filter(([u0, u1, , h1]) => u1 > u0 && h1 > v0);
+      // openings reaching the bottom edge (doors) are notches in the outline, the others are holes
+      const notches = cut.filter(([, , h0]) => h0 <= v0 + 0.01).sort((p, q) => p[0] - q[0]);
+      const outline: THREE.Vector2[] = [new THREE.Vector2(a0, v0)];
+      for (const [u0, u1, , h1] of notches) outline.push(new THREE.Vector2(u0, v0), new THREE.Vector2(u0, h1), new THREE.Vector2(u1, h1), new THREE.Vector2(u1, v0));
+      outline.push(new THREE.Vector2(a1, v0), new THREE.Vector2(a1, top), new THREE.Vector2(a0, top));
+      const sh = new THREE.Shape(outline);
+      for (const [u0, u1, h0, h1] of cut) if (h0 > v0 + 0.01) sh.holes.push(new THREE.Path([new THREE.Vector2(u0, h0), new THREE.Vector2(u0, h1), new THREE.Vector2(u1, h1), new THREE.Vector2(u1, h0)]));
+      const g = new THREE.ShapeGeometry(sh);
+      const pos = g.getAttribute('position') as THREE.BufferAttribute;
+      for (let i = 0; i < pos.count; i++) {
+        const u = pos.getX(i), v = pos.getY(i) + y0;
+        if (side === 'front') pos.setXYZ(i, u, v, z1 - T2); else if (side === 'back') pos.setXYZ(i, u, v, z0 + T2);
+        else if (side === 'left') pos.setXYZ(i, x0 + T2, v, u); else pos.setXYZ(i, x1 - T2, v, u);
+      }
+      // ShapeGeometry faces +Z in (u, v): flip the winding where that would face out of the room
+      if (side === 'front' || side === 'left') { const idx = g.getIndex()!; for (let i = 0; i < idx.count; i += 3) { const a = idx.getX(i + 1); idx.setX(i + 1, idx.getX(i + 2)); idx.setX(i + 2, a); } }
+      add('interior_paint', g);
+    };
+    lineWall('front', ROOM_FLOOR_LOCAL);
+    lineWall('back', ROOM_FLOOR_LOCAL + 1.1); lineWall('left', ROOM_FLOOR_LOCAL + 1.1); lineWall('right', ROOM_FLOOR_LOCAL + 1.1);
     // fluorescent tubes on the ceiling, real light is runtime-owned (toggle)
     const tubes: THREE.Vector3[] = [];
     for (let x = x0 + 1.5; x < x1 - 0.8; x += 2.6) for (let z = z0 + 1.6; z < z1 - 0.8; z += 2.8) tubes.push(new THREE.Vector3(x, y0 + FH - 0.29, z));
@@ -300,7 +362,8 @@ function buildBuilding(b: BuildingSpec, sink: Sink, collide: THREE.BufferGeometr
 }
 
 /** Openings: frames, shutters, louvres, burglar bars, awnings, recessed shop interiors. */
-function buildOpening(o: Opening, wallLen: number, y0: number, wm: THREE.Matrix4, b: BuildingSpec, add: (m: string, g: THREE.BufferGeometry, o?: { collide?: boolean; nav?: boolean }) => void, hasRooms: boolean) {
+function buildOpening(o: Opening, wallLen: number, y0: number, wm: THREE.Matrix4, b: BuildingSpec, add: (m: string, g: THREE.BufferGeometry, o?: { collide?: boolean; nav?: boolean }) => void, hasRooms: boolean,
+  shop?: (local: THREE.Matrix4, o: Opening, depth: number) => void) {
   const cx = o.offset + wallLen / 2;
   const put = (mat: string, g: THREE.BufferGeometry, opts?: { collide?: boolean; nav?: boolean }) => { g.applyMatrix4(new THREE.Matrix4().makeTranslation(0, y0, 0).multiply(wm)); add(mat, g, opts); };
   const sill = o.kind === 'window' ? (o.sill ?? 0.9) : 0;
@@ -323,10 +386,11 @@ function buildOpening(o: Opening, wallLen: number, y0: number, wm: THREE.Matrix4
         put('glass_louvre', blade);
       }
     } else {
-      const pane = new THREE.PlaneGeometry(o.width - 0.14, o.height - 0.14); pane.translate(cx, sill + o.height / 2, -0.1); put('glass_louvre', pane);
+      const pane = metricPlane(o.width - 0.14, o.height - 0.14); pane.translate(cx, sill + o.height / 2, -0.1); put('glass_louvre', pane);
     }
     // dark interior behind glass so windows read as rooms, not holes into the sky
-    const back = new THREE.PlaneGeometry(o.width, o.height); back.translate(cx, sill + o.height / 2, -0.6); put('interior_dark', back);
+    // dark backing so windows of closed buildings read as rooms; an accessible room shows its real interior instead
+    if (!(hasRooms && b.rooms.some((r) => r.level === o.level))) { const back = new THREE.PlaneGeometry(o.width, o.height); back.translate(cx, sill + o.height / 2, -0.6); put('interior_dark', back); }
     if (b.style.bars) {
       for (let x = cx - o.width / 2 + 0.12; x < cx + o.width / 2 - 0.06; x += 0.13) { const r = metricBox(0.018, o.height - 0.06, 0.018); r.translate(x, sill + o.height / 2, 0.06); put('steel_dark', r); }
       for (const y of [sill + 0.15, sill + o.height / 2, top - 0.15]) { const r = metricBox(o.width - 0.08, 0.03, 0.03); r.translate(cx, y, 0.06); put('steel_dark', r); }
@@ -335,19 +399,15 @@ function buildOpening(o: Opening, wallLen: number, y0: number, wm: THREE.Matrix4
   }
   if (o.kind === 'shopfront') {
     // roll-up shutter housing + shutter two-thirds up, recessed shop interior with shelves
-    const housing = metricBox(o.width + 0.1, 0.32, 0.32); housing.translate(cx, top + 0.12, 0.06); put('shutter', housing);
+    const housing = metricBox(o.width + 0.1, 0.32, 0.32); housing.translate(cx, top + 0.16, 0.06); put('shutter', housing);
     const shut = metricBox(o.width - 0.1, 0.75, 0.04); shut.translate(cx, top - 0.38, -0.02); put('shutter', shut);
     const depth = 2.2;
     const floor = metricBox(o.width, 0.05, depth); floor.translate(cx, 0.025, -depth / 2); put('floor_tile', floor);
     const back = metricBox(o.width, o.height, 0.05); back.translate(cx, o.height / 2, -depth); put('interior_wall', back);
     for (const sx of [-1, 1]) { const side = metricBox(0.05, o.height, depth); side.translate(cx + sx * (o.width / 2 - 0.03), o.height / 2, -depth / 2); put('interior_wall', side); }
     const ceil = metricBox(o.width, 0.05, depth); ceil.translate(cx, o.height, -depth / 2); put('ceiling', ceil);
-    for (const y of [0.5, 1.1, 1.7]) { const shelf = metricBox(o.width - 0.3, 0.04, 0.4); shelf.translate(cx, y, -depth + 0.25); put('wood_shelf', shelf); }
-    // goods on shelves (varied boxes give the read of stocked provisions without fake objects up close)
-    for (const y of [0.52, 1.12, 1.72]) for (let x = cx - o.width / 2 + 0.3; x < cx + o.width / 2 - 0.3; x += 0.32) {
-      const hgt = 0.12 + ((x * 7.3 + y * 3.1) % 1 + 1) % 1 * 0.18; const g = metricBox(0.26, hgt, 0.28); g.translate(x, y + 0.02 + hgt / 2, -depth + 0.25);
-      put(`goods${Math.floor(((x * 13.7 + y * 5.3) % 4 + 4) % 4)}`, g);
-    }
+    // stock: authored shelving and goods chosen by trade, placed at runtime near the camera (ShopDresser)
+    shop?.(new THREE.Matrix4().makeTranslation(cx, 0, 0).premultiply(new THREE.Matrix4().makeTranslation(0, y0, 0).multiply(wm)), o, depth);
     // the shop is not walkable: invisible counter line just inside the opening
     const stop = metricBox(o.width, NAV_TOP, 0.2); stop.translate(cx, NAV_TOP / 2, -0.3);
     stop.applyMatrix4(new THREE.Matrix4().makeTranslation(0, y0, 0).multiply(wm));
@@ -360,8 +420,9 @@ function buildOpening(o: Opening, wallLen: number, y0: number, wm: THREE.Matrix4
   if (o.level === 0) {
     // corrugated awning on two brackets (classic shopfront shade)
     const aw = o.width + 0.8;
-    const sheet = metricBox(aw, 0.03, 1.5); sheet.rotateX(THREE.MathUtils.degToRad(14)); sheet.translate(cx, top + 0.42, 0.72); put('roof_metal', sheet);
-    for (const sx of [-1, 1]) { const br = metricBox(0.05, 0.05, 1.5); br.rotateX(THREE.MathUtils.degToRad(14)); br.translate(cx + sx * (aw / 2 - 0.2), top + 0.38, 0.72); put('steel_rusty', br); }
+    // fixed just above the opening, sloping down toward the street (rain runs off outward); signs go above it
+    const sheet = metricBox(aw, 0.03, 1.5); sheet.rotateX(THREE.MathUtils.degToRad(14)); sheet.translate(cx, top + AWNING_Y, 0.72); put('roof_metal', sheet);
+    for (const sx of [-1, 1]) { const br = metricBox(0.05, 0.05, 1.5); br.rotateX(THREE.MathUtils.degToRad(14)); br.translate(cx + sx * (aw / 2 - 0.2), top + AWNING_Y - 0.04, 0.72); put('steel_rusty', br); }
     // step at the threshold
     // threshold: from the street step through the wall reveal to the interior floor (no gap under the doorway)
     const step = metricBox(o.width + 0.3, 0.12, 0.8); step.translate(cx, 0.06, 0.05); put('concrete', step, { collide: true, nav: true });
@@ -378,4 +439,9 @@ function clipBelow(g: THREE.BufferGeometry, top: number) {
 function remapCylUV(g: THREE.BufferGeometry, r: number, h: number) {
   const uv = g.getAttribute('uv') as THREE.BufferAttribute;
   for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * Math.PI * 2 * r, uv.getY(i) * h);
+}
+
+function scaleUV(g: THREE.BufferGeometry, su: number, sv: number) {
+  const uv = g.getAttribute('uv') as THREE.BufferAttribute;
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * su, uv.getY(i) * sv);
 }

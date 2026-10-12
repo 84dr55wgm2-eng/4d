@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import type { Entity, WorldDocument } from '../../core/types';
-import { buildDistrict, type DistrictBuild } from './DistrictBuilder';
+import type { AssetRecord, Entity, Vec3, WorldDocument } from '../../core/types';
+import { buildDistrict, metricBox, type DistrictBuild } from './DistrictBuilder';
 import { LAGOS_MATERIALS } from './LagosMaterials';
 import { MaterialLibrary } from './Materials';
 
@@ -39,14 +39,27 @@ export class DistrictRuntime {
     return true;
   }
 
-  /** world boxes of entities that obstruct walking (desks, vehicles, generators…), not chairs/doors/props in hand */
-  static obstacles(doc: WorldDocument, objects: Map<string, THREE.Object3D>) {
+  /**
+   * World boxes of entities that obstruct walking (desks, vehicles, generators…), not chairs/doors/props in hand.
+   * Derived from the document + each model's measured footprint, so a route is planned around an obstacle
+   * whether or not its model is currently loaded; the loaded object is only a fallback for unmeasured imports.
+   */
+  static obstacles(doc: WorldDocument, objects: Map<string, THREE.Object3D>, footprint: (assetId: string) => AssetRecord['footprint'] | undefined = () => undefined) {
     const out: THREE.Box3[] = [];
+    const m = new THREE.Matrix4(), corner = new THREE.Vector3();
     for (const e of doc.entities) {
       if (!blocks(e)) continue;
-      const o = objects.get(e.id);
-      if (!o) continue;
-      const b = new THREE.Box3().setFromObject(o);
+      const fp = e.assetId ? footprint(e.assetId) : undefined;
+      let b: THREE.Box3;
+      if (fp) {
+        b = new THREE.Box3();
+        m.compose(new THREE.Vector3(...e.transform.position), new THREE.Quaternion(...e.transform.rotation), new THREE.Vector3(...e.transform.scale));
+        for (const x of [fp.min[0], fp.max[0]]) for (const y of [fp.min[1], fp.max[1]]) for (const z of [fp.min[2], fp.max[2]]) b.expandByPoint(corner.set(x, y, z).applyMatrix4(m));
+      } else {
+        const o = objects.get(e.id);
+        if (!o) continue;
+        b = new THREE.Box3().setFromObject(o);
+      }
       if (b.isEmpty() || b.getSize(new THREE.Vector3()).length() < 0.5) continue;
       b.expandByScalar(-0.03);
       out.push(b);
@@ -54,8 +67,8 @@ export class DistrictRuntime {
     return out;
   }
 
-  geometry(doc: WorldDocument, objects: Map<string, THREE.Object3D>) {
-    const boxes = DistrictRuntime.obstacles(doc, objects).map((b) => {
+  geometry(doc: WorldDocument, objects: Map<string, THREE.Object3D>, footprint?: (assetId: string) => AssetRecord['footprint'] | undefined) {
+    const boxes = DistrictRuntime.obstacles(doc, objects, footprint).map((b) => {
       const s = b.getSize(new THREE.Vector3()), c = b.getCenter(new THREE.Vector3());
       const top = Math.min(b.max.y, b.min.y + NAV_TOP);
       const g = new THREE.BoxGeometry(s.x, top - b.min.y, s.z);
@@ -86,7 +99,7 @@ export function doorObject(e: Entity, mats: MaterialLibrary) {
   const cfg = (e.metadata?.procedural ?? {}) as { width?: number; height?: number };
   const w = cfg.width ?? 1, h = cfg.height ?? 2.15;
   const g = new THREE.Group();
-  const leaf = new THREE.BoxGeometry(w - 0.05, h - 0.03, 0.045);
+  const leaf = metricBox(w - 0.05, h - 0.03, 0.045);
   const uv = leaf.getAttribute('uv') as THREE.BufferAttribute;
   for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * w, uv.getY(i) * h);
   leaf.translate(w / 2, h / 2, 0);
@@ -133,4 +146,15 @@ export function lightBankObject(e: Entity, template: THREE.Object3D | null, mats
     m.material = cloned.length === 1 ? cloned[0] : cloned;
   });
   return g;
+}
+
+/** Flexible cable along authored points (entity-local), e.g. a PC power lead down to its wall socket. */
+export function cableObject(e: Entity, mats: MaterialLibrary) {
+  const cfg = (e.metadata?.procedural ?? {}) as { points?: Vec3[]; radius?: number };
+  const pts = (cfg.points ?? []).map((p) => new THREE.Vector3(...p));
+  if (pts.length < 2) return new THREE.Group();
+  const curve = new THREE.CatmullRomCurve3(pts, false, 'centripetal');
+  const mesh = new THREE.Mesh(new THREE.TubeGeometry(curve, Math.max(12, pts.length * 10), cfg.radius ?? 0.005, 6, false), mats.get('cable'));
+  mesh.castShadow = false; mesh.receiveShadow = true;
+  return mesh;
 }

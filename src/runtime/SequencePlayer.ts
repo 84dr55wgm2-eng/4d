@@ -37,6 +37,8 @@ export class SequencePlayer extends Emitter<Events> {
     for (const r of doc.relations ?? []) if (ids.has(r.to)) ids.add(r.from);
     const seatedOn = doc.entities.find((e) => (e.metadata?.interaction as { occupiedBy?: string })?.occupiedBy === s.actorEntityId)?.id ?? null;
     if (seatedOn) ids.add(seatedOn);
+    // whatever the actor carries at the start is part of the start state
+    for (const e of doc.entities) if ((e.metadata?.interaction as { heldBy?: string } | undefined)?.heldBy === s.actorEntityId) ids.add(e.id);
     const entities: SequenceStart['entities'] = {};
     for (const id of ids) {
       const e = s.store.entity(id);
@@ -52,9 +54,7 @@ export class SequencePlayer extends Emitter<Events> {
   /** Restore the start state (data first, then the actor). */
   restore(seq: Sequence) {
     const s = this.studio, a = s.actor!;
-    this.token++;
-    this.waits = [];
-    a.cancelPath();
+    this.halt();
     s.store.applySilently(`Début de ${seq.name}`, (doc) => {
       for (const [id, st] of Object.entries(seq.start.entities)) {
         const e = doc.entities.find((x) => x.id === id);
@@ -67,6 +67,7 @@ export class SequencePlayer extends Emitter<Events> {
         const inter = e.metadata?.interaction as Record<string, unknown> | undefined;
         if (!inter) continue;
         if (inter.occupiedBy === s.actorEntityId && e.id !== seq.start.actor.seatedOn) inter.occupiedBy = null;
+        if (inter.heldBy === s.actorEntityId && !seq.start.entities[e.id]) inter.heldBy = null;
       }
     });
     a.place(new THREE.Vector3(...seq.start.actor.position), seq.start.actor.heading);
@@ -110,9 +111,39 @@ export class SequencePlayer extends Emitter<Events> {
     this.emit('tick', { time: this.time, duration: this.seq.timing?.duration ?? 0, playing: this.playing, beat: this.beat });
   }
 
-  private wait(seconds: number, token: number) {
-    return new Promise<void>((resolve) => this.waits.push({ at: this.time + seconds, resolve: () => token === this.token && resolve() }));
+  /** resolves at `time + seconds`, or as soon as the run is halted (callers re-check their token) */
+  private wait(seconds: number, _token: number) {
+    return new Promise<void>((resolve) => this.waits.push({ at: this.time + seconds, resolve }));
   }
+
+  /** Invalidate the running beats: resolve every pending wait, cancel the walk and the interaction in progress. */
+  private halt() {
+    this.token++;
+    const pending = this.waits;
+    this.waits = [];
+    pending.forEach((w) => w.resolve());
+    this.studio.interactions.cancel();
+    this.studio.actor?.cancelPath();
+  }
+
+  /** ids the running sequence acts on (kept loaded by the streaming) */
+  activeTargets(): string[] {
+    if (!this.playing || !this.seq) return [];
+    return [...new Set([...this.seq.beats.flatMap((b) => (b.target ? [b.target] : [])), ...Object.keys(this.seq.start.entities)])];
+  }
+
+  /**
+   * What the measured timing depends on: beats, start state, the plan and every obstacle on the way.
+   * When it changes, the cut times may be wrong: the sequence must be re-rehearsed.
+   */
+  timingKey(seq: Sequence) {
+    const d = this.studio.store.doc;
+    const obstacles = d.entities.filter((e) => e.capabilities.includes('collidable') || e.type === 'DOOR' || e.type === 'CHAIR')
+      .filter((e) => !seq.start.entities[e.id]).map((e) => [e.id, e.transform.position.map((v) => Math.round(v * 100))]);
+    return hash(JSON.stringify([seq.beats, seq.start, d.district?.buildings.map((b) => [b.front, b.width, b.depth, b.rooms]), obstacles]));
+  }
+
+  isStale(seq: Sequence) { return !seq.timing || seq.timing.key !== this.timingKey(seq); }
 
   private async runBeats(seq: Sequence, token: number, starts?: number[]) {
     const s = this.studio;
@@ -156,12 +187,13 @@ export class SequencePlayer extends Emitter<Events> {
     e.paused = wasPaused;
     if (failed) throw failed;
     if (!done) throw new Error('La séquence ne se termine pas (plus de 4 minutes)');
-    seq.timing = { beatStarts: starts, duration, dt };
+    seq.timing = { beatStarts: starts, duration, dt, key: this.timingKey(seq) };
     return seq.timing;
   }
 
-  play(seq: Sequence) {
+  async play(seq: Sequence) {
     this.stop();
+    if (this.isStale(seq)) await this.rehearse(seq);
     this.restore(seq);
     this.seq = seq;
     this.playing = true;
@@ -174,36 +206,46 @@ export class SequencePlayer extends Emitter<Events> {
     );
   }
 
+  /** Stop playback and the action in progress (walk, approach, waits); the actor stays where he is. */
   stop() {
-    this.token++;
+    this.halt();
     this.playing = false;
-    this.waits = [];
     this.emit('tick', { time: this.time, duration: this.seq?.timing?.duration ?? 0, playing: false, beat: this.beat });
   }
 
-  /** Jump to time t: restore and re-simulate (same result as playing up to t). */
+  /**
+   * Jump to time t: restore and re-simulate (same result as playing up to t). A beat that fails before t is
+   * reported (the world is left at the failure point, the engine back in its previous state).
+   */
   async seek(seq: Sequence, t: number, dt = 1 / 30) {
     const e = this.studio.engine;
     this.stop();
+    if (this.isStale(seq)) await this.rehearse(seq, dt);
     const wasPaused = e.paused;
     e.paused = true;
-    this.restore(seq);
-    this.seq = seq;
-    this.playing = true;
-    const token = this.token;
-    this.runBeats(seq, token).catch(() => {});
-    while (this.time < t) { e.step(dt, dt); await Promise.resolve(); await Promise.resolve(); }
-    this.applyCut(seq, this.time, true);
-    this.playing = false;
-    this.token++;
-    e.renderOnce();
-    e.paused = wasPaused;
+    let failed: unknown = null, done = false;
+    try {
+      this.restore(seq);
+      this.seq = seq;
+      this.playing = true;
+      const token = this.token;
+      this.runBeats(seq, token).then(() => { done = true; }, (err) => { failed = err; done = true; });
+      while (this.time < t && !failed) { e.step(dt, dt); await Promise.resolve(); await Promise.resolve(); }
+      this.applyCut(seq, this.time, true);
+    } finally {
+      this.playing = false;
+      this.halt();
+      e.renderOnce();
+      e.paused = wasPaused;
+    }
+    if (failed) throw failed instanceof Error ? failed : new Error(String(failed));
+    return { time: this.time, finished: done };
   }
 
   /** Reproducible render: fixed step, every frame encoded with its exact timestamp. */
   async export(seq: Sequence, opts: { fps?: number; width?: number; onProgress?: (f: number) => void } = {}): Promise<{ blob: Blob; mime: string; frames: number }> {
     if (!('VideoEncoder' in window)) throw new Error('Export vidéo indisponible : ce navigateur n’a pas WebCodecs (VideoEncoder).');
-    if (!seq.timing) await this.rehearse(seq);
+    if (this.isStale(seq)) await this.rehearse(seq);
     const fps = opts.fps ?? 30, dt = 1 / fps;
     const s = this.studio, e = s.engine, canvas = e.canvas;
     const width = Math.min(opts.width ?? 1280, canvas.width) & ~1, height = Math.round((width * canvas.height) / canvas.width) & ~1;
@@ -216,10 +258,12 @@ export class SequencePlayer extends Emitter<Events> {
     this.seq = seq;
     this.playing = true;
     const token = this.token;
-    this.runBeats(seq, token).catch(() => {});
+    let failed: unknown = null;
+    this.runBeats(seq, token).catch((err) => { failed = err; });
     try {
       for (let f = 0; f < total; f++) {
         if (f > 0) { e.step(dt, dt); await Promise.resolve(); await Promise.resolve(); }
+        if (failed) { encoder.close(); throw failed instanceof Error ? failed : new Error(String(failed)); }
         this.applyCut(seq, this.time, true);
         e.renderOnce();
         ctx.drawImage(canvas, 0, 0, width, height);
@@ -233,11 +277,16 @@ export class SequencePlayer extends Emitter<Events> {
       return { blob, mime: container === 'mp4' ? 'video/mp4' : 'video/webm', frames: total };
     } finally {
       this.playing = false;
-      this.token++;
       this.restore(seq);
       e.paused = wasPaused;
     }
   }
+}
+
+function hash(s: string) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+  return (h >>> 0).toString(36);
 }
 
 async function createEncoder(width: number, height: number, fps: number) {

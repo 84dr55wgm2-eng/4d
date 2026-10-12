@@ -44,6 +44,14 @@ export class AssetRegistry {
   private loaded = new Map<string, Promise<LoadedAsset>>();
   /** called whenever an asset finishes loading (thumbnails, diagnostics) */
   onLoaded?: (asset: LoadedAsset) => void;
+  /**
+   * Three levels are kept apart: the persistent byte cache (OPFS/IDB, survives reloads), parsed models in memory
+   * (`loaded`), and visible instances (counted by retain/release). A model nobody retains any more is dropped
+   * from memory after a grace period; its bytes stay in the persistent cache for a fast reload.
+   */
+  private refs = new Map<string, number>();
+  private evictTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  evictAfterMs = 15000;
 
   constructor(private baseUrl = import.meta.env.BASE_URL) {
     MeshoptDecoder.useWorkers?.(Math.min(4, navigator.hardwareConcurrency || 2));
@@ -343,6 +351,51 @@ export class AssetRegistry {
       }
     });
     return root;
+  }
+
+  retain(id: string) {
+    this.refs.set(id, (this.refs.get(id) ?? 0) + 1);
+    const t = this.evictTimers.get(id);
+    if (t) { clearTimeout(t); this.evictTimers.delete(id); }
+  }
+
+  release(id: string) {
+    const n = (this.refs.get(id) ?? 0) - 1;
+    if (n > 0) { this.refs.set(id, n); return; }
+    this.refs.delete(id);
+    if (this.evictTimers.has(id)) return;
+    this.evictTimers.set(id, setTimeout(() => { this.evictTimers.delete(id); if (!this.refs.has(id)) void this.evict(id); }, this.evictAfterMs));
+  }
+
+  /** drop a parsed model from memory (GPU buffers + textures); derived/variant models never dispose shared data */
+  private async evict(id: string) {
+    const p = this.loaded.get(id);
+    if (!p) return;
+    const record = this.manifest.assets.find((a) => a.id === id);
+    const isSource = [...this.loaded.keys()].some((k) => this.manifest.assets.find((a) => a.id === k)?.runtime?.sourceAssetId === id);
+    if (!record || isSource || record.entityType === 'ACTOR' || record.entityType === 'ENVIRONMENT') return;
+    const asset = await p.catch(() => null);
+    if (this.refs.has(id)) return;
+    this.loaded.delete(id);
+    if (!asset || record.runtime?.sourceAssetId) return;
+    const textures = new Set<THREE.Texture>();
+    asset.gltf.scene.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (!m.isMesh) return;
+      m.geometry.dispose();
+      for (const mat of Array.isArray(m.material) ? m.material : [m.material]) {
+        for (const v of Object.values(mat)) if ((v as THREE.Texture)?.isTexture) textures.add(v as THREE.Texture);
+        mat.dispose();
+      }
+    });
+    textures.forEach((t) => t.dispose());
+    this.memoryEvicted++;
+  }
+
+  memoryEvicted = 0;
+  /** persistent cache vs memory vs instance references (diagnostics) */
+  memoryStats() {
+    return { inMemory: this.loaded.size, referenced: this.refs.size, instances: [...this.refs.values()].reduce((a, b) => a + b, 0), evicted: this.memoryEvicted, pendingEviction: this.evictTimers.size };
   }
 
   instantiate(asset: LoadedAsset): THREE.Object3D {

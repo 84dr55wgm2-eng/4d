@@ -7,7 +7,7 @@ import { idb } from '../storage/idb';
 import { WorldStore } from '../world/WorldStore';
 import { createOps } from '../ops/operations';
 import { Actor, stripRootMotion } from './Actor';
-import { CameraDirector, type CameraMode } from './CameraDirector';
+import { CameraDirector, type CameraMode, type FollowContext } from './CameraDirector';
 import { CollisionWorld } from './CollisionWorld';
 import { Engine, type Quality } from './Engine';
 import { EntityRuntime, readTransform } from './EntityRuntime';
@@ -19,9 +19,11 @@ import { composeWorld, refreshSpatialData, type WorldPlan } from '../world/World
 import { worldGeometry } from '../world/WorldGeometry';
 import { importedDocument, sceneGeometry, sceneSpawn } from '../world/SceneWorld';
 import { createToolRegistry } from '../ops/ToolRegistry';
-import { DistrictRuntime, doorObject, lightBankObject } from '../world/district/DistrictRuntime';
+import { cableObject, DistrictRuntime, doorObject, lightBankObject } from '../world/district/DistrictRuntime';
 import { closedDoorBoxes, setTimeOfDay } from '../world/district/DistrictOps';
 import { composeYabaWorld } from '../world/district/YabaWorld';
+import { ShopDresser } from '../world/district/ShopDresser';
+import { INTERIOR_ENV } from '../world/district/Materials';
 import type { DistrictBriefPlan } from '../world/district/Commands';
 import { SequencePlayer } from './SequencePlayer';
 
@@ -58,6 +60,7 @@ type Events = { ui: StudioUI };
 const _ray = new THREE.Raycaster();
 const _ndc = new THREE.Vector2();
 const _v = new THREE.Vector3();
+const _fv = new THREE.Vector3();
 
 export class Studio extends Emitter<Events> {
   readonly engine: Engine;
@@ -76,6 +79,8 @@ export class Studio extends Emitter<Events> {
   environment: THREE.Object3D | null = null;
   thumbnails!: Thumbnails;
   district: DistrictRuntime | null = null;
+  dresser: ShopDresser | null = null;
+  private pendingNotice = '';
   /** recent selections (chair, then computer…) for commands like « déplace cette chaise devant cet ordinateur » */
   selectionHistory: string[] = [];
   sequences!: SequencePlayer;
@@ -97,6 +102,7 @@ export class Studio extends Emitter<Events> {
     super();
     this.engine = new Engine(canvas);
     this.cameras = new CameraDirector(canvas);
+    this.cameras.followContext = () => (this.actor ? this.followContext() : { destination: null, velocity: _fv.set(0, 0, 0), room: null });
     this.engine.setCamera(this.cameras.camera);
     this.entities = new EntityRuntime(this.registry);
     this.engine.scene.add(this.entities.group);
@@ -135,7 +141,9 @@ export class Studio extends Emitter<Events> {
     try {
       this.set({ phase: 'loading' });
       this.registry.setRenderer(this.engine.renderer);
+      performance.mark('boot:start');
       await this.registry.init();
+      performance.mark('boot:manifest');
       const localWorlds = await idb.all<WorldDocument>('worlds');
       this.worlds = [...this.registry.manifest.worlds.map(({id, name}) => ({id, name})), ...localWorlds.filter((d) => (d.composition || d.imported || d.district) && !this.registry.manifest.worlds.some((w) => w.id === d.id)).map(({id, name}) => ({id, name}))];
       const doc = await this.loadWorldDocument();
@@ -181,6 +189,7 @@ export class Studio extends Emitter<Events> {
       if (doc.district) {
         this.district = new DistrictRuntime(base, this.engine.renderer.capabilities.getMaxAnisotropy());
         this.district.sync(doc);
+        performance.mark('boot:district-built');
         this.engine.scene.add(this.district.group);
         const fixture = await this.registry.loadGLTF('lagos.fluorescent').then((a) => a.template, () => null);
         const mats = this.district.mats;
@@ -189,6 +198,11 @@ export class Studio extends Emitter<Events> {
         this.entities.focus = [new THREE.Vector3(...(doc.entities.find((e) => e.type === 'ACTOR')?.transform.position ?? doc.spawn.position))];
         this.entities.factories.set('door', (e) => doorObject(e, mats));
         this.entities.factories.set('light_bank', (e) => lightBankObject(e, fixture, mats));
+        this.entities.factories.set('cable', (e) => cableObject(e, mats));
+        // shop recesses are stocked with authored shelving and goods near the camera only
+        this.dresser = new ShopDresser(this.registry);
+        this.dresser.prepare = (o) => this.engine.renderer.compileAsync(o, this.cameras.camera, this.engine.scene);
+        this.engine.scene.add(this.dresser.group);
       }
       this.appliedSun = JSON.stringify([env.sun, env.exposure]);
       const [world, bakedCollision, bakedNav, actor] = await Promise.all([
@@ -232,8 +246,13 @@ export class Studio extends Emitter<Events> {
         this.engine.scene.add(actor.actor.root);
       }
       this.entities.onLoadError = (e) => this.toast(`Could not load ${e.name}`);
-      this.entities.onSpawn = () => { this.engine.shadowsDirty = true; this.scheduleDistrictRebuild(); };
-      this.entities.onRelease = () => this.scheduleDistrictRebuild();
+      // Navigation obstacles come from footprints, so streaming does not change routes; only an unmeasured
+      // (imported) blocker appearing or leaving requires a rebuild.
+      const unmeasured = (id: string) => { const e = this.store.entity(id); return !!e?.assetId && e.capabilities.includes('collidable') && !this.registry.manifest.assets.find((a) => a.id === e.assetId)?.footprint; };
+      this.entities.onSpawn = (o) => { this.engine.shadowsDirty = true; this.applyInteriorLight(o, !!this.roomAt(o.getWorldPosition(new THREE.Vector3()).setY(o.position.y + 0.3))); if (unmeasured(o.userData.entityId)) this.scheduleDistrictRebuild(); };
+      this.entities.onRelease = (id) => { if (unmeasured(id)) this.scheduleDistrictRebuild(); };
+      // objects a running interaction or sequence depends on stay loaded whatever the distance
+      this.entities.protect = () => this.protectedEntities();
       this.entities.sync(this.store.doc);
       this.placeActorFromDoc();
       this.interactions.restoreSeat();
@@ -241,16 +260,22 @@ export class Studio extends Emitter<Events> {
       this.engine.onUpdate((dt) => this.update(dt));
       this.engine.setQuality(this.ui.quality);
       this.engine.start();
+      performance.mark('boot:world-and-actor');
       await this.entities.ready();
+      performance.mark('boot:entities');
       if (this.district) {
         this.set({ loading: [...this.ui.loading, { label: 'Navigation du quartier', loaded: 0, total: 0 }] });
         await this.rebuildDistrictGeometry();
+        performance.mark('boot:navigation');
         this.placeActorFromDoc();
         this.interactions.restoreSeat();
         this.resetFollowCamera();
       }
       this.sequences = new SequencePlayer(this);
+      this.district?.mats.setEnvironment(this.engine.scene.environment, this.engine.scene.environmentIntensity);
+      performance.mark('boot:ready');
       this.set({ phase: 'ready', loading: [], canUndo: false, canRedo: false });
+      if (this.pendingNotice) { this.toast(this.pendingNotice); this.pendingNotice = ''; }
     } catch (e) {
       console.error(e);
       this.set({ phase: 'error', error: e instanceof Error ? e.message : String(e) });
@@ -270,8 +295,17 @@ export class Studio extends Emitter<Events> {
     const pkg = (await res.json()) as WorldDocument;
     const saved = await idb.get<WorldDocument>('worlds', pkg.id).catch(() => undefined);
     // User edits (entities, shots, world state) persist; environment settings always come from the package.
-    if (saved && saved.format === pkg.format && saved.version === pkg.version)
+    if (saved && saved.format === pkg.format && saved.version === pkg.version) {
+      if (pkg.revision && saved.revision !== pkg.revision) {
+        // the published world changed (content, construction fixes): open it, keep the user's copy as its own world
+        const backup = { ...saved, id: `${pkg.id}.avant-${saved.revision ?? 'v1'}`, name: `${saved.name} (avant mise à jour)` };
+        await idb.put('worlds', backup.id, backup).catch(() => undefined);
+        await idb.put('worlds', pkg.id, pkg).catch(() => undefined);
+        this.pendingNotice = `« ${pkg.name} » a été mis à jour. Ta version précédente reste disponible : « ${backup.name} ».`;
+        return pkg;
+      }
       return pkg.district ? saved : { ...saved, environment: pkg.environment, zones: pkg.zones };
+    }
     return pkg;
   }
 
@@ -325,12 +359,54 @@ export class Studio extends Emitter<Events> {
   resetFollowCamera() {
     if (!this.actor) return;
     this.cameras.followHeading = this.actor.heading;
-    this.cameras.followYaw = this.actor.heading + Math.PI;
-    this.cameras.followPivot.copy(this.actor.position).y += 1.45;
-    this.cameras.setPose(
-      _v.set(Math.sin(this.cameras.followYaw), 0.35, Math.cos(this.cameras.followYaw)).multiplyScalar(3.4).add(this.cameras.followPivot),
-      this.cameras.followPivot,
-    );
+    this.cameras.followPivot.copy(this.actor.position);
+    this.cameras.snapFollow();
+  }
+
+  /** room containing a world point (district rooms are rectangles in their building's frame) */
+  roomAt(p: THREE.Vector3) {
+    for (const r of this.district?.build.rooms ?? []) {
+      if (p.y < r.floorY - 0.6 || p.y > r.ceilingY) continue;
+      const [c0, c1, , c3] = r.corners;
+      const ux = c1.x - c0.x, uz = c1.z - c0.z, vx = c3.x - c0.x, vz = c3.z - c0.z;
+      const fu = ((p.x - c0.x) * ux + (p.z - c0.z) * uz) / (ux * ux + uz * uz);
+      const fv = ((p.x - c0.x) * vx + (p.z - c0.z) * vz) / (vx * vx + vz * vz);
+      if (fu > 0 && fu < 1 && fv > 0 && fv < 1) return r;
+    }
+    return null;
+  }
+
+  /** Surroundings for the automatic follow framing: destination, motion, and the room the actor is in. */
+  private followContext(): FollowContext {
+    const a = this.actor!;
+    const r = this.roomAt(a.position);
+    return {
+      destination: a.path.length ? a.path[a.path.length - 1] : null,
+      velocity: _fv.copy(a.desiredDir).multiplyScalar(a.speed),
+      room: r ? { corners: r.corners, ceilingY: r.ceilingY } : null,
+    };
+  }
+
+  /** inside a room the sky light only comes through the openings: objects (and the actor) get a reduced share */
+  private applyInteriorLight(obj: THREE.Object3D, inside: boolean) {
+    const env = this.engine.scene.environment;
+    const key = inside ? `in:${env?.uuid}` : 'out';
+    if (obj.userData.__interior === key) return;
+    obj.userData.__interior = key;
+    obj.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (!m.isMesh) return;
+      for (const mat of Array.isArray(m.material) ? m.material : [m.material]) {
+        const std = mat as THREE.MeshStandardMaterial;
+        if (!std.isMeshStandardMaterial) continue;
+        if (!('__env' in std.userData)) std.userData.__env = { map: std.envMap, intensity: std.envMapIntensity };
+        const orig = std.userData.__env as { map: THREE.Texture | null; intensity: number };
+        // an explicit envMap is required for the reduced intensity to apply (see MaterialLibrary.setEnvironment)
+        if (inside && !orig.map && env) { std.envMap = env; std.envMapIntensity = orig.intensity * INTERIOR_ENV * this.engine.scene.environmentIntensity; }
+        else { std.envMap = orig.map; std.envMapIntensity = orig.intensity; }
+        std.needsUpdate = true;
+      }
+    });
   }
 
   // ---------------------------------------------------------------- frame
@@ -345,7 +421,8 @@ export class Studio extends Emitter<Events> {
       // an animated actor always changes its shadow; an idle one only breathes
       if (a.state !== 'idle' || Math.abs(before - (a.position.x + a.position.z * 7.31 + a.heading * 3.7)) > 1e-5) this.engine.shadowsDirty = true;
       if (a.state !== this.ui.actorState) this.set({ actorState: a.state });
-      this.cameras.followPivot.lerp(_v.copy(a.position).setY(a.position.y + 1.45), 1 - Math.exp(-dt * 10));
+      this.cameras.followPivot.lerp(a.position, 1 - Math.exp(-dt * 10));
+      if (this.district) this.applyInteriorLight(a.root, !!this.roomAt(a.position));
       if (this.actorMarker.visible) this.actorMarker.position.set(a.position.x, a.position.y + 0.025, a.position.z);
       this.engine.shadowFocus.copy(this.ui.cameraMode === 'follow' ? a.position : this.cameras.mode === 'director' ? this.cameras.orbitTarget : a.position);
     }
@@ -355,6 +432,8 @@ export class Studio extends Emitter<Events> {
       this.streamTimer = 0;
       this.entities.focus = [this.actor?.position.clone() ?? new THREE.Vector3(), this.cameras.camera.position.clone()];
       this.entities.stream();
+      // shops are stocked once the world is usable, never in competition with its first load
+      if (this.district && this.dresser && this.ui.phase === 'ready') this.dresser.update(this.district.build, this.entities.focus);
     }
   }
 
@@ -433,8 +512,8 @@ export class Studio extends Emitter<Events> {
   async rebuildDistrictGeometry() {
     if (!this.district || !this.store.doc.district) return;
     await this.entities.ready();
-    this.district.sync(this.store.doc);
-    const { collide, navigate } = this.district.geometry(this.store.doc, this.entities.objects);
+    if (this.district.sync(this.store.doc)) this.dresser?.clear();
+    const { collide, navigate } = this.district.geometry(this.store.doc, this.entities.objects, (id) => this.registry.manifest.assets.find((a) => a.id === id)?.footprint);
     // human clearance: 0.3 m radius on a 15 cm grid, so 1.2 m doorways stay passable
     const nav = await Navigation.build(navigate, { cs: 0.15, radius: 0.3 });
     navigate.dispose();
@@ -449,6 +528,14 @@ export class Studio extends Emitter<Events> {
   }
 
   private streamTimer = 0;
+  /** interaction target, held objects and every target of the sequence being played */
+  private protectedEntities() {
+    const ids = new Set<string>();
+    if (this.ui.interactionTarget) ids.add(this.ui.interactionTarget);
+    for (const e of this.store.doc.entities) if ((e.metadata?.interaction as { heldBy?: string } | undefined)?.heldBy) ids.add(e.id);
+    for (const id of this.sequences?.activeTargets() ?? []) ids.add(id);
+    return ids;
+  }
   private scheduleDistrictRebuild() {
     if (!this.district || this.ui.phase !== 'ready') return;
     clearTimeout(this.geometryTimer);
@@ -465,6 +552,8 @@ export class Studio extends Emitter<Events> {
 
   private onDocChange(source: string) {
     this.entities.sync(this.store.doc);
+    // moved objects follow the light of the space they are now in
+    if (this.district) for (const o of this.entities.objects.values()) if (o !== this.actor?.root) this.applyInteriorLight(o, !!this.roomAt(_v.copy(o.position).setY(o.position.y + 0.3)));
     const env = this.store.doc.environment, sunKey = JSON.stringify([env.sun, env.exposure]);
     if (sunKey !== this.appliedSun) {
       this.appliedSun = sunKey;
@@ -566,14 +655,19 @@ export class Studio extends Emitter<Events> {
   }
 
   /** Brief → district plan → authored assets → composed, saved, navigable world (Yaba 2003 kit). */
+  /**
+   * Brief/panel plan → composed, saved, navigable world. Nothing is preloaded here: the new world streams its
+   * models around the spawn point like any district (only missing manifest entries block the composition).
+   */
   async createDistrictWorld(p: DistrictBriefPlan) {
-    if (p.missing.length) throw new Error(p.missing.join(' '));
+    if (p.blockers.length) throw new Error(p.blockers.join(' '));
     const actor = this.store.doc.entities.find((e) => e.type === 'ACTOR');
     if (!actor) throw new Error('Acteur de référence absent');
-    const doc = composeYabaWorld(p.plan, actor, this.registry.manifest.assets, { id: `world.${crypto.randomUUID()}`, name: p.name, workstations: p.workstations });
+    const doc = composeYabaWorld(p.plan, actor, this.registry.manifest.assets, { id: `world.${crypto.randomUUID()}`, name: p.name, workstations: p.params.cafe.workstations, layout: p.params.cafe.layout });
     setTimeOfDay(doc, p.time);
     if (doc.district!.missing.length) throw new Error(`Assets introuvables : ${doc.district!.missing.join(', ')}`);
-    await Promise.all(doc.district!.requires.map((id) => this.registry.loadGLTF(id)));
+    const made = doc.entities.filter((e) => /^ws\.\d+\.desk$/.test(e.id)).length;
+    if (made < p.params.cafe.workstations) throw new Error(`La salle (${p.params.cafe.width} × ${p.params.cafe.depth} m, disposition « ${p.params.cafe.layout} ») ne contient que ${made} poste(s) sur ${p.params.cafe.workstations} : agrandis-la ou change la disposition.`);
     if (!await this.save()) throw new Error('Le monde actuel ne peut pas être sauvegardé');
     await idb.put('worlds', doc.id, doc);
     const back = await idb.get<WorldDocument>('worlds', doc.id);

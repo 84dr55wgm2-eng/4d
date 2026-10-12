@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { addWorkstations, closedDoorBoxes, enlargeRoom, seatChairAt, setTimeOfDay, type TimeOfDay } from '../world/district/DistrictOps';
 import { parseCommand } from '../world/district/Commands';
 import { uid } from '../core/emitter';
-import type { AssetCategory, CameraShot, Capability, Entity, Vec3, WorldDocument, WorldState } from '../core/types';
+import type { AssetCategory, CameraShot, Capability, Entity, Sequence, SequenceBeat, Vec3, WorldDocument, WorldState } from '../core/types';
 import type { CameraMode } from '../runtime/CameraDirector';
 import type { Studio } from '../runtime/Studio';
 
@@ -29,6 +29,37 @@ export function createOps(studio: Studio) {
     let out: T | undefined, err = '';
     const committed = store().commit(label, (d) => { try { out = fn(d); } catch (e) { err = e instanceof Error ? e.message : String(e); return false; } });
     return committed ? ok(out as T) : fail(err || 'Modification refusée');
+  };
+
+  /** a new target joins the start state as it is now, so playback always starts from the same world */
+  const captureTarget = (d: WorldDocument, sq: Sequence, target?: string) => {
+    if (!target || sq.start.entities[target]) return;
+    const e = d.entities.find((x) => x.id === target);
+    if (e) sq.start.entities[target] = { transform: structuredClone(e.transform), interaction: structuredClone(e.metadata?.interaction as Record<string, unknown> | undefined) };
+  };
+  /** actions available from any state (e.g. a seated chair offers « stand »; a sequence can also « sit ») */
+  const extraActions = (e: Entity) => {
+    const out: { id: string; label: string }[] = [];
+    if (e.capabilities.includes('sittable')) out.push({ id: 'sit', label: 'S’asseoir' }, { id: 'stand', label: 'Se lever' });
+    if (e.capabilities.includes('openable')) out.push({ id: 'open', label: 'Ouvrir' }, { id: 'close', label: 'Fermer' });
+    if (e.capabilities.includes('pickable')) out.push({ id: 'pickup', label: 'Prendre' }, { id: 'putdown', label: 'Poser' });
+    if (e.capabilities.includes('toggleable')) out.push({ id: 'toggle', label: 'Allumer / éteindre' });
+    return out;
+  };
+  const validateBeat = (b: Partial<SequenceBeat>): string | null => {
+    if (b.kind === 'wait') return b.seconds !== undefined && b.seconds >= 0.2 && b.seconds <= 60 ? null : 'Durée entre 0,2 et 60 s';
+    if (b.kind === 'interact') {
+      const e = b.target ? store().entity(b.target) : null;
+      if (!e) return 'Cible introuvable';
+      const ids = new Set([...studio.interactions.actionsFor(e.id), ...extraActions(e)].map((a) => a.id));
+      return b.action && ids.has(b.action) ? null : `« ${e.name} » ne propose pas cette action`;
+    }
+    if (b.kind === 'moveTo' || b.kind === 'turnTo') {
+      if (!b.position?.every(Number.isFinite)) return 'Position invalide';
+      if (b.kind === 'moveTo') { const p = studio.nav?.closest(new THREE.Vector3(...b.position)); if (!p || p.distanceTo(new THREE.Vector3(...b.position)) > 0.8) return 'Destination hors des zones praticables'; }
+      return null;
+    }
+    return 'Type d’action inconnu';
   };
 
   const ops = {
@@ -267,7 +298,7 @@ export function createOps(studio: Studio) {
       return fail(last);
     },
     placeChairAt(chairId: string, targetId: string): OpResult<string> {
-      return edit('Placer la chaise au poste', (d) => seatChairAt(d, chairId, targetId));
+      return edit('Placer la chaise au poste', (d) => seatChairAt(d, chairId, targetId, studio.registry.manifest.assets));
     },
     setTimeOfDay(time: TimeOfDay): OpResult<TimeOfDay> {
       if (!store().doc.district) return fail('Le changement d’heure ciblé est disponible pour les mondes de quartier');
@@ -329,6 +360,31 @@ export function createOps(studio: Studio) {
       store().commit('Séquence de référence', (dd) => { (dd.sequences ??= []).push(sq); });
       return ok(sq.id);
     },
+    /** empty sequence from the current world: one pause, third-person camera; actions are added in the panel */
+    createSequence(name = 'Nouvelle séquence'): OpResult<string> {
+      if (!studio.actor) return fail('Aucun personnage');
+      const sq = studio.sequences.create(name, [{ id: uid('beat'), kind: 'wait', label: 'Pause', seconds: 2 }], [{ id: uid('cut'), shotId: 'follow', beat: 0, offset: 0 }]);
+      return edit('Nouvelle séquence', (d) => { (d.sequences ??= []).push(sq); return sq.id; });
+    },
+    addCut(seqId: string, shotId = 'follow', beat = 0, offset = 0): OpResult<string> {
+      const id = uid('cut');
+      return edit('Ajouter un plan à la séquence', (d) => {
+        const sq = d.sequences?.find((x) => x.id === seqId);
+        if (!sq) throw new Error('Séquence introuvable');
+        if (shotId !== 'follow' && !d.shots.some((x) => x.id === shotId)) throw new Error('Cadrage inconnu');
+        sq.cuts.push({ id, shotId, beat: Math.min(beat, sq.beats.length - 1), offset });
+        return id;
+      });
+    },
+    removeCut(seqId: string, cutId: string): OpResult<undefined> {
+      return edit('Retirer un plan de la séquence', (d) => {
+        const sq = d.sequences?.find((x) => x.id === seqId);
+        if (!sq || !sq.cuts.some((c) => c.id === cutId)) throw new Error('Plan introuvable');
+        if (sq.cuts.length === 1) throw new Error('Une séquence garde au moins un plan');
+        sq.cuts = sq.cuts.filter((c) => c.id !== cutId);
+        return undefined;
+      });
+    },
     sequence(id?: string) {
       const list = store().doc.sequences ?? [];
       return id ? list.find((x) => x.id === id) ?? null : list.at(-1) ?? null;
@@ -339,27 +395,102 @@ export function createOps(studio: Studio) {
       try { const timing = await studio.sequences.rehearse(sq); store().commit('Minutage de la séquence', (d) => { const x = d.sequences!.find((y) => y.id === id)!; x.timing = timing; }); return ok(timing); }
       catch (e) { return fail(e instanceof Error ? e.message : String(e)); }
     },
-    playSequence(id: string): OpResult<string> {
+    /** the stored sequence, re-rehearsed first when the world or its actions changed since its timing was measured */
+    async timedSequence(id: string): Promise<OpResult<Sequence>> {
       const sq = ops.sequence(id);
       if (!sq) return fail('Séquence introuvable');
-      studio.sequences.play(structuredClone(sq));
-      return ok(sq.id);
+      if (studio.sequences.isStale(sq)) {
+        const r = await ops.rehearseSequence(id);
+        if (!r.ok) return r;
+      }
+      return ok(structuredClone(ops.sequence(id)!));
+    },
+    async playSequence(id: string): Promise<OpResult<string>> {
+      const r = await ops.timedSequence(id);
+      if (!r.ok) return r;
+      void studio.sequences.play(r.value);
+      return ok(id);
     },
     stopSequence() { studio.sequences.stop(); return ok(undefined); },
     async seekSequence(id: string, t: number): Promise<OpResult<number>> {
-      const sq = ops.sequence(id);
-      if (!sq) return fail('Séquence introuvable');
-      await studio.sequences.seek(structuredClone(sq), t);
-      return ok(t);
+      const r = await ops.timedSequence(id);
+      if (!r.ok) return r;
+      try { const at = await studio.sequences.seek(r.value, t); return ok(at.time); }
+      catch (e) { return fail(`Lecture interrompue : ${e instanceof Error ? e.message : String(e)}`); }
     },
     async exportSequence(id: string, onProgress?: (f: number) => void): Promise<OpResult<{ url: string; filename: string; bytes: number; frames: number }>> {
-      const sq = ops.sequence(id);
-      if (!sq) return fail('Séquence introuvable');
+      const r = await ops.timedSequence(id);
+      if (!r.ok) return r;
+      const sq = r.value;
       try {
-        const { blob, mime, frames } = await studio.sequences.export(structuredClone(sq), { onProgress });
+        const { blob, mime, frames } = await studio.sequences.export(sq, { onProgress });
         const filename = `${sq.name.replace(/[^\p{L}\p{N}]+/gu, '_')}.${mime === 'video/mp4' ? 'mp4' : 'webm'}`;
         return ok({ url: URL.createObjectURL(blob), filename, bytes: blob.size, frames });
-      } catch (e) { return fail(e instanceof Error ? e.message : String(e)); }
+      } catch (e) { return fail(`Export interrompu : ${e instanceof Error ? e.message : String(e)}`); }
+    },
+
+    // ---------------------------------------------------------------- action editing (cuts stay anchored to their action)
+    /** Add an action; interact needs a target offering that action, wait a duration, moveTo a reachable point. */
+    addBeat(seqId: string, beat: Omit<SequenceBeat, 'id'>, index?: number): OpResult<string> {
+      const check = validateBeat(beat);
+      if (check) return fail(check);
+      const id = uid('beat');
+      return edit('Ajouter une action', (d) => {
+        const sq = d.sequences?.find((x) => x.id === seqId);
+        if (!sq) throw new Error('Séquence introuvable');
+        const at = Math.max(0, Math.min(index ?? sq.beats.length, sq.beats.length));
+        sq.beats.splice(at, 0, { ...beat, id });
+        for (const c of sq.cuts) if (c.beat >= at && at < sq.beats.length - 1) c.beat++;
+        captureTarget(d, sq, beat.target);
+        return id;
+      });
+    },
+    removeBeat(seqId: string, beatId: string): OpResult<undefined> {
+      return edit('Supprimer une action', (d) => {
+        const sq = d.sequences?.find((x) => x.id === seqId);
+        const i = sq?.beats.findIndex((b) => b.id === beatId) ?? -1;
+        if (!sq || i < 0) throw new Error('Action introuvable');
+        if (sq.beats.length === 1) throw new Error('Une séquence garde au moins une action');
+        sq.beats.splice(i, 1);
+        // cuts of the removed action move to the action that now takes its place (offset kept), later ones shift
+        for (const c of sq.cuts) if (c.beat > i) c.beat--; else if (c.beat === i) c.beat = Math.min(i, sq.beats.length - 1);
+        return undefined;
+      });
+    },
+    moveBeat(seqId: string, beatId: string, delta: -1 | 1): OpResult<undefined> {
+      return edit('Réordonner les actions', (d) => {
+        const sq = d.sequences?.find((x) => x.id === seqId);
+        const i = sq?.beats.findIndex((b) => b.id === beatId) ?? -1;
+        const j = i + delta;
+        if (!sq || i < 0 || j < 0 || j >= sq.beats.length) throw new Error('Déplacement impossible');
+        [sq.beats[i], sq.beats[j]] = [sq.beats[j], sq.beats[i]];
+        // a cut follows the action it is anchored to
+        for (const c of sq.cuts) c.beat = c.beat === i ? j : c.beat === j ? i : c.beat;
+        return undefined;
+      });
+    },
+    updateBeat(seqId: string, beatId: string, patch: Partial<Omit<SequenceBeat, 'id'>>): OpResult<undefined> {
+      return edit('Modifier une action', (d) => {
+        const sq = d.sequences?.find((x) => x.id === seqId);
+        const b = sq?.beats.find((x) => x.id === beatId);
+        if (!sq || !b) throw new Error('Action introuvable');
+        const next = { ...b, ...patch };
+        if (patch.target && !patch.action) next.action = studio.interactions.actionsFor(patch.target)[0]?.id;
+        const check = validateBeat(next);
+        if (check) throw new Error(check);
+        Object.assign(b, next);
+        captureTarget(d, sq, b.target);
+        return undefined;
+      });
+    },
+    /** objects an action can target, with their actions (for the panel) */
+    beatTargets() {
+      return store().doc.entities.filter((e) => e.capabilities.includes('interactable'))
+        .map((e) => {
+          const actions = new Map<string, string>();
+          for (const a of [...studio.interactions.actionsFor(e.id), ...extraActions(e)]) if (!actions.has(a.id)) actions.set(a.id, a.label);
+          return { id: e.id, name: e.name, actions: [...actions].map(([id, label]) => ({ id, label })) };
+        });
     },
     setCut(seqId: string, cutId: string, patch: { shotId?: string; beat?: number; offset?: number }): OpResult<undefined> {
       return edit('Modifier un plan de la séquence', (d) => {

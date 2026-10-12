@@ -60,7 +60,8 @@
       "offset": -2,
       "width": 3,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "provisions"
      },
      {
       "id": "op1",
@@ -69,7 +70,8 @@
       "offset": 2.2,
       "width": 2.6,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "provisions"
      },
      {
       "id": "op2",
@@ -160,7 +162,8 @@
       "offset": -2.6,
       "width": 3.2,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "phones"
      },
      {
       "id": "op7",
@@ -169,7 +172,8 @@
       "offset": 2.4,
       "width": 3,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "phones"
      },
      {
       "id": "op8",
@@ -469,7 +473,8 @@
       "offset": 0,
       "width": 3.6,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "chemist"
      },
      {
       "id": "op27",
@@ -560,7 +565,8 @@
       "offset": -2.5,
       "width": 3,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "business"
      },
      {
       "id": "op32",
@@ -569,7 +575,8 @@
       "offset": 2.4,
       "width": 3,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "business"
      },
      {
       "id": "op33",
@@ -720,7 +727,8 @@
       "offset": -1.8,
       "width": 2.8,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "electricals"
      },
      {
       "id": "op44",
@@ -729,7 +737,8 @@
       "offset": 2.3,
       "width": 2.4,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "electricals"
      },
      {
       "id": "op45",
@@ -820,7 +829,8 @@
       "offset": -3,
       "width": 3.4,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "fashion"
      },
      {
       "id": "op50",
@@ -829,7 +839,8 @@
       "offset": 2.6,
       "width": 3.4,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "fashion"
      },
      {
       "id": "op51",
@@ -980,7 +991,8 @@
       "offset": 0,
       "width": 3.8,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "barber"
      },
      {
       "id": "op62",
@@ -1081,7 +1093,8 @@
       "offset": -2.6,
       "width": 3,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "photo"
      },
      {
       "id": "op68",
@@ -1090,7 +1103,8 @@
       "offset": 2.5,
       "width": 3,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "photo"
      },
      {
       "id": "op69",
@@ -1241,7 +1255,8 @@
       "offset": -2.4,
       "width": 3,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "canteen"
      },
      {
       "id": "op80",
@@ -1250,7 +1265,8 @@
       "offset": 2.4,
       "width": 2.8,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "canteen"
      },
      {
       "id": "op81",
@@ -1351,7 +1367,8 @@
       "offset": 0,
       "width": 4,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "books"
      },
      {
       "id": "op87",
@@ -1502,7 +1519,8 @@
       "offset": -2,
       "width": 2.8,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "general"
      },
      {
       "id": "op98",
@@ -1511,7 +1529,8 @@
       "offset": 2.2,
       "width": 2.6,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "general"
      },
      {
       "id": "op99",
@@ -1591,7 +1610,8 @@
       "offset": -7,
       "width": 3.4,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "general"
      },
      {
       "id": "op104",
@@ -1600,7 +1620,8 @@
       "offset": 0,
       "width": 3.4,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "general"
      },
      {
       "id": "op105",
@@ -1609,7 +1630,8 @@
       "offset": 7,
       "width": 3.4,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "general"
      },
      {
       "id": "op106",
@@ -1860,7 +1882,8 @@
       "offset": -6,
       "width": 3.4,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "general"
      },
      {
       "id": "op127",
@@ -1869,7 +1892,8 @@
       "offset": 6,
       "width": 3.4,
       "height": 2.6,
-      "level": 0
+      "level": 0,
+      "trade": "general"
      },
      {
       "id": "op128",
@@ -1988,6 +2012,7 @@
   ],
   "requires": [
    "actor.rpm-civilian",
+   "lagos.lightswitch",
    "lagos.counter",
    "lagos.tv",
    "lagos.chair",
@@ -1997,17 +2022,18 @@
    "lagos.chalkboard",
    "lagos.desk",
    "lagos.crt",
+   "lagos.socket4",
+   "lagos.crate",
+   "lagos.box",
+   "lagos.planter",
    "lagos.generator",
    "lagos.jerrycan",
-   "lagos.crate",
-   "lagos.bench",
    "lagos.stool",
+   "lagos.bench",
    "lagos.barrel",
    "lagos.tyre",
    "lagos.trashcan",
    "lagos.trashbag",
-   "lagos.box",
-   "lagos.planter",
    "lagos.powerbox",
    "lagos.peugeot504",
    "lagos.corolla",
@@ -2060,6 +2086,16 @@
    "to": "room.cafe"
   },
   {
+   "kind": "connects",
+   "from": "cafe.switch",
+   "to": "light.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "cafe.switch",
+   "to": "room.cafe"
+  },
+  {
    "kind": "in",
    "from": "cafe.counter",
    "to": "room.cafe"
@@ -2088,6 +2124,19 @@
    "to": "ws.1.crt"
   },
   {
+   "kind": "partOf",
+   "from": "ws.1.socket",
+   "to": "ws.1.desk"
+  },
+  {
+   "kind": "connects",
+   "from": "ws.1.cable",
+   "to": "ws.1.socket",
+   "data": {
+    "other": "ws.1.crt"
+   }
+  },
+  {
    "kind": "in",
    "from": "ws.2.desk",
    "to": "room.cafe"
@@ -2109,6 +2158,19 @@
    "kind": "faces",
    "from": "ws.2.chair",
    "to": "ws.2.crt"
+  },
+  {
+   "kind": "partOf",
+   "from": "ws.2.socket",
+   "to": "ws.2.desk"
+  },
+  {
+   "kind": "connects",
+   "from": "ws.2.cable",
+   "to": "ws.2.socket",
+   "data": {
+    "other": "ws.2.crt"
+   }
   },
   {
    "kind": "in",
@@ -2134,6 +2196,19 @@
    "to": "ws.3.crt"
   },
   {
+   "kind": "partOf",
+   "from": "ws.3.socket",
+   "to": "ws.3.desk"
+  },
+  {
+   "kind": "connects",
+   "from": "ws.3.cable",
+   "to": "ws.3.socket",
+   "data": {
+    "other": "ws.3.crt"
+   }
+  },
+  {
    "kind": "in",
    "from": "ws.4.desk",
    "to": "room.cafe"
@@ -2155,6 +2230,19 @@
    "kind": "faces",
    "from": "ws.4.chair",
    "to": "ws.4.crt"
+  },
+  {
+   "kind": "partOf",
+   "from": "ws.4.socket",
+   "to": "ws.4.desk"
+  },
+  {
+   "kind": "connects",
+   "from": "ws.4.cable",
+   "to": "ws.4.socket",
+   "data": {
+    "other": "ws.4.crt"
+   }
   },
   {
    "kind": "in",
@@ -2180,6 +2268,19 @@
    "to": "ws.5.crt"
   },
   {
+   "kind": "partOf",
+   "from": "ws.5.socket",
+   "to": "ws.5.desk"
+  },
+  {
+   "kind": "connects",
+   "from": "ws.5.cable",
+   "to": "ws.5.socket",
+   "data": {
+    "other": "ws.5.crt"
+   }
+  },
+  {
    "kind": "in",
    "from": "ws.6.desk",
    "to": "room.cafe"
@@ -2203,9 +2304,17 @@
    "to": "ws.6.crt"
   },
   {
-   "kind": "in",
-   "from": "door.cafe",
-   "to": "room.cafe"
+   "kind": "partOf",
+   "from": "ws.6.socket",
+   "to": "ws.6.desk"
+  },
+  {
+   "kind": "connects",
+   "from": "ws.6.cable",
+   "to": "ws.6.socket",
+   "data": {
+    "other": "ws.6.crt"
+   }
   },
   {
    "kind": "in",
@@ -2254,12 +2363,32 @@
   },
   {
    "kind": "in",
+   "from": "ws.1.socket",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.1.cable",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
    "from": "ws.2.crt",
    "to": "room.cafe"
   },
   {
    "kind": "in",
    "from": "ws.2.chair",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.2.socket",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.2.cable",
    "to": "room.cafe"
   },
   {
@@ -2274,12 +2403,32 @@
   },
   {
    "kind": "in",
+   "from": "ws.3.socket",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.3.cable",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
    "from": "ws.4.crt",
    "to": "room.cafe"
   },
   {
    "kind": "in",
    "from": "ws.4.chair",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.4.socket",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.4.cable",
    "to": "room.cafe"
   },
   {
@@ -2294,6 +2443,16 @@
   },
   {
    "kind": "in",
+   "from": "ws.5.socket",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.5.cable",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
    "from": "ws.6.crt",
    "to": "room.cafe"
   },
@@ -2301,6 +2460,41 @@
    "kind": "in",
    "from": "ws.6.chair",
    "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.6.socket",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "ws.6.cable",
+   "to": "room.cafe"
+  },
+  {
+   "kind": "in",
+   "from": "st.crates",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.crate1",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.box",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.planter",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.generator2",
+   "to": "zone.street"
   },
   {
    "kind": "in",
@@ -2314,12 +2508,17 @@
   },
   {
    "kind": "in",
-   "from": "st.crates",
+   "from": "st.planter3",
    "to": "zone.street"
   },
   {
    "kind": "in",
-   "from": "st.crates2",
+   "from": "st.chair_out",
+   "to": "zone.street"
+  },
+  {
+   "kind": "in",
+   "from": "st.stool4",
    "to": "zone.street"
   },
   {
@@ -2334,7 +2533,7 @@
   },
   {
    "kind": "in",
-   "from": "st.chair_out",
+   "from": "st.bench5",
    "to": "zone.street"
   },
   {
@@ -2355,16 +2554,6 @@
   {
    "kind": "in",
    "from": "st.trashbag",
-   "to": "zone.street"
-  },
-  {
-   "kind": "in",
-   "from": "st.box",
-   "to": "zone.street"
-  },
-  {
-   "kind": "in",
-   "from": "st.planter",
    "to": "zone.street"
   },
   {
@@ -2476,9 +2665,9 @@
  "sequences": [],
  "spawn": {
   "position": [
-   -22,
+   -24.5,
    0.31,
-   -5.4
+   -5.8
   ],
   "heading": 1.5707963267948966
  },
@@ -2503,10 +2692,10 @@
    "name": "Cybercafé",
    "kind": "interior",
    "bounds": [
-    -12.4,
-    -18.4,
-    -0.8,
-    -7.4
+    -12.35,
+    -18.15,
+    -0.8499999999999996,
+    -7.65
    ],
    "tags": [
     "interior",
@@ -2522,9 +2711,9 @@
    "assetId": "actor.rpm-civilian",
    "transform": {
     "position": [
-     -22,
+     -24.5,
      0.31,
-     -5.4
+     -5.8
     ],
     "rotation": [
      0,
@@ -2688,20 +2877,53 @@
        2.5500000000000007
       ]
      ],
-     "yaw": 90
+     "yaw": 90,
+     "ceilingHeight": 3.13
     },
     "interaction": {
      "enabled": true,
      "color": "#eef6ff",
-     "intensity": 26,
+     "intensity": 40,
      "distance": 16,
      "approach": [
       -2.8,
-      -2.92,
+      -3.07,
       4.6
      ]
     }
    }
+  },
+  {
+   "id": "cafe.switch",
+   "name": "Interrupteur des néons",
+   "type": "PROP",
+   "assetId": "lagos.lightswitch",
+   "transform": {
+    "position": [
+     -9.424999999999999,
+     1.31,
+     -7.680000000000001
+    ],
+    "rotation": [
+     0,
+     1,
+     0,
+     6.123233995736766e-17
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "switch",
+    "electric"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {}
   },
   {
    "id": "cafe.counter",
@@ -2711,7 +2933,7 @@
    "transform": {
     "position": [
      -2.4499999999999993,
-     0.36,
+     0.21,
      -10.05
     ],
     "rotation": [
@@ -2747,7 +2969,7 @@
    "transform": {
     "position": [
      -2.25,
-     1.15,
+     1,
      -10.55
     ],
     "rotation": [
@@ -2782,7 +3004,7 @@
    "transform": {
     "position": [
      -1.4499999999999993,
-     0.36,
+     0.21,
      -10.05
     ],
     "rotation": [
@@ -2835,7 +3057,7 @@
    "transform": {
     "position": [
      -2.7499999999999996,
-     1.15,
+     1,
      -9.850000000000001
     ],
     "rotation": [
@@ -3012,8 +3234,8 @@
    "assetId": "lagos.desk",
    "transform": {
     "position": [
-     -12.07,
-     0.36,
+     -11.825800000000001,
+     0.21,
      -16.75
     ],
     "rotation": [
@@ -3042,7 +3264,7 @@
    "metadata": {
     "workstation": "1",
     "worksurface": {
-     "height": 0.75
+     "height": 0.8
     }
    }
   },
@@ -3053,8 +3275,8 @@
    "assetId": "lagos.crt",
    "transform": {
     "position": [
-     -12.09,
-     1.1099999999999999,
+     -11.815,
+     1.01,
      -16.75
     ],
     "rotation": [
@@ -3090,8 +3312,8 @@
    "assetId": "lagos.chair",
    "transform": {
     "position": [
-     -11.219999999999999,
-     0.36,
+     -11.0976,
+     0.21,
      -16.75
     ],
     "rotation": [
@@ -3136,14 +3358,111 @@
    }
   },
   {
+   "id": "ws.1.socket",
+   "name": "Prise du poste 1",
+   "type": "PROP",
+   "assetId": "lagos.socket4",
+   "transform": {
+    "position": [
+     -12.32,
+     0.51,
+     -17.3
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "socket",
+    "electric"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {
+    "workstation": "1"
+   }
+  },
+  {
+   "id": "ws.1.cable",
+   "name": "Câble d’alimentation 1",
+   "type": "PROP",
+   "transform": {
+    "position": [
+     -12.065,
+     1.13,
+     -17.05
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "cable"
+   ],
+   "capabilities": [],
+   "metadata": {
+    "workstation": "1",
+    "procedural": {
+     "kind": "cable",
+     "radius": 0.0045,
+     "points": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       -0.21499999999999986,
+       -0.1399999999999998,
+       0
+      ],
+      [
+       -0.2350000000000012,
+       -0.8699999999999999,
+       -0.05000000000000071
+      ],
+      [
+       -0.2350000000000012,
+       -0.8899999999999999,
+       -0.1999999999999993
+      ],
+      [
+       -0.22499999999999964,
+       -0.5999999999999999,
+       -0.25
+      ]
+     ]
+    }
+   }
+  },
+  {
    "id": "ws.2.desk",
    "name": "Table du poste 2",
    "type": "FURNITURE",
    "assetId": "lagos.desk",
    "transform": {
     "position": [
-     -12.07,
-     0.36,
+     -11.825800000000001,
+     0.21,
      -15.15
     ],
     "rotation": [
@@ -3172,7 +3491,7 @@
    "metadata": {
     "workstation": "2",
     "worksurface": {
-     "height": 0.75
+     "height": 0.8
     }
    }
   },
@@ -3183,8 +3502,8 @@
    "assetId": "lagos.crt",
    "transform": {
     "position": [
-     -12.09,
-     1.1099999999999999,
+     -11.815,
+     1.01,
      -15.15
     ],
     "rotation": [
@@ -3220,8 +3539,8 @@
    "assetId": "lagos.chair",
    "transform": {
     "position": [
-     -11.219999999999999,
-     0.36,
+     -11.0976,
+     0.21,
      -15.15
     ],
     "rotation": [
@@ -3266,14 +3585,111 @@
    }
   },
   {
+   "id": "ws.2.socket",
+   "name": "Prise du poste 2",
+   "type": "PROP",
+   "assetId": "lagos.socket4",
+   "transform": {
+    "position": [
+     -12.32,
+     0.51,
+     -15.700000000000001
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "socket",
+    "electric"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {
+    "workstation": "2"
+   }
+  },
+  {
+   "id": "ws.2.cable",
+   "name": "Câble d’alimentation 2",
+   "type": "PROP",
+   "transform": {
+    "position": [
+     -12.065,
+     1.13,
+     -15.450000000000001
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "cable"
+   ],
+   "capabilities": [],
+   "metadata": {
+    "workstation": "2",
+    "procedural": {
+     "kind": "cable",
+     "radius": 0.0045,
+     "points": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       -0.21499999999999986,
+       -0.1399999999999998,
+       0
+      ],
+      [
+       -0.2350000000000012,
+       -0.8699999999999999,
+       -0.049999999999998934
+      ],
+      [
+       -0.2350000000000012,
+       -0.8899999999999999,
+       -0.1999999999999993
+      ],
+      [
+       -0.22499999999999964,
+       -0.5999999999999999,
+       -0.25
+      ]
+     ]
+    }
+   }
+  },
+  {
    "id": "ws.3.desk",
    "name": "Table du poste 3",
    "type": "FURNITURE",
    "assetId": "lagos.desk",
    "transform": {
     "position": [
-     -12.07,
-     0.36,
+     -11.825800000000001,
+     0.21,
      -13.55
     ],
     "rotation": [
@@ -3302,7 +3718,7 @@
    "metadata": {
     "workstation": "3",
     "worksurface": {
-     "height": 0.75
+     "height": 0.8
     }
    }
   },
@@ -3313,8 +3729,8 @@
    "assetId": "lagos.crt",
    "transform": {
     "position": [
-     -12.09,
-     1.1099999999999999,
+     -11.815,
+     1.01,
      -13.55
     ],
     "rotation": [
@@ -3350,8 +3766,8 @@
    "assetId": "lagos.chair",
    "transform": {
     "position": [
-     -11.219999999999999,
-     0.36,
+     -11.0976,
+     0.21,
      -13.55
     ],
     "rotation": [
@@ -3396,14 +3812,111 @@
    }
   },
   {
+   "id": "ws.3.socket",
+   "name": "Prise du poste 3",
+   "type": "PROP",
+   "assetId": "lagos.socket4",
+   "transform": {
+    "position": [
+     -12.32,
+     0.51,
+     -14.100000000000001
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "socket",
+    "electric"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {
+    "workstation": "3"
+   }
+  },
+  {
+   "id": "ws.3.cable",
+   "name": "Câble d’alimentation 3",
+   "type": "PROP",
+   "transform": {
+    "position": [
+     -12.065,
+     1.13,
+     -13.850000000000001
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "cable"
+   ],
+   "capabilities": [],
+   "metadata": {
+    "workstation": "3",
+    "procedural": {
+     "kind": "cable",
+     "radius": 0.0045,
+     "points": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       -0.21499999999999986,
+       -0.1399999999999998,
+       0
+      ],
+      [
+       -0.2350000000000012,
+       -0.8699999999999999,
+       -0.049999999999998934
+      ],
+      [
+       -0.2350000000000012,
+       -0.8899999999999999,
+       -0.1999999999999993
+      ],
+      [
+       -0.22499999999999964,
+       -0.5999999999999999,
+       -0.25
+      ]
+     ]
+    }
+   }
+  },
+  {
    "id": "ws.4.desk",
    "name": "Table du poste 4",
    "type": "FURNITURE",
    "assetId": "lagos.desk",
    "transform": {
     "position": [
-     -1.13,
-     0.36,
+     -1.3741999999999992,
+     0.21,
      -16.75
     ],
     "rotation": [
@@ -3432,7 +3945,7 @@
    "metadata": {
     "workstation": "4",
     "worksurface": {
-     "height": 0.75
+     "height": 0.8
     }
    }
   },
@@ -3443,8 +3956,8 @@
    "assetId": "lagos.crt",
    "transform": {
     "position": [
-     -1.1099999999999994,
-     1.1099999999999999,
+     -1.3849999999999998,
+     1.01,
      -16.75
     ],
     "rotation": [
@@ -3480,8 +3993,8 @@
    "assetId": "lagos.chair",
    "transform": {
     "position": [
-     -1.9799999999999995,
-     0.36,
+     -2.1023999999999994,
+     0.21,
      -16.75
     ],
     "rotation": [
@@ -3526,14 +4039,111 @@
    }
   },
   {
+   "id": "ws.4.socket",
+   "name": "Prise du poste 4",
+   "type": "PROP",
+   "assetId": "lagos.socket4",
+   "transform": {
+    "position": [
+     -0.8799999999999999,
+     0.51,
+     -16.2
+    ],
+    "rotation": [
+     0,
+     0.7071067811865476,
+     0,
+     -0.7071067811865475
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "socket",
+    "electric"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {
+    "workstation": "4"
+   }
+  },
+  {
+   "id": "ws.4.cable",
+   "name": "Câble d’alimentation 4",
+   "type": "PROP",
+   "transform": {
+    "position": [
+     -1.1349999999999998,
+     1.13,
+     -16.45
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "cable"
+   ],
+   "capabilities": [],
+   "metadata": {
+    "workstation": "4",
+    "procedural": {
+     "kind": "cable",
+     "radius": 0.0045,
+     "points": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0.21499999999999986,
+       -0.1399999999999998,
+       0
+      ],
+      [
+       0.23500000000000032,
+       -0.8699999999999999,
+       0.05000000000000071
+      ],
+      [
+       0.23500000000000032,
+       -0.8899999999999999,
+       0.1999999999999993
+      ],
+      [
+       0.22500000000000053,
+       -0.5999999999999999,
+       0.25
+      ]
+     ]
+    }
+   }
+  },
+  {
    "id": "ws.5.desk",
    "name": "Table du poste 5",
    "type": "FURNITURE",
    "assetId": "lagos.desk",
    "transform": {
     "position": [
-     -1.13,
-     0.36,
+     -1.3741999999999992,
+     0.21,
      -15.15
     ],
     "rotation": [
@@ -3562,7 +4172,7 @@
    "metadata": {
     "workstation": "5",
     "worksurface": {
-     "height": 0.75
+     "height": 0.8
     }
    }
   },
@@ -3573,8 +4183,8 @@
    "assetId": "lagos.crt",
    "transform": {
     "position": [
-     -1.1099999999999994,
-     1.1099999999999999,
+     -1.3849999999999998,
+     1.01,
      -15.15
     ],
     "rotation": [
@@ -3610,8 +4220,8 @@
    "assetId": "lagos.chair",
    "transform": {
     "position": [
-     -1.9799999999999995,
-     0.36,
+     -2.1023999999999994,
+     0.21,
      -15.15
     ],
     "rotation": [
@@ -3656,14 +4266,111 @@
    }
   },
   {
+   "id": "ws.5.socket",
+   "name": "Prise du poste 5",
+   "type": "PROP",
+   "assetId": "lagos.socket4",
+   "transform": {
+    "position": [
+     -0.8799999999999999,
+     0.51,
+     -14.600000000000001
+    ],
+    "rotation": [
+     0,
+     0.7071067811865476,
+     0,
+     -0.7071067811865475
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "socket",
+    "electric"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {
+    "workstation": "5"
+   }
+  },
+  {
+   "id": "ws.5.cable",
+   "name": "Câble d’alimentation 5",
+   "type": "PROP",
+   "transform": {
+    "position": [
+     -1.1349999999999998,
+     1.13,
+     -14.850000000000001
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "cable"
+   ],
+   "capabilities": [],
+   "metadata": {
+    "workstation": "5",
+    "procedural": {
+     "kind": "cable",
+     "radius": 0.0045,
+     "points": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0.21499999999999986,
+       -0.1399999999999998,
+       0
+      ],
+      [
+       0.23500000000000032,
+       -0.8699999999999999,
+       0.05000000000000071
+      ],
+      [
+       0.23500000000000032,
+       -0.8899999999999999,
+       0.20000000000000107
+      ],
+      [
+       0.22500000000000053,
+       -0.5999999999999999,
+       0.25
+      ]
+     ]
+    }
+   }
+  },
+  {
    "id": "ws.6.desk",
    "name": "Table du poste 6",
    "type": "FURNITURE",
    "assetId": "lagos.desk",
    "transform": {
     "position": [
-     -1.13,
-     0.36,
+     -1.3741999999999992,
+     0.21,
      -13.55
     ],
     "rotation": [
@@ -3692,7 +4399,7 @@
    "metadata": {
     "workstation": "6",
     "worksurface": {
-     "height": 0.75
+     "height": 0.8
     }
    }
   },
@@ -3703,8 +4410,8 @@
    "assetId": "lagos.crt",
    "transform": {
     "position": [
-     -1.1099999999999994,
-     1.1099999999999999,
+     -1.3849999999999998,
+     1.01,
      -13.55
     ],
     "rotation": [
@@ -3740,8 +4447,8 @@
    "assetId": "lagos.chair",
    "transform": {
     "position": [
-     -1.9799999999999995,
-     0.36,
+     -2.1023999999999994,
+     0.21,
      -13.55
     ],
     "rotation": [
@@ -3786,21 +4493,298 @@
    }
   },
   {
+   "id": "ws.6.socket",
+   "name": "Prise du poste 6",
+   "type": "PROP",
+   "assetId": "lagos.socket4",
+   "transform": {
+    "position": [
+     -0.8799999999999999,
+     0.51,
+     -13
+    ],
+    "rotation": [
+     0,
+     0.7071067811865476,
+     0,
+     -0.7071067811865475
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "socket",
+    "electric"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "metadata": {
+    "workstation": "6"
+   }
+  },
+  {
+   "id": "ws.6.cable",
+   "name": "Câble d’alimentation 6",
+   "type": "PROP",
+   "transform": {
+    "position": [
+     -1.1349999999999998,
+     1.13,
+     -13.25
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "cybercafe",
+    "cable"
+   ],
+   "capabilities": [],
+   "metadata": {
+    "workstation": "6",
+    "procedural": {
+     "kind": "cable",
+     "radius": 0.0045,
+     "points": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0.21499999999999986,
+       -0.1399999999999998,
+       0
+      ],
+      [
+       0.23500000000000032,
+       -0.8699999999999999,
+       0.049999999999998934
+      ],
+      [
+       0.23500000000000032,
+       -0.8899999999999999,
+       0.1999999999999993
+      ],
+      [
+       0.22500000000000053,
+       -0.5999999999999999,
+       0.25
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "id": "st.crates",
+   "name": "Casiers de bouteilles",
+   "type": "PROP",
+   "assetId": "lagos.crate",
+   "transform": {
+    "position": [
+     -31.85,
+     0.08,
+     -5.78
+    ],
+    "rotation": [
+     0,
+     -0.1772743100004977,
+     0,
+     0.9841614801514269
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "crate",
+    "drinks"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "st.crate1",
+   "name": "Casiers de bouteilles",
+   "type": "PROP",
+   "assetId": "lagos.crate",
+   "transform": {
+    "position": [
+     -28.15,
+     0.08,
+     -5.67
+    ],
+    "rotation": [
+     0,
+     -0.19888984510989002,
+     0,
+     0.9800218515483029
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "crate",
+    "drinks"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "st.box",
+   "name": "Carton",
+   "type": "PROP",
+   "assetId": "lagos.box",
+   "transform": {
+    "position": [
+     -19.6,
+     0.08,
+     -5.76
+    ],
+    "rotation": [
+     0,
+     0.020759633251776367,
+     0,
+     0.999784495592551
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "box"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "interactable",
+    "pickable"
+   ],
+   "metadata": {
+    "interaction": {
+     "pickable": true,
+     "heldBy": null
+    }
+   }
+  },
+  {
+   "id": "st.planter",
+   "name": "Bac à plantes",
+   "type": "VEGETATION",
+   "assetId": "lagos.planter",
+   "transform": {
+    "position": [
+     2.7,
+     0.08,
+     -6.62
+    ],
+    "rotation": [
+     0,
+     -0.21312526503690032,
+     0,
+     0.97702488269386
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "plant"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "st.generator2",
+   "name": "Groupe électrogène",
+   "type": "PROP",
+   "assetId": "lagos.generator",
+   "transform": {
+    "position": [
+     15.6,
+     0.08,
+     -5.76
+    ],
+    "rotation": [
+     0,
+     -0.0774637313168094,
+     0,
+     0.9969951706655741
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "generator",
+    "nepa",
+    "street"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
    "id": "st.gen1",
    "name": "Groupe électrogène",
    "type": "PROP",
    "assetId": "lagos.generator",
    "transform": {
     "position": [
-     14.3,
+     24.05,
      0.08,
-     -6.5
+     -5.64
     ],
     "rotation": [
      0,
-     0.13052619222005157,
+     -0.16073171567503958,
      0,
-     0.9914448613738104
+     0.9869981335221248
     ],
     "scale": [
      1,
@@ -3828,15 +4812,15 @@
    "assetId": "lagos.jerrycan",
    "transform": {
     "position": [
-     15.4,
+     27.95,
      0.08,
-     -6.800000000000001
+     -5.66
     ],
     "rotation": [
      0,
-     -0.17364817766693033,
+     -0.06295400157707265,
      0,
-     0.984807753012208
+     0.9980164295668854
     ],
     "scale": [
      1,
@@ -3863,21 +4847,21 @@
    }
   },
   {
-   "id": "st.crates",
-   "name": "Casiers de bouteilles",
-   "type": "PROP",
-   "assetId": "lagos.crate",
+   "id": "st.planter3",
+   "name": "Bac à plantes",
+   "type": "VEGETATION",
+   "assetId": "lagos.planter",
    "transform": {
     "position": [
-     -31.2,
+     -28.3,
      0.08,
-     -6.800000000000001
+     6.46
     ],
     "rotation": [
      0,
-     0.03489949670250097,
+     0.9795934831416948,
      0,
-     0.9993908270190958
+     -0.20098907379835856
     ],
     "scale": [
      1,
@@ -3886,112 +4870,7 @@
     ]
    },
    "tags": [
-    "crate",
-    "drinks"
-   ],
-   "capabilities": [
-    "selectable",
-    "movable",
-    "rotatable",
-    "collidable"
-   ],
-   "metadata": {}
-  },
-  {
-   "id": "st.crates2",
-   "name": "Casiers de bouteilles",
-   "type": "PROP",
-   "assetId": "lagos.crate",
-   "transform": {
-    "position": [
-     -30.4,
-     0.08,
-     -6.800000000000001
-    ],
-    "rotation": [
-     0,
-     -0.0697564737441253,
-     0,
-     0.9975640502598242
-    ],
-    "scale": [
-     1,
-     1,
-     1
-    ]
-   },
-   "tags": [
-    "crate",
-    "drinks"
-   ],
-   "capabilities": [
-    "selectable",
-    "movable",
-    "rotatable",
-    "collidable"
-   ],
-   "metadata": {}
-  },
-  {
-   "id": "st.bench1",
-   "name": "Banc",
-   "type": "FURNITURE",
-   "assetId": "lagos.bench",
-   "transform": {
-    "position": [
-     5.6,
-     0.08,
-     6.65
-    ],
-    "rotation": [
-     0,
-     1,
-     0,
-     6.123233995736766e-17
-    ],
-    "scale": [
-     1,
-     1,
-     1
-    ]
-   },
-   "tags": [
-    "bench",
-    "seat"
-   ],
-   "capabilities": [
-    "selectable",
-    "movable",
-    "rotatable",
-    "collidable"
-   ],
-   "metadata": {}
-  },
-  {
-   "id": "st.stool1",
-   "name": "Tabouret",
-   "type": "FURNITURE",
-   "assetId": "lagos.stool",
-   "transform": {
-    "position": [
-     7.4,
-     0.08,
-     6.1000000000000005
-    ],
-    "rotation": [
-     0,
-     0.25881904510252074,
-     0,
-     0.9659258262890683
-    ],
-    "scale": [
-     1,
-     1,
-     1
-    ]
-   },
-   "tags": [
-    "stool"
+    "plant"
    ],
    "capabilities": [
     "selectable",
@@ -4008,15 +4887,15 @@
    "assetId": "lagos.chair",
    "transform": {
     "position": [
-     -15.6,
+     -12.9,
      0.08,
-     6
+     6.6
     ],
     "rotation": [
      0,
-     0.984807753012208,
+     0.9823795425863293,
      0,
-     -0.1736481776669303
+     -0.1868968547297533
     ],
     "scale": [
      1,
@@ -4055,21 +4934,159 @@
    }
   },
   {
+   "id": "st.stool4",
+   "name": "Tabouret",
+   "type": "FURNITURE",
+   "assetId": "lagos.stool",
+   "transform": {
+    "position": [
+     -5.15,
+     0.08,
+     6.46
+    ],
+    "rotation": [
+     0,
+     0.9947469071407935,
+     0,
+     -0.10236498783190287
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "stool"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "st.bench1",
+   "name": "Banc",
+   "type": "FURNITURE",
+   "assetId": "lagos.bench",
+   "transform": {
+    "position": [
+     8.5,
+     0.08,
+     5.66
+    ],
+    "rotation": [
+     0,
+     0.9958602740757515,
+     0,
+     -0.09089727453432853
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "bench",
+    "seat"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "st.stool1",
+   "name": "Tabouret",
+   "type": "FURNITURE",
+   "assetId": "lagos.stool",
+   "transform": {
+    "position": [
+     4.3,
+     0.08,
+     5.69
+    ],
+    "rotation": [
+     0,
+     0.9796771563769264,
+     0,
+     0.20058082977497907
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "stool"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
+   "id": "st.bench5",
+   "name": "Banc",
+   "type": "FURNITURE",
+   "assetId": "lagos.bench",
+   "transform": {
+    "position": [
+     21.28,
+     0.08,
+     6.6
+    ],
+    "rotation": [
+     0,
+     0.9921854414046567,
+     0,
+     0.1247719915070952
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "bench",
+    "seat"
+   ],
+   "capabilities": [
+    "selectable",
+    "movable",
+    "rotatable",
+    "collidable"
+   ],
+   "metadata": {}
+  },
+  {
    "id": "st.barrel",
    "name": "Fût",
    "type": "PROP",
    "assetId": "lagos.barrel",
    "transform": {
     "position": [
-     27.8,
+     30.4,
      0.08,
-     -6.7
+     5.66
     ],
     "rotation": [
      0,
+     0.9818404407709955,
      0,
-     0,
-     1
+     -0.18970858933273768
     ],
     "scale": [
      1,
@@ -4096,15 +5113,15 @@
    "assetId": "lagos.tyre",
    "transform": {
     "position": [
-     29,
+     26.4,
      0.08,
-     -6.5
+     5.69
     ],
     "rotation": [
      0,
+     0.9803118950640369,
      0,
-     0,
-     1
+     -0.19745528201584422
     ],
     "scale": [
      1,
@@ -4131,9 +5148,9 @@
    "assetId": "lagos.trashcan",
    "transform": {
     "position": [
-     -3.5,
+     -1.2,
      0.08,
-     6.800000000000001
+     -4.8
     ],
     "rotation": [
      0,
@@ -4165,9 +5182,9 @@
    "assetId": "lagos.trashbag",
    "transform": {
     "position": [
-     -2.4,
+     -1.9,
      0.08,
-     6.9
+     -4.7
     ],
     "rotation": [
      0,
@@ -4193,89 +5210,15 @@
    "metadata": {}
   },
   {
-   "id": "st.box",
-   "name": "Carton",
-   "type": "PROP",
-   "assetId": "lagos.box",
-   "transform": {
-    "position": [
-     -17.6,
-     0.08,
-     -6.800000000000001
-    ],
-    "rotation": [
-     0,
-     0.21643961393810288,
-     0,
-     0.9762960071199334
-    ],
-    "scale": [
-     1,
-     1,
-     1
-    ]
-   },
-   "tags": [
-    "box"
-   ],
-   "capabilities": [
-    "selectable",
-    "movable",
-    "rotatable",
-    "interactable",
-    "pickable"
-   ],
-   "metadata": {
-    "interaction": {
-     "pickable": true,
-     "heldBy": null
-    }
-   }
-  },
-  {
-   "id": "st.planter",
-   "name": "Bac à plantes",
-   "type": "VEGETATION",
-   "assetId": "lagos.planter",
-   "transform": {
-    "position": [
-     4.8,
-     0.08,
-     -6.8500000000000005
-    ],
-    "rotation": [
-     0,
-     0,
-     0,
-     1
-    ],
-    "scale": [
-     1,
-     1,
-     1
-    ]
-   },
-   "tags": [
-    "plant"
-   ],
-   "capabilities": [
-    "selectable",
-    "movable",
-    "rotatable",
-    "collidable"
-   ],
-   "metadata": {}
-  },
-  {
    "id": "st.powerbox",
    "name": "Coffret électrique",
    "type": "PROP",
    "assetId": "lagos.powerbox",
    "transform": {
     "position": [
-     -12.9,
+     -0.95,
      0.08,
-     -7.1000000000000005
+     -7.1
     ],
     "rotation": [
      0,
@@ -4308,9 +5251,9 @@
    "assetId": "lagos.peugeot504",
    "transform": {
     "position": [
-     9.5,
+     -15.93,
      0,
-     -2.3
+     -2.35
     ],
     "rotation": [
      0,
@@ -4345,9 +5288,9 @@
    "assetId": "lagos.corolla",
    "transform": {
     "position": [
-     -26,
+     6.84,
      0,
-     2.4
+     2.35
     ],
     "rotation": [
      0,
@@ -4381,15 +5324,15 @@
    "assetId": "lagos.covered_car",
    "transform": {
     "position": [
-     24,
+     23.45,
      0,
-     2.5
+     2.35
     ],
     "rotation": [
      0,
-     0.7071067811865475,
      0,
-     0.7071067811865476
+     0,
+     1
     ],
     "scale": [
      1,
@@ -4968,5 +5911,6 @@
  "shots": [],
  "worldState": {
   "timeOfDay": "day"
- }
+ },
+ "revision": "2026-10-12.2"
 }
