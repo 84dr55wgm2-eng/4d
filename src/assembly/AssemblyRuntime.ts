@@ -76,9 +76,10 @@ export class AssemblyRuntime {
     return [[b.min[0], b.min[2]], [b.max[0], b.min[2]], [b.max[0], b.max[2]], [b.min[0], b.max[2]]].map(([x, z]) => new THREE.Vector3(x, 0, z).applyMatrix4(m));
   }
 
-  /** collision triangles of every placed set (world space), for collision + navigation */
+  /** collision triangles of every placed set (world space, float32 — package meshes may be quantized), for collision + navigation */
   geometry(doc: WorldDocument, objects: Map<string, THREE.Object3D>) {
-    const parts: THREE.BufferGeometry[] = [];
+    const out: number[] = [];
+    const v = new THREE.Vector3();
     for (const e of doc.entities) {
       if (e.type !== 'SET') continue;
       const o = objects.get(e.id); const hd = (o?.userData.lodGroups as { hd: THREE.Group } | undefined)?.hd;
@@ -86,23 +87,23 @@ export class AssemblyRuntime {
       o.updateMatrixWorld(true);
       hd.traverse((x) => {
         const mesh = x as THREE.Mesh;
-        if (!mesh.isMesh || !mesh.geometry.getAttribute('position')) return;
+        const pos = mesh.isMesh ? mesh.geometry.getAttribute('position') : undefined;
+        if (!pos) return;
         const mat = mesh.material as THREE.MeshStandardMaterial;
         if (mat?.transparent && (mat.opacity ?? 1) < 0.6) return; // glazing does not block
-        const g = new THREE.BufferGeometry();
-        g.setAttribute('position', mesh.geometry.getAttribute('position').clone());
-        if (mesh.geometry.index) g.setIndex(mesh.geometry.index.clone());
-        g.applyMatrix4(mesh.matrixWorld);
-        parts.push(g.index ? g.toNonIndexed() : g);
+        const idx = mesh.geometry.index;
+        const n = idx ? idx.count : pos.count;
+        for (let i = 0; i < n; i++) {
+          v.fromBufferAttribute(pos, idx ? idx.getX(i) : i).applyMatrix4(mesh.matrixWorld);
+          out.push(v.x, v.y, v.z);
+        }
       });
     }
-    let n = 0; for (const p of parts) n += p.getAttribute('position').count;
-    const pos = new Float32Array(n * 3);
-    let o = 0; for (const p of parts) { pos.set(p.getAttribute('position').array as Float32Array, o); o += p.getAttribute('position').count * 3; p.dispose(); }
-    const out = new THREE.BufferGeometry();
-    out.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    out.setIndex(new THREE.BufferAttribute(new Uint32Array(n).map((_, i) => i), 1));
-    return out;
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(out), 3));
+    g.setIndex(new THREE.BufferAttribute(new Uint32Array(out.length / 3).map((_, i) => i), 1));
+    g.computeBoundingBox();
+    return g;
   }
 }
 

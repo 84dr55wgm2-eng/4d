@@ -50,6 +50,12 @@ export class CameraDirector extends Emitter<Events> {
   followHeading = 0;
   /** user zoom factor on the automatic framing distance (pinch / wheel) */
   followZoom = 1;
+  /**
+   * Manual orientation chosen by the user while following (drag): a world yaw kept as the actor moves, plus a
+   * pitch offset. null = automatic (behind the actor). Cleared only by recenter().
+   */
+  manualYaw: number | null = null;
+  manualPitch = 0;
   /** provider of the actor's surroundings; without it the camera frames as exterior */
   followContext: (() => FollowContext) | null = null;
   /** current smoothed framing + chosen yaw offset (hysteresis), exposed for diagnostics */
@@ -79,17 +85,25 @@ export class CameraDirector extends Emitter<Events> {
 
     const touches = new Map<number, THREE.Vector2>();
     let pinch = 0;
-    dom.addEventListener('pointerdown', (e) => { touches.set(e.pointerId, new THREE.Vector2(e.clientX, e.clientY)); pinch = 0; });
+    let drag: { x: number; y: number; on: boolean } | null = null;
+    dom.addEventListener('pointerdown', (e) => { touches.set(e.pointerId, new THREE.Vector2(e.clientX, e.clientY)); pinch = 0; drag = touches.size === 1 ? { x: e.clientX, y: e.clientY, on: false } : null; });
     dom.addEventListener('pointermove', (e) => {
       if (!touches.has(e.pointerId)) return;
+      const prev = touches.get(e.pointerId)!.clone();
       touches.set(e.pointerId, new THREE.Vector2(e.clientX, e.clientY));
+      if (this.mode === 'follow' && touches.size === 1 && drag) {
+        // one-finger / mouse drag orbits the follow camera; a tap (< 6 px) stays a tap for the studio
+        if (!drag.on && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 6) drag.on = true;
+        if (drag.on) this.orbitFollow((e.clientX - prev.x) * 0.006, (e.clientY - prev.y) * 0.004);
+        return;
+      }
       if (this.mode !== 'follow' || touches.size !== 2) return;
       const [a, b] = [...touches.values()];
       const distance = a.distanceTo(b);
       if (pinch > 0 && distance > 0) this.followZoom = THREE.MathUtils.clamp(this.followZoom * pinch / distance, 0.45, 2.2);
       pinch = distance;
     });
-    const release = (e: PointerEvent) => { touches.delete(e.pointerId); pinch = 0; };
+    const release = (e: PointerEvent) => { touches.delete(e.pointerId); pinch = 0; if (!touches.size) drag = null; };
     window.addEventListener('pointerup', release);
     dom.addEventListener('pointercancel', release);
     dom.addEventListener('wheel', (e) => {
@@ -169,9 +183,25 @@ export class CameraDirector extends Emitter<Events> {
     else this.updateDirector(dt);
   }
 
+  /** manual orbit around the followed actor: the chosen yaw is kept while the actor moves */
+  orbitFollow(dYaw: number, dPitch: number) {
+    this.manualYaw = (this.manualYaw ?? this.followYaw + this.yawOffset) - dYaw;
+    this.manualPitch = THREE.MathUtils.clamp(this.manualPitch + dPitch, -0.25, 0.9);
+    this.emit('change', { mode: this.mode, focalLength: this.focalLength });
+  }
+
+  /** back to the automatic framing behind the actor (explicit action only) */
+  recenter() {
+    this.manualYaw = null; this.manualPitch = 0; this.followZoom = 1;
+    this.emit('change', { mode: this.mode, focalLength: this.focalLength });
+  }
+
+  /** controlled zoom on the follow distance (buttons, keys), same limits as wheel / pinch */
+  zoomFollow(factor: number) { this.followZoom = THREE.MathUtils.clamp(this.followZoom * factor, 0.45, 2.2); }
+
   /** Jump straight to the automatic framing (world load, mode change): same computation as the live follow. */
   snapFollow() {
-    this.followYaw = this.followHeading + Math.PI;
+    this.followYaw = this.manualYaw ?? this.followHeading + Math.PI;
     this.yawOffset = 0;
     this.updateFollow(1, true);
   }
@@ -201,7 +231,9 @@ export class CameraDirector extends Emitter<Events> {
       if (dx * dx + dz * dz > 2.2) heading += angleDiff(Math.atan2(dx, dz), heading) * 0.35;
     }
     const ky = snap ? 1 : 1 - Math.exp(-Math.min(dt, 0.1) * 4);
-    this.followYaw += angleDiff(heading + Math.PI, this.followYaw) * ky;
+    if (this.manualYaw !== null) this.followYaw = this.manualYaw; // the user's orientation, kept as the actor moves
+    else this.followYaw += angleDiff(heading + Math.PI, this.followYaw) * ky;
+    const manual = this.manualYaw !== null;
 
     // look point: chest height + lead toward where the actor is going
     const look = _look.copy(feet); look.y += f.look;
@@ -214,9 +246,9 @@ export class CameraDirector extends Emitter<Events> {
     const future = _probe.copy(look);
     if (ctx) future.addScaledVector(ctx.velocity, 0.6);
     let best = this.yawOffset, bestScore = -Infinity, bestClear = want;
-    for (const off of YAW_TRIES) {
+    for (const off of manual ? [0] : YAW_TRIES) { // a chosen orientation is not overridden; walls shorten the distance instead
       const yaw = this.followYaw + off;
-      const dir = this.offsetDir(yaw, f.pitch, _v);
+      const dir = this.offsetDir(yaw, f.pitch + this.manualPitch, _v);
       let clear = this.clearance(look, dir, want);
       if (ctx && ctx.velocity.lengthSq() > 0.04) clear = Math.min(clear, this.clearance(future, dir, want));
       clear = Math.min(clear, this.roomLimit(look, dir, want, room));
@@ -228,7 +260,7 @@ export class CameraDirector extends Emitter<Events> {
     let dist = Math.max(1.3, Math.min(want, bestClear));
     // when the space forces the camera close, crane up rather than filling the frame with the actor's back
     const squeeze = 1 - dist / want;
-    const pitch = f.pitch + Math.max(0, squeeze) * 0.45;
+    const pitch = f.pitch + this.manualPitch + Math.max(0, squeeze) * 0.45;
     const dir = this.offsetDir(yaw, pitch, _dir);
     dist = Math.max(1.1, Math.min(dist, this.clearance(look, dir, dist), this.roomLimit(look, dir, dist, room)));
     const right = _w.set(Math.cos(yaw), 0, -Math.sin(yaw));

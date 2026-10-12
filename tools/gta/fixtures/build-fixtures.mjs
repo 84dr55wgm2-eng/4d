@@ -138,7 +138,8 @@ function building(name, { w, d, floors = 2, fh = 3.3, paint = 'plaster', front =
   b.add(paint, wallPanel(d, H, WALL_T, []), new THREE.Matrix4().multiplyMatrices(T(-w / 2, 0, -d / 2), RY(-90)));
   b.add(paint, wallPanel(d, H, WALL_T, []), new THREE.Matrix4().multiplyMatrices(T(w / 2, 0, d / 2), RY(90)));
   // slabs (ground floor slab only when the ground floor is enterable), roof parapet
-  if (hollow || passage) b.add('floor_tile', metricBox(w - 2 * WALL_T, 0.06, d - 2 * WALL_T), T(0, 0.03, 0));
+  // full-footprint slab: the doorways get a floor across the wall thickness (an interior is reachable from the street)
+  if (hollow || passage) b.add('floor_tile', metricBox(w, 0.06, d), T(0, 0.03, 0));
   for (let f = 1; f <= floors; f++) b.add('concrete', metricBox(w, 0.22, d), T(0, f * fh - 0.11, 0));
   b.add('concrete', metricBox(w + 0.2, 0.8, 0.2), T(0, H + 0.4, d / 2 + 0.1 - 0.2));
   // shutters / glazing / door leaves in the openings

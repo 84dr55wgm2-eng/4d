@@ -1,0 +1,8 @@
+{
+  "name": "cws-agent-relay",
+  "private": true,
+  "type": "module",
+  "description": "Server-side inference relay for Cinematic World Studio: holds the model key, forwards one agent turn at a time. Tools run in the browser on the real studio state.",
+  "scripts": { "start": "node server.mjs" },
+  "dependencies": { "@anthropic-ai/sdk": "^0.133.0" }
+}

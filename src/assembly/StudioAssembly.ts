@@ -10,6 +10,7 @@ import type { Studio } from '../runtime/Studio';
 import { isAgentRefusal, refusalPayload } from '../vendor/pascal/refusal';
 import type { SceneChanges, SceneNodes } from '../vendor/pascal/types';
 import { AssemblyRuntime, resourceAssetId } from './AssemblyRuntime';
+import type { SimSnapshot } from '../sim/Simulation';
 import { planTransaction, verifyAssembly, worldConnector, type Issue, type OperationName } from './operations';
 
 /**
@@ -77,8 +78,9 @@ export class StudioAssembly {
   static emptyWorld(name: string, context: NonNullable<WorldDocument['assembly']>['context'], hdri: string): WorldDocument {
     return {
       format: 'cws-world', version: 3, id: `world.${crypto.randomUUID()}`, name,
-      environment: { hdri, sun: { azimuth: 150, elevation: 50, intensity: 3.2 }, exposure: 0.95 },
-      spawn: { position: [0, 0.3, 0], heading: 0 }, zones: [], entities: [], shots: [], worldState: { timeOfDay: 'day' },
+      // late-afternoon light by default (the physical sky reads as a sky, not a white haze); set_time_of_day changes it
+      environment: { hdri, sun: { azimuth: -95, elevation: 16, intensity: 3.2 }, exposure: 1.0 },
+      spawn: { position: [0, 0.3, 0], heading: 0 }, zones: [], entities: [], shots: [], worldState: { timeOfDay: 'golden' },
       assembly: { context, junctions: [], packages: [] }, sequences: [],
     } as WorldDocument;
   }
@@ -140,18 +142,24 @@ export class StudioAssembly {
     const pts = sets.map((e) => ({ e, p: sample(e) }));
     const origin = pts.find((x) => x.p);
     if (!origin) return issues;
+    const reachable = new Set<string>([origin.e.id]);
     for (const x of pts) {
       if (x === origin) continue;
       if (!x.p) { issues.push({ code: 'not_walkable', severity: 'warning', message: `${x.e.name} : aucun sol praticable trouvé.`, ids: [x.e.id] }); continue; }
       if (!nav.path(origin.p!, x.p)) issues.push({ code: 'unreachable', severity: 'warning', message: `${x.e.name} n’est pas accessible à pied depuis ${origin.e.name}.`, ids: [origin.e.id, x.e.id] });
+      else reachable.add(x.e.id);
     }
-    return issues;
+    // a set placed edge to edge without a declared junction is still fine when one can actually walk to it
+    return issues.filter((i) => !(i.code === 'isolated' && reachable.has(i.ids[0]))).concat(issues.some((i) => i.code === 'isolated' && reachable.has(i.ids[0])) ? [{ code: 'adjacent_without_junction', severity: 'info', message: 'Ensemble(s) accolé(s) sans jonction déclarée, mais accessibles à pied.', ids: issues.filter((i) => i.code === 'isolated' && reachable.has(i.ids[0])).map((i) => i.ids[0]) }] : []);
   }
 
   // ------------------------------------------------------------------ collision + navigation from the placed sets
+  private simSignature = '';
   onDocChange(source: string) {
     const doc = this.s.store.doc;
     const sig = JSON.stringify(doc.entities.filter((e) => e.type === 'SET').map((e) => [e.id, e.transform, e.metadata?.set]));
+    const simSig = JSON.stringify(doc.entities.filter((e) => e.metadata?.sim).map((e) => [e.id, e.assetId, e.transform.position, e.metadata?.sim]));
+    if (sig === this.signature && simSig !== this.simSignature && this.s.nav) { this.simSignature = simSig; void this.rebuildSim(); }
     if (sig === this.signature || source === 'sequence') return;
     this.signature = sig;
     clearTimeout(this.rebuildTimer);
@@ -165,10 +173,17 @@ export class StudioAssembly {
     while (this.runtime.loading.size && performance.now() - t0 < timeoutMs) await new Promise((r) => setTimeout(r, 60));
   }
 
-  async rebuildGeometry() {
+  private building: Promise<void> = Promise.resolve();
+  /** one rebuild at a time (the navigation generator is not re-entrant) */
+  rebuildGeometry() { return (this.building = this.building.catch(() => undefined).then(() => this.rebuildNow())); }
+
+  private async rebuildNow() {
     await this.waitForSets();
     const geometry = this.runtime.geometry(this.s.store.doc, this.s.entities.objects);
     if (!geometry.getAttribute('position').count) { geometry.dispose(); return; }
+    const size = geometry.boundingBox!.getSize(new THREE.Vector3());
+    if (!(Math.max(size.x, size.z) < 6000)) { geometry.dispose(); throw new Error(`étendue de l’assemblage invalide pour la navigation (${size.x.toFixed(0)} × ${size.z.toFixed(0)} m)`); }
+    console.info(`[assembly] navigation: ${geometry.getAttribute('position').count / 3} triangles, ${size.x.toFixed(0)} × ${size.z.toFixed(0)} m`);
     const nav = await Navigation.build(geometry, { cs: 0.2, radius: 0.3 });
     const old = this.s.collision;
     const collision = new CollisionWorld(geometry);
@@ -179,7 +194,20 @@ export class StudioAssembly {
     if (this.s.actor) this.s.actor.collision = collision;
     this.s.engine.scene.add(collision.debugMesh, nav.debugObject());
     this.s.engine.shadowsDirty = true;
+    await this.rebuildSim();
     this.s.set({});
+  }
+
+  private simRestored = false;
+  /** population on the current navigation; the saved snapshot is applied once, when the world opens */
+  async rebuildSim() {
+    const doc = this.s.store.doc, nav = this.s.nav;
+    if (!nav) return;
+    this.simSignature = JSON.stringify(doc.entities.filter((e) => e.metadata?.sim).map((e) => [e.id, e.assetId, e.transform.position, e.metadata?.sim]));
+    const restore = this.simRestored ? null : await idb.get<SimSnapshot>('settings', `sim:${doc.id}`).catch(() => undefined);
+    this.simRestored = true;
+    this.s.sim.setDocument(doc);
+    await this.s.sim.rebuild(doc, nav, this.s.entities.objects, restore);
   }
 
   /** where the actor starts: a walkable point next to the first placement's first pedestrian access */

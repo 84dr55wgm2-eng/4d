@@ -200,7 +200,7 @@ export const addEntities: Op<{ resource: string; count?: number; placement: stri
       id, type: kind === 'vehicle' ? 'VEHICLE' : 'PROP', name: `${input.name ?? hit!.res.id} ${i + 1}`, assetId: resourceAssetId(hit!.pkg.id, hit!.res.id), parentId: e.id,
       transform: { position: p.toArray().map(r3) as Vec3, rotation: yawQuat(THREE.MathUtils.radToDeg(-a)).toArray().map(r3) as Entity['transform']['rotation'], scale: [1, 1, 1] },
       tags: [kind, ...hit!.res.tags], capabilities: ['selectable', 'movable', 'rotatable'],
-      metadata: { sim: { kind: kind === 'vehicle' ? 'vehicle' : kind === 'character' ? 'person' : 'prop', behavior, home: input.placement, area: input.at ?? null } },
+      metadata: { sim: { kind: kind === 'vehicle' ? 'vehicle' : kind === 'character' ? 'person' : 'prop', behavior, home: input.placement, area: input.at ?? null }, ...(kind === 'vehicle' || kind === 'character' ? { procedural: { kind: 'sim' } } : {}) },
     };
     created.push(en as unknown as AnyNode);
   }
@@ -253,6 +253,20 @@ export function verifyAssembly(nodes: SceneNodes, ctx: AssemblyContext): Issue[]
 export const OPERATIONS = { place_set: placeSet, connect_sets: connectSets, move_set: moveSet, replace_set: replaceSet, remove_set: removeSet, hide_members: hideMembers, add_entities: addEntities } as const satisfies Record<string, AgentOperation<never> | Op<never>>;
 export type OperationName = keyof typeof OPERATIONS;
 
+/** "$0" (or "$0.placement") in a step input = the placement created/handled by step 0 of the same transaction */
+function resolveRefs(v: unknown, results: Record<string, unknown>[]): unknown {
+  if (typeof v === 'string') {
+    const m = v.match(/^\$(\d+)(?:\.(\w+))?$/);
+    if (!m) return v;
+    const r = results[+m[1]];
+    if (!r) refuse('bad_step_reference', `Référence ${v} : l’étape ${m[1]} n’existe pas encore dans cette transaction.`);
+    return r![m[2] ?? 'placement'];
+  }
+  if (Array.isArray(v)) return v.map((x) => resolveRefs(x, results));
+  if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, resolveRefs(x, results)]));
+  return v;
+}
+
 /**
  * Run several operations as one transaction: each sees the scene as the previous ones left it (preview), the
  * changes are merged (Pascal mergeSceneChanges) and verified before anything is committed.
@@ -266,7 +280,7 @@ export function planTransaction(nodes: SceneNodes, steps: { op: OperationName; i
     const op = OPERATIONS[s.op] as Op<Record<string, unknown>>;
     if (!op) refuse('unknown_operation', `Opération inconnue : ${s.op}`, { available: Object.keys(OPERATIONS) });
     let out;
-    try { out = op(view, s.input, { ...ctx, junctions }); }
+    try { out = op(view, resolveRefs(s.input, results) as Record<string, unknown>, { ...ctx, junctions }); }
     catch (e) { (e as { details?: Record<string, unknown> }).details = { ...(e as { details?: Record<string, unknown> }).details, step: i, op: s.op }; throw e; }
     results.push({ op: s.op, ...out.result });
     if (out.changes) {

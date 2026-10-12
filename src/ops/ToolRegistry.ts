@@ -2,6 +2,21 @@ import { planWorld } from '../world/WorldCreator';
 import { matchesDistrictKit, planDistrict } from '../world/district/Commands';
 import { compileWorldIntent } from '../world/WorldIntent';
 import type { Studio } from '../runtime/Studio';
+import type { OperationName } from '../assembly/operations';
+import { yawOf } from '../assembly/AssemblyRuntime';
+
+function assemblyState(studio: Studio) {
+  const d = studio.store.doc;
+  if (!d.assembly) return { error: 'Le monde ouvert n’est pas un assemblage.', world: d.name };
+  const r = (v: number) => Math.round(v * 100) / 100;
+  return {
+    world: { id: d.id, name: d.name, context: d.assembly.context },
+    placements: d.entities.filter((e) => e.type === 'SET').map((e) => ({ id: e.id, name: e.name, ref: (e.metadata?.set as { ref: string }).ref, position: e.transform.position.map(r), yaw: r(yawOf(e)) })),
+    population: d.entities.filter((e) => e.metadata?.sim).map((e) => ({ id: e.id, name: e.name, assetId: e.assetId, placement: e.parentId, sim: e.metadata!.sim })),
+    junctions: d.assembly.junctions, issues: d.assembly.issues ?? [], packages: d.assembly.packages,
+    missingPackages: d.assembly.packages.filter((p) => !studio.assembly.catalog.list().some((x) => x.id === p)),
+  };
+}
 
 type Tool = {
   description: string;
@@ -22,7 +37,42 @@ export class StudioToolRegistry {
 
   constructor(private studio: Studio) {
     const ops = studio.ops;
+    const asm = () => studio.assembly;
+    const step = (op: OperationName, label: (a: any) => string) => ({ description: '', run: (a: any) => asm().run([{ op, input: a ?? {} }], label(a ?? {}), { force: !!a?.force }) });
     this.sets = {
+      catalog: {
+        description: 'Imported content packages: search sets (streets, crossroads, buildings, interiors, courtyards, map portions) and resources (props, characters, vehicles); inspect connectors and rooms.',
+        tools: {
+          list_packages: { description: 'Packages imported in this browser (id, kind, notGta flag, counts) and storage backend.', run: async () => ({ packages: asm().catalog.list(), broken: asm().broken, storage: await asm().packages.storage() }) },
+          search_sets: { description: 'Compact candidates for a query + filters {query, kind, capability, access, minWidth, maxWidth, limit}.', run: (a) => asm().catalog.searchSets(String(a?.query ?? ''), a ?? {}) },
+          inspect_set: { description: 'Full description of one set {ref}: connectors (id, kind, position, normal, width, origin), rooms, measured vs inferred annotations.', run: (a) => asm().catalog.inspect(String(a?.ref)) ?? { error: `Ensemble introuvable : ${a?.ref}` } },
+          search_resources: { description: 'Resources {query, kind: prop|character|vehicle|building|road|…, limit}.', run: (a) => asm().catalog.searchResources(String(a?.query ?? ''), a ?? {}) },
+        },
+      },
+      assembly: {
+        description: 'Assemble a place from imported sets with validated, undoable operations (Pascal operation contract, one transaction per call).',
+        tools: {
+          create_world: { description: 'Save the current world, create a new empty place {name, brief?, place?, era?, ambience?} and open it.', run: (a) => studio.createAssemblyWorld(String(a?.name ?? 'Nouveau lieu'), { brief: a?.brief, place: a?.place, era: a?.era, ambience: a?.ambience }) },
+          state: { description: 'Placements (id, set ref, kind, position, yaw), junctions and last issues of the open place.', run: () => assemblyState(studio) },
+          place_set: { ...step('place_set', (a) => `Placer ${a.ref}`), description: 'Place a set {ref, position?, yaw?, name?}; without position, the nearest free spot next to the assembly.' },
+          connect_sets: { ...step('connect_sets', () => 'Raccorder deux ensembles'), description: 'Join {a:{placement, connector}, b:{placement, connector}}: B moves so its connector meets A’s (normals opposite; interior door onto facade door).' },
+          move_set: { ...step('move_set', () => 'Déplacer un ensemble'), description: 'Move a placement {placement, position? | by?, yaw?}. Breaks its junctions if they no longer meet.' },
+          replace_set: { ...step('replace_set', (a) => `Remplacer par ${a.ref}`), description: 'Swap the set of a placement {placement, ref}, keeping junctions whose connector kinds exist on the new set.' },
+          remove_set: { ...step('remove_set', () => 'Retirer un ensemble'), description: 'Remove a placement {placement} with its junctions and the entities it contains.' },
+          hide_members: { ...step('hide_members', () => 'Masquer des éléments'), description: 'Hide members of a placed set {placement, members:[memberId]} (e.g. a prop blocking a door).' },
+          apply_plan: { description: 'Several steps as ONE transaction {steps:[{op, input}], label?, force?}; "$0" in an input = placement of step 0.', run: (a) => asm().run(a?.steps ?? [], String(a?.label ?? 'Plan d’assemblage'), { force: !!a?.force }) },
+          verify: { description: 'Overlaps, open/misaligned junctions, floor steps, blocked doors, isolated sets and walking reachability on the navmesh.', run: () => asm().verify() },
+        },
+      },
+      population: {
+        description: 'Characters and vehicles from imported packages, with behaviours bound to a placement.',
+        tools: {
+          sim_state: { description: 'Shared simulation clock and population state (phases, seats occupied, stopped vehicles).', run: () => studio.sim.stats },
+          sim_run: { description: 'Pause or resume the population simulation {running: boolean}.', run: (a) => { studio.sim.running = a?.running !== false; return studio.sim.stats; } },
+          set_actor: { description: 'Character the user embodies {resource} (package character with its own clips); the place is saved and reopened.', run: (a) => studio.setPlaceActor(String(a?.resource)) },
+          add_entities: { ...step('add_entities', (a) => `Ajouter ${a.count ?? 1} × ${a.resource}`), description: 'Add {resource, count?, placement, at? (room or connector id), behavior?: wander|customer|sit|drive|idle, name?}.' },
+        },
+      },
       world: {
         description: 'World state, world briefs and persistence.',
         tools: {

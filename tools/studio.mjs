@@ -16,7 +16,7 @@ const [vw, vh] = (process.env.VIEWPORT ?? '1280x720').split('x').map(Number);
 const touch = !!process.env.VIEWPORT;
 const ctx = await browser.newContext({ viewport: { width: vw, height: vh }, ...(touch ? { hasTouch: true, isMobile: true, deviceScaleFactor: 2 } : {}) });
 const page = await ctx.newPage();
-page.on('console', (m) => { if (['error', 'warning'].includes(m.type()) && !/GPU stall|swiftshader|Automatic fallback/i.test(m.text())) console.log(`[${m.type()}]`, m.text().slice(0, 240)); });
+page.on('console', (m) => { if ((['error', 'warning'].includes(m.type()) || /^\[assembly\]/.test(m.text())) && !/GPU stall|swiftshader|Automatic fallback/i.test(m.text())) console.log(`[${m.type()}]`, m.text().slice(0, 240)); });
 page.on('requestfailed', (r) => console.log('[reqfail]', r.url().slice(0, 160), r.failure()?.errorText));
 page.on('response', (r) => { if (r.status() >= 400) console.log('[http]', r.status(), r.url().slice(0, 160)); });
 page.on('request', (r) => { const u = r.url(); if (!/^(https?:\/\/127\.0\.0\.1|data:|blob:)/.test(u)) console.log('[external]', u.slice(0, 140)); });

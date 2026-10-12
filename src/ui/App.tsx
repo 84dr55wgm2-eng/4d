@@ -8,6 +8,7 @@ import type { Studio } from '../runtime/Studio';
 import { LENSES } from '../runtime/CameraDirector';
 import { Icon, type IconName } from './icons';
 import { useDocVersion, usePoll, useStudioUI } from './useStudio';
+import { PlacePanel } from './PlacePanel';
 
 export function App({ studio }: { studio: Studio }) {
   const ui = useStudioUI(studio);
@@ -18,7 +19,7 @@ export function App({ studio }: { studio: Studio }) {
         <>
           <TopIsland studio={studio} />
           {!!studio.store.doc.composition?.missing.length && <div className="glass incomplete-world" role="status">Assemblage incomplet : ce décor ne respecte pas tout le brief. Ouvre le menu des mondes pour voir le contenu manquant.</div>}
-          <LibraryRail studio={studio} />
+          {(ui.placePanel ?? !!studio.store.doc.assembly) ? <PlacePanel studio={studio} close={() => studio.set({ placePanel: false })} /> : <LibraryRail studio={studio} />}
           <div className={ui.mode === 'direct' && ui.sequencePanel ? 'seq-open' : undefined}><Inspector studio={studio} /></div>
           <ActionDock studio={studio} />
           {ui.mode === 'direct' && ui.sequencePanel && <SequencePanel studio={studio} />}
@@ -90,13 +91,16 @@ function TopIsland({ studio }: { studio: Studio }) {
                 </button>
               ))}
               {studio.store.doc.district && <><div className="pop-title">Modifier ce monde</div><WorldCommand studio={studio} /></>}
-              <div className="pop-title">Créer un monde à partir d’une intention</div>
+              <div className="pop-title">Nouveau lieu assemblé</div>
+              <button className="row" onClick={() => studio.createAssemblyWorld('Nouveau lieu').catch((e) => studio.toast(String(e)))}>Créer un lieu vide (contenu importé)</button>
+              <div className="pop-title">Kits précédents (Bistro, Yaba)</div>
               <WorldBrief studio={studio} />
               <WorldImport studio={studio} />
             </div>
           )}
         </div>
         <Btn icon="plus" label="Créer un nouveau monde" onClick={() => setMenu(menu === 'world' ? null : 'world')} />
+        <Btn text="Lieux" label="Sources, catalogue, assemblage et agent" active={ui.placePanel ?? !!studio.store.doc.assembly} onClick={() => studio.set({ placePanel: !(ui.placePanel ?? !!studio.store.doc.assembly) })} />
         <div className="seg" role="tablist" aria-label="Mode">
           {(['explore', 'edit', 'direct'] as const).map((m, i) => (
             <button key={m} role="tab" aria-selected={ui.mode === m} className={ui.mode === m ? 'on' : ''} onClick={() => studio.setMode(m)} title={`${m[0].toUpperCase() + m.slice(1)} (${i + 1})`}>
@@ -554,6 +558,10 @@ function ActionDock({ studio }: { studio: Studio }) {
       <span className="hint">{actorSelected ? 'Personnage sélectionné · touche le sol pour marcher · touche un objet pour agir' : 'Touche le personnage puis une destination · caméra automatique'}</span>
       {contextId && <span className="context-actions">{studio.interactions.actionsFor(contextId).map((action) => <Btn key={action.id} text={action.label} label={action.label} onClick={async () => { const r = await studio.interactions.execute(contextId, action.id); if (!r.ok) studio.toast(r.error); else studio.toast(action.label); }} />)}</span>}
       {actorSelected && <Btn text="Stop" label="Arrêter le personnage" onClick={() => studio.ops.stopActor()} />}
+      {ui.cameraMode === 'follow' && <><div className="sep" />
+        <Btn text="−" label="Éloigner la caméra" onClick={() => studio.cameras.zoomFollow(1.15)} />
+        <Btn text="+" label="Rapprocher la caméra" onClick={() => studio.cameras.zoomFollow(1 / 1.15)} />
+        <Btn text={studio.cameras.manualYaw !== null ? 'Recentrer ●' : 'Recentrer'} label="Revenir derrière le personnage (glisser pour orienter la caméra)" active={studio.cameras.manualYaw !== null} onClick={() => studio.cameras.recenter()} /></>}
       {actorSelected && <Btn text="Done" label="Stop directing actor" onClick={() => studio.select(null)} />}
     </>;
   }

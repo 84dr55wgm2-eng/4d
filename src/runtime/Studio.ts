@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { AssetRegistry } from '../assets/AssetRegistry';
 import { Emitter } from '../core/emitter';
-import type { WorldDocument } from '../core/types';
+import type { Entity, WorldDocument } from '../core/types';
 import { idb } from '../storage/idb';
 import { WorldStore } from '../world/WorldStore';
 import { createOps } from '../ops/operations';
@@ -23,6 +23,9 @@ import { cableObject, DistrictRuntime, doorObject, lightBankObject } from '../wo
 import { closedDoorBoxes, setTimeOfDay } from '../world/district/DistrictOps';
 import { composeYabaWorld } from '../world/district/YabaWorld';
 import { ShopDresser } from '../world/district/ShopDresser';
+import { StudioAgent } from '../agent/Agent';
+import { Simulation, type SimSnapshot } from '../sim/Simulation';
+import { ConversionService } from '../content/ConversionService';
 import { StudioAssembly, characterClips } from '../assembly/StudioAssembly';
 import { INTERIOR_ENV } from '../world/district/Materials';
 import type { DistrictBriefPlan } from '../world/district/Commands';
@@ -53,6 +56,8 @@ export interface StudioUI {
   walkTargeting: boolean;
   interactionTarget?: string | null;
   sequencePanel?: boolean;
+  /** place studio panel (sources, catalogue, assembly, agent); undefined = open on assembled places */
+  placePanel?: boolean;
   toast?: { text: string; at: number };
 }
 
@@ -72,6 +77,9 @@ export class Studio extends Emitter<Events> {
   readonly interactions = new InteractionSystem(this);
   readonly ops = createOps(this);
   readonly tools = createToolRegistry(this);
+  readonly agent = new StudioAgent(this);
+  sim!: Simulation;
+  readonly conversion = new ConversionService();
   store!: WorldStore;
   actor: Actor | null = null;
   actorEntityId: string | null = null;
@@ -148,6 +156,8 @@ export class Studio extends Emitter<Events> {
       await this.registry.init();
       performance.mark('boot:manifest');
       this.assembly = new StudioAssembly(this);
+      this.sim = new Simulation(this.registry, this.assembly.runtime);
+      this.engine.scene.add(this.sim.root);
       await this.assembly.loadInstalled();
       const localWorlds = await idb.all<WorldDocument>('worlds');
       this.worlds = [...this.registry.manifest.worlds.map(({id, name}) => ({id, name})), ...localWorlds.filter((d) => (d.composition || d.imported || d.district || d.assembly) && !this.registry.manifest.worlds.some((w) => w.id === d.id)).map(({id, name}) => ({id, name}))];
@@ -209,7 +219,11 @@ export class Studio extends Emitter<Events> {
         this.dresser.prepare = (o) => this.engine.renderer.compileAsync(o, this.cameras.camera, this.engine.scene);
         this.engine.scene.add(this.dresser.group);
       }
-      if (doc.assembly) this.entities.factories.set('set', (e) => this.assembly.runtime.build(e));
+      if (doc.assembly) {
+        this.entities.factories.set('set', (e) => this.assembly.runtime.build(e));
+        // population entities are placeholders in the document; the simulation owns their animated bodies
+        this.entities.factories.set('sim', (e) => { const g = new THREE.Group(); g.name = e.name; return g; });
+      }
       this.appliedSun = JSON.stringify([env.sun, env.exposure]);
       const [world, bakedCollision, bakedNav, actor] = await Promise.all([
         env.assetId ? this.registry.loadGLTF(env.assetId, track(envRec!.name)) : null,
@@ -474,6 +488,10 @@ export class Studio extends Emitter<Events> {
     }
     this.interactions.update();
     this.cameras.update(dt);
+    if (this.store.doc.assembly) {
+      this.assembly.runtime.updateLod(this.entities.objects.values(), this.cameras.camera.position);
+      if (!this.sequences?.playing) this.sim.update(dt, this.actor ? { position: this.actor.position } : null);
+    }
     if (Number.isFinite(this.entities.radius) && (this.streamTimer += dt) > 0.5) {
       this.streamTimer = 0;
       this.entities.focus = [this.actor?.position.clone() ?? new THREE.Vector3(), this.cameras.camera.position.clone()];
@@ -667,6 +685,7 @@ export class Studio extends Emitter<Events> {
       await idb.put('worlds', doc.id, doc);
       const back = await idb.get<WorldDocument>('worlds', doc.id);
       if (!back || back.entities.length !== doc.entities.length) throw new Error('read-back mismatch');
+      if (doc.assembly && this.sim?.people.length + this.sim?.vehicles.length) await idb.put('settings', `sim:${doc.id}`, this.sim.snapshot());
       this.set({ saveState: 'saved', saveError: undefined });
       return true;
     } catch (e) {
@@ -722,6 +741,39 @@ export class Studio extends Emitter<Events> {
     this.worlds.push({ id: doc.id, name: doc.name });
     await this.switchWorld(doc.id);
     return doc.id;
+  }
+
+  /**
+   * New empty assembled place (no bundled district, no default actor content): saved, listed, then opened.
+   * Content is added afterwards with the assembly operations.
+   */
+  async createAssemblyWorld(name = 'Nouveau lieu', context: Partial<NonNullable<WorldDocument['assembly']>['context']> = {}) {
+    const hdri = this.registry.manifest.assets.find((a) => a.id === 'hdri.pedestrian-overpass')?.id ?? this.registry.manifest.assets.find((a) => a.id.startsWith('hdri.'))!.id;
+    const doc = StudioAssembly.emptyWorld(name, { fictional: true, ...context }, hdri);
+    if (!await this.save()) throw new Error('Le monde actuel ne peut pas être sauvegardé');
+    await idb.put('worlds', doc.id, doc);
+    if (!(await idb.get<WorldDocument>('worlds', doc.id))?.assembly) throw new Error('Échec de sauvegarde du nouveau lieu');
+    this.worlds.push({ id: doc.id, name: doc.name });
+    await this.switchWorld(doc.id);
+    return doc.id;
+  }
+
+  /**
+   * The character the user embodies in an assembled place: a package character with its own rig and clips
+   * (no retargeting). The world is saved and reopened so the actor loads like any world actor.
+   */
+  async setPlaceActor(resourceRef: string) {
+    const hit = this.assembly.catalog.resource(resourceRef);
+    if (!hit || hit.res.kind !== 'character') throw new Error(`Personnage introuvable : ${resourceRef}`);
+    if (!hit.res.clips?.length) throw new Error(`${hit.res.id} n’a pas d’animation : il ne peut pas être dirigé.`);
+    const assetId = `pkg:${hit.pkg.id}/${hit.res.id}`;
+    const p = this.assembly.spawnPoint() ?? new THREE.Vector3(...this.store.doc.spawn.position);
+    this.store.commit(`Personnage : ${hit.res.id}`, (d) => {
+      d.entities = d.entities.filter((e) => e.type !== 'ACTOR');
+      d.entities.push({ id: 'actor', type: 'ACTOR', name: hit.res.id, assetId, transform: { position: [p.x, p.y, p.z], rotation: [0, 0, 0, 1], scale: [1, 1, 1] }, tags: ['actor'], capabilities: ['selectable'], metadata: { package: hit.pkg.id } } as unknown as Entity);
+      d.spawn = { position: [p.x, p.y, p.z], heading: 0 };
+    });
+    await this.switchWorld(this.store.doc.id);
   }
 
   async importWorldFile(file: File, unitsToMetres = 1) {
