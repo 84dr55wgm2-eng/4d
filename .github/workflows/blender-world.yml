@@ -2,7 +2,7 @@ name: Prepare Blender authored world
 on:
   push:
     branches: [codex/blender-authored-world]
-    paths: ['tools/prepare/export_hidden_alley.py', 'tools/prepare/register_hidden_alley.mjs', '.github/workflows/blender-world.yml', 'src/runtime/Studio.ts', 'tools/scenarios/hidden-alley.mjs']
+    paths: ['tools/prepare/export_hidden_alley.py', 'tools/prepare/register_hidden_alley.mjs', '.github/workflows/blender-world.yml', 'src/runtime/Studio.ts', 'tools/scenarios/hidden-alley.mjs', 'tools/prepare/fix_hidden_alley_materials.mjs']
   workflow_dispatch:
 permissions:
   contents: write
@@ -15,6 +15,8 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -23,12 +25,15 @@ jobs:
       - name: Convert the complete CC0 Blender scene
         run: |
           mkdir -p tools/work/hidden-alley/source public/content/worlds/hidden-alley
+          if [ ! -s public/content/worlds/hidden-alley/scene.glb ] || [ '${{ github.event_name }}' = workflow_dispatch ] || ! git diff --quiet HEAD^ HEAD -- tools/prepare/export_hidden_alley.py; then
           curl --fail -L --retry 3 https://dl.polyhaven.org/file/ph-assets/Scenes/hidden_alley.zip -o tools/work/hidden-alley/source.zip
           unzip -q tools/work/hidden-alley/source.zip -d tools/work/hidden-alley/source
           curl --fail -L --retry 3 https://download.blender.org/release/Blender4.2/blender-4.2.9-linux-x64.tar.xz -o /tmp/blender.tar.xz
           tar -xJf /tmp/blender.tar.xz -C /tmp
           /tmp/blender-4.2.9-linux-x64/blender -b -t 2 --factory-startup --python tools/prepare/export_hidden_alley.py
           node tools/prepare/optimize.mjs tools/work/hidden-alley/export/scene.gltf public/content/worlds/hidden-alley/scene.glb 1024
+          fi
+          node tools/prepare/fix_hidden_alley_materials.mjs
           node tools/prepare/bake_world.mjs public/content/worlds/hidden-alley/scene.glb public/content/worlds/hidden-alley
           node tools/prepare/register_hidden_alley.mjs
       - run: npm run build
@@ -43,6 +48,8 @@ jobs:
             sleep 1
           done
           node tools/studio.mjs tools/scenarios/hidden-alley.mjs tools/out/hidden-alley 'http://127.0.0.1:5173/?world=hidden-alley&capture'
+          test -s tools/out/hidden-alley/entrance.png
+          test -s tools/out/hidden-alley/inside.png
       - name: Save prepared content and review frames
         run: |
           mkdir -p public/content/worlds/hidden-alley/review
