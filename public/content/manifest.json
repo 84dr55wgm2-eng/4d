@@ -1,6 +1,6 @@
 {
  "format": "cws-manifest",
- "version": "2026.10.12-yaba-shops",
+ "version": "2026.10.12-yaba-shops-hidden-alley-1",
  "assets": [
   {
    "id": "env.bistro",
@@ -2842,6 +2842,28 @@
      0.025
     ]
    }
+  },
+  {
+   "id": "env.hidden-alley",
+   "name": "Hidden Alley — décor complet",
+   "category": "ENVIRONMENT",
+   "source": "Poly Haven",
+   "sourceUrl": "https://blog.polyhaven.com/hidden-alley/",
+   "url": "content/worlds/hidden-alley/scene.glb",
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true
+   },
+   "format": "glb",
+   "bytes": 69766208,
+   "tags": [
+    "authored",
+    "alley",
+    "urban",
+    "blender",
+    "complete-scene"
+   ],
+   "entityType": "ENVIRONMENT"
   }
  ],
  "worlds": [
@@ -2854,6 +2876,11 @@
    "id": "yaba",
    "name": "Yaba, Lagos — 2003",
    "url": "content/worlds/yaba/world.json"
+  },
+  {
+   "id": "hidden-alley",
+   "name": "Hidden Alley — essai Blender",
+   "url": "content/worlds/hidden-alley/world.json"
   }
  ]
 }

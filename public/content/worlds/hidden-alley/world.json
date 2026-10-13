@@ -1,0 +1,66 @@
+{
+ "format": "cws-world",
+ "version": 3,
+ "revision": "hidden-alley-1",
+ "id": "hidden-alley",
+ "name": "Hidden Alley — essai Blender",
+ "environment": {
+  "assetId": "env.hidden-alley",
+  "collision": "content/worlds/hidden-alley/collision.json",
+  "navmesh": "content/worlds/hidden-alley/navmesh.bin",
+  "hdri": "hdri.pedestrian-overpass",
+  "sun": {
+   "azimuth": 135,
+   "elevation": 38,
+   "intensity": 3.5
+  },
+  "exposure": 1.1
+ },
+ "spawn": {
+  "position": [
+   0,
+   0.3,
+   3
+  ],
+  "heading": 3.141592653589793
+ },
+ "zones": [
+  {
+   "id": "alley",
+   "name": "Ruelle",
+   "kind": "alley",
+   "bounds": [
+    -15,
+    -35,
+    15,
+    10
+   ],
+   "tags": [
+    "authored",
+    "urban"
+   ]
+  }
+ ],
+ "entities": [],
+ "shots": [
+  {
+   "id": "shot.entrance",
+   "name": "Entrée de la ruelle",
+   "position": [
+    -0.07,
+    1.7,
+    4.4
+   ],
+   "target": [
+    0,
+    1.7,
+    -10
+   ],
+   "focalLength": 28
+  }
+ ],
+ "sequences": [],
+ "worldState": {
+  "timeOfDay": "day"
+ }
+}

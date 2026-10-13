@@ -1,0 +1,36 @@
+{
+ "format": "collision-bvh-v1",
+ "binary": "collision.bin",
+ "triangles": 386402,
+ "byteLength": 12674752,
+ "bounds": {
+  "min": [
+   -470.53009033203125,
+   -16.044343948364258,
+   -431.0658264160156
+  ],
+  "max": [
+   134.198974609375,
+   166.14894104003906,
+   378.8400573730469
+  ]
+ },
+ "layout": {
+  "roots": [
+   {
+    "byteOffset": 9649824,
+    "byteLength": 3024928
+   }
+  ],
+  "position": {
+   "byteOffset": 0,
+   "byteLength": 5013000,
+   "type": "Float32Array"
+  },
+  "index": {
+   "byteOffset": 5013000,
+   "byteLength": 4636824,
+   "type": "Uint32Array"
+  }
+ }
+}

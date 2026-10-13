@@ -1,0 +1,13 @@
+{
+  "source": "https://blog.polyhaven.com/hidden-alley/",
+  "download": "https://dl.polyhaven.org/file/ph-assets/Scenes/hidden_alley.zip",
+  "license": "CC0-1.0",
+  "authors": "Poly Haven community; full credits on source page",
+  "preparation": "Blender 4.2: preserve authored placement; remove offline subdivision/particles; reduce heavy vegetation; image-based PBR material bridge. glTF Transform: spatial batching, WebP, meshopt.",
+  "limitations": [
+    "Scene conversion trial, not GTA",
+    "No population or AI in this trial",
+    "Procedural/parallax shading differs from Blender rendering"
+  ],
+  "bytes": 69766208
+}
