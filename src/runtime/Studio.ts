@@ -320,6 +320,7 @@ export class Studio extends Emitter<Events> {
 
   private async loadWorldDocument(): Promise<WorldDocument> {
     let wanted = new URLSearchParams(location.search).get('world');
+    if (!wanted && this.registry.manifest.worlds.some((w) => w.id === 'hidden-alley')) wanted = 'hidden-alley';
     if (!wanted) {
       // the studio opens on the last assembled place, or on an empty one — never on a bundled demo district
       const last = await StudioAssembly.lastWorld();

@@ -4,8 +4,8 @@ Browser-native 3D scene studio (Three.js + React + Vite), published by `.github/
 https://84dr55wgm2-eng.github.io/4d/ from branch `claude/amazing-mendel-bv6uox`.
 
 ## Non-negotiables
-- The actor is fixed: Ready Player Me avatar + RPM idle/walk/jog clips. Never replace, retarget or reduce it.
-- Bistro stays available; saved worlds, imports, cache, undo/redo, shots and interactions must keep working.
+- The user revoked the fixed-actor requirement. The old RPM performer must not be inserted into the new default experience. A replacement must bring its own compatible rig and animations.
+- The user revoked preservation of Bistro/Yaba as the visual foundation. Reuse complete authored content; do not rebuild the same two-row district. The current Hidden Alley route is a scenery conversion trial, not the requested populated world.
 - Visible content near the camera comes from authored assets or semantic construction with PBR scans — never
   placeholder boxes. Record provenance (`public/content/lagos/provenance.json`) for every acquired file.
 - Never label an idea as "integrated": integrated = code executed or content loaded in the product.

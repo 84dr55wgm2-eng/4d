@@ -538,9 +538,11 @@ function ActionDock({ studio }: { studio: Studio }) {
           <button key={mm} className={ui.focalLength === mm ? 'on' : ''} onClick={() => studio.cameras.setLens(mm)} title={`${mm}mm lens`}>{mm}</button>
         ))}
       </div>
+      {studio.actor && <>
       <Btn icon="target" text="Frame actor" label="Look at the actor" onClick={() => studio.ops.setCamera({ lookAtActor: true })} />
       <Btn icon="pulse" text="Track" label="Keep the actor framed" active={track} onClick={() => { studio.cameras.trackTarget = !track; setTrack(!track); }} />
       <Btn icon="walk" text="Walk to…" label="Direct the actor to walk to a point" onClick={() => studio.set({ walkTargeting: true })} />
+      </>}
       <div className="sep" />
       <Btn icon="plus" text="Save shot" label="Save the current camera as a shot" onClick={() => studio.ops.saveShot()} />
       <Btn icon="pulse" text="Séquence" label="Ouvrir la séquence (plans + actions)" active={!!ui.sequencePanel} onClick={() => studio.set({ sequencePanel: !ui.sequencePanel })} />
