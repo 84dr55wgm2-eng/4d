@@ -1,0 +1,64 @@
+name: Prepare Blender authored world
+on:
+  push:
+    branches: [codex/blender-authored-world]
+    paths: ['tools/prepare/export_hidden_alley.py', 'tools/prepare/register_hidden_alley.mjs', '.github/workflows/blender-world.yml', 'src/runtime/Studio.ts', 'tools/scenarios/hidden-alley.mjs']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: blender-world-preparation
+  cancel-in-progress: true
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Convert the complete CC0 Blender scene
+        run: |
+          mkdir -p tools/work/hidden-alley/source public/content/worlds/hidden-alley
+          curl --fail -L --retry 3 https://dl.polyhaven.org/file/ph-assets/Scenes/hidden_alley.zip -o tools/work/hidden-alley/source.zip
+          unzip -q tools/work/hidden-alley/source.zip -d tools/work/hidden-alley/source
+          curl --fail -L --retry 3 https://download.blender.org/release/Blender4.2/blender-4.2.9-linux-x64.tar.xz -o /tmp/blender.tar.xz
+          tar -xJf /tmp/blender.tar.xz -C /tmp
+          /tmp/blender-4.2.9-linux-x64/blender -b -t 2 --factory-startup --python tools/prepare/export_hidden_alley.py
+          node tools/prepare/optimize.mjs tools/work/hidden-alley/export/scene.gltf public/content/worlds/hidden-alley/scene.glb 1024
+          node tools/prepare/bake_world.mjs public/content/worlds/hidden-alley/scene.glb public/content/worlds/hidden-alley
+          node tools/prepare/register_hidden_alley.mjs
+      - run: npm run build
+        env:
+          PAGES_BASE: /4d/
+      - name: Inspect the scene in the actual web app
+        run: |
+          npx playwright install --with-deps chromium
+          npm run dev -- --host 127.0.0.1 > /tmp/vite.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:5173/ > /dev/null; then break; fi
+            sleep 1
+          done
+          node tools/studio.mjs tools/scenarios/hidden-alley.mjs tools/out/hidden-alley 'http://127.0.0.1:5173/?world=hidden-alley&capture'
+      - name: Save prepared content and review frames
+        run: |
+          mkdir -p public/content/worlds/hidden-alley/review
+          cp tools/out/hidden-alley/*.png public/content/worlds/hidden-alley/review/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/content/manifest.json public/content/worlds/hidden-alley
+          if ! git diff --cached --quiet; then
+            git commit -m 'Prepare and capture authored Hidden Alley through Blender'
+            git push
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hidden-alley-review
+          path: |
+            tools/out/hidden-alley
+            tools/work/hidden-alley/export/report.json
+            /tmp/vite.log

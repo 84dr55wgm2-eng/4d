@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+const file='public/content/manifest.json';
+const m=JSON.parse(fs.readFileSync(file,'utf8'));
+const id='env.hidden-alley';
+const a={id,name:'Hidden Alley — décor complet',category:'ENVIRONMENT',source:'Poly Haven',sourceUrl:'https://blog.polyhaven.com/hidden-alley/',url:'content/worlds/hidden-alley/scene.glb',license:{id:'CC0-1.0',verified:true},format:'glb',bytes:fs.statSync('public/content/worlds/hidden-alley/scene.glb').size,tags:['authored','alley','urban','blender','complete-scene'],entityType:'ENVIRONMENT'};
+m.assets=m.assets.filter(x=>x.id!==id);m.assets.push(a);
+m.worlds=m.worlds.filter(x=>x.id!=='hidden-alley');m.worlds.push({id:'hidden-alley',name:'Hidden Alley — essai Blender',url:'content/worlds/hidden-alley/world.json'});
+m.version=m.version.replace(/-hidden-alley-\d+$/,'')+'-hidden-alley-1';fs.writeFileSync(file,JSON.stringify(m,null,1));
+const hdri=m.assets.find(x=>x.id==='hdri.pedestrian-overpass')?.id??m.assets.find(x=>x.id.startsWith('hdri.')).id;
+const world={format:'cws-world',version:3,revision:'hidden-alley-1',id:'hidden-alley',name:'Hidden Alley — essai Blender',environment:{assetId:id,collision:'content/worlds/hidden-alley/collision.json',navmesh:'content/worlds/hidden-alley/navmesh.bin',hdri,sun:{azimuth:135,elevation:38,intensity:3.5},exposure:1.1},spawn:{position:[0,0.3,3],heading:Math.PI},zones:[{id:'alley',name:'Ruelle',kind:'alley',bounds:[-15,-35,15,10],tags:['authored','urban']}],entities:[],shots:[{id:'shot.entrance',name:'Entrée de la ruelle',position:[-0.07,1.7,4.4],target:[0,1.7,-10],focalLength:28}],sequences:[],worldState:{timeOfDay:'day'}};
+fs.writeFileSync('public/content/worlds/hidden-alley/world.json',JSON.stringify(world,null,1));
+fs.writeFileSync('public/content/worlds/hidden-alley/provenance.json',JSON.stringify({source:a.sourceUrl,download:'https://dl.polyhaven.org/file/ph-assets/Scenes/hidden_alley.zip',license:'CC0-1.0',authors:'Poly Haven community; full credits on source page',preparation:'Blender 4.2: preserve authored placement; remove offline subdivision/particles; reduce heavy vegetation; image-based PBR material bridge. glTF Transform: spatial batching, WebP, meshopt.',limitations:['Scene conversion trial, not GTA','No population or AI in this trial','Procedural/parallax shading differs from Blender rendering'],bytes:a.bytes},null,2));
+console.log('Registered Hidden Alley',a.bytes);

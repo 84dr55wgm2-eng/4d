@@ -303,6 +303,11 @@ export class Studio extends Emitter<Events> {
         this.resetFollowCamera();
       }
       this.sequences = new SequencePlayer(this);
+      // Authored scenery without a performer opens on its supplied camera.
+      if (!this.actor && doc.shots.length) {
+        this.setMode('direct');
+        this.cameras.goTo(doc.shots[0], 0);
+      }
       this.district?.mats.setEnvironment(this.engine.scene.environment, this.engine.scene.environmentIntensity);
       performance.mark('boot:ready');
       this.set({ phase: 'ready', loading: [], canUndo: false, canRedo: false });
