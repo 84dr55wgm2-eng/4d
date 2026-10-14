@@ -221,6 +221,8 @@ export class Studio extends Emitter<Events> {
       }
       if (doc.assembly) {
         this.entities.factories.set('set', (e) => this.assembly.runtime.build(e));
+      }
+      if (doc.entities.some((e) => e.metadata?.sim)) {
         // population entities are placeholders in the document; the simulation owns their animated bodies
         this.entities.factories.set('sim', (e) => { const g = new THREE.Group(); g.name = e.name; return g; });
       }
@@ -303,6 +305,13 @@ export class Studio extends Emitter<Events> {
         this.resetFollowCamera();
       }
       this.sequences = new SequencePlayer(this);
+      if (!doc.assembly && this.nav && doc.entities.some((e) => e.metadata?.sim)) {
+        await this.assembly.rebuildSim();
+      }
+      if (doc.worldState.openingShot && doc.shots.length) {
+        this.setMode('direct');
+        this.cameras.goTo(doc.shots[0], 0);
+      }
       // Authored scenery without a performer opens on its supplied camera.
       if (!this.actor && doc.shots.length) {
         this.setMode('direct');
@@ -320,6 +329,7 @@ export class Studio extends Emitter<Events> {
 
   private async loadWorldDocument(): Promise<WorldDocument> {
     let wanted = new URLSearchParams(location.search).get('world');
+    if (!wanted && this.registry.manifest.worlds.some((w) => w.id === 'lagos-market')) wanted = 'lagos-market';
     if (!wanted && this.registry.manifest.worlds.some((w) => w.id === 'hidden-alley')) wanted = 'hidden-alley';
     if (!wanted) {
       // the studio opens on the last assembled place, or on an empty one — never on a bundled demo district
@@ -362,14 +372,14 @@ export class Studio extends Emitter<Events> {
     const ent = doc.entities.find((e) => e.type === 'ACTOR');
     if (!ent?.assetId) return null;
     const rec = this.registry.get(ent.assetId);
-    if (rec.url.startsWith('pkg://')) {
+    if (rec.url.startsWith('pkg://') || rec.runtime?.embeddedClips) {
       // a character from an imported package: its own rig and clips (no substitution by another avatar)
       const a = await this.registry.loadGLTF(ent.assetId, track(rec.name));
       const c = characterClips(a.gltf.animations);
       if (!c.walk || !c.idle) throw new Error(`${rec.name} : aucune animation de locomotion dans le fichier — personnage non dirigeable`);
       const loco = (clip: THREE.AnimationClip) => {
         const k = clip.clone();
-        const root = k.tracks.find((t) => t.name.endsWith('.position'))?.name.split('.')[0];
+        const root = k.tracks.find((t) => /hips.*\.position$/i.test(t.name))?.name.split('.')[0];
         const dist = root ? stripRootMotion(k, root) : 0;
         // clips animated in place have no root travel: a walking pace is assumed and recorded
         return { clip: k, speed: dist > 0.05 ? dist / k.duration : 1.3 };
@@ -494,7 +504,7 @@ export class Studio extends Emitter<Events> {
     }
     this.interactions.update();
     this.cameras.update(dt);
-    if (this.store.doc.assembly) {
+    if (this.store.doc.assembly || this.store.doc.entities.some((e) => e.metadata?.sim)) {
       this.assembly.runtime.updateLod(this.entities.objects.values(), this.cameras.camera.position);
       // one clock: the population advances with the same frame time as the sequence and the actor (also in fixed-step rehearsal/export)
       this.sim.update(dt, this.actor ? { position: this.actor.position } : null);
@@ -692,7 +702,7 @@ export class Studio extends Emitter<Events> {
       await idb.put('worlds', doc.id, doc);
       const back = await idb.get<WorldDocument>('worlds', doc.id);
       if (!back || back.entities.length !== doc.entities.length) throw new Error('read-back mismatch');
-      if (doc.assembly && this.sim?.people.length + this.sim?.vehicles.length) await idb.put('settings', `sim:${doc.id}`, this.sim.snapshot());
+      if (this.sim?.people.length + this.sim?.vehicles.length) await idb.put('settings', `sim:${doc.id}`, this.sim.snapshot());
       this.set({ saveState: 'saved', saveError: undefined });
       return true;
     } catch (e) {
@@ -852,7 +862,7 @@ export class Studio extends Emitter<Events> {
     const r = this.canvas.getBoundingClientRect();
     _ndc.set(((x - r.left) / r.width) * 2 - 1, -((y - r.top) / r.height) * 2 + 1);
     _ray.setFromCamera(_ndc, this.cameras.camera);
-    const hits = _ray.intersectObjects(this.entities.pickables(), true);
+    const hits = _ray.intersectObjects([...this.entities.pickables(), this.sim.root], true);
     const entityHit = hits.find((h) => { const id = h.object.userData.entityId; return id && this.store.entity(id)?.capabilities.includes('selectable'); });
     let ent = entityHit?.object.userData.entityId as string | undefined;
     let ground: THREE.Vector3 | null = null;

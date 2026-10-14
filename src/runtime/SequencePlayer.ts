@@ -45,7 +45,7 @@ export class SequencePlayer extends Emitter<Events> {
       const e = s.store.entity(id);
       if (e) entities[id] = { transform: structuredClone(e.transform), interaction: structuredClone((e.metadata?.interaction ?? undefined) as Record<string, unknown> | undefined) };
     }
-    const sim = s.store.doc.assembly && (s.sim?.people.length || s.sim?.vehicles.length) ? s.sim.snapshot() : undefined;
+    const sim = (s.sim?.people.length || s.sim?.vehicles.length) ? s.sim.snapshot() : undefined;
     return { actor: { position: a.position.toArray() as Vec3, heading: a.heading, seatedOn }, entities, ...(sim ? { sim } : {}) };
   }
 

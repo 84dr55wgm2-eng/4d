@@ -132,6 +132,7 @@ export class Simulation {
     const obj = this.registry.instantiate(asset);
     obj.traverse((o) => { o.userData.entityId = e.id; if ((o as THREE.SkinnedMesh).isSkinnedMesh) { o.frustumCulled = false; o.castShadow = true; } });
     const holder = new THREE.Group(); holder.name = e.name; holder.add(obj); this.root.add(holder);
+    obj.scale.multiply(new THREE.Vector3(...e.transform.scale));
     const clips = characterClips(asset.gltf.animations);
     const mixer = clips.walk ? new THREE.AnimationMixer(obj) : null;
     const walk = clips.walk && mixer ? mixer.clipAction(clips.walk) : undefined;
@@ -148,6 +149,8 @@ export class Simulation {
       if (p.phase === 'walk') p.phase = 'idle'; // re-plan the leg from where it stood
     }
     holder.position.copy(start);
+    holder.quaternion.fromArray(e.transform.rotation);
+    p.heading = new THREE.Euler().setFromQuaternion(holder.quaternion, 'YXZ').y;
     this.people.push(p);
   }
 
