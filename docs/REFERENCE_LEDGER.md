@@ -72,3 +72,17 @@ Aucun téléchargement de fichiers du jeu, aucun asset Rockstar dans le dépôt 
 - Existing authored Poly Haven Hidden Alley shell reused in a fictional market adaptation. This is not geographic Lagos, GTA, a full city, or live AI world generation.
 - Mixamo Michelle and compatible source motion from three.js examples: own mesh/rig and three embedded clips, replacing the old default RPM performer for this route. The crowd currently shares the same civilian mesh.
 - Existing Detour simulation extended to authored worlds; no new crowd algorithm written. Existing tap-to-direct, manual follow-camera override and sequence clock reused. Foreground navigation derived from the actual authored floor, with acquired-stall footprints carved out; full collision mesh kept separately.
+
+## 2026-10-14 — Cybercity / NEON KAIDO: priority integrated-world reference
+
+- User-provided repository: https://github.com/xikhar/cybercity
+- Author profile provided by user: https://github.com/xikhar — retain alongside the repository for future related references; other repositories have not been examined.
+- Examined source revision: `21ce1e48294628e3a597bfdfd74be6e9c347856c`. Repository cloned and source inspected; rendering/performance not yet tested. No Cybercity code or assets currently integrated in KOVA.
+- Reuse intent: evaluate the complete coordinated engine + city + population + traffic as an integration base, then adapt to Lagos and KOVA's touch-directed movement and cinematic controls. Do not reduce this reference to visual inspiration or a handful of props. Preserve real upstream systems and implement only required adaptations.
+- Actual source: `src/world/layout.js` coordinates avenue, cross streets, alley, river/promenade, bridge, elevated rail, expressway and skyline. Buildings include authored procedural shop interior geometry; accessibility and interactive doors are not verified.
+- `src/systems/crowd`: male/female GLBs, six outfits each, nine named animation clips per base, phone/umbrella accessories, lane steering/avoidance, pooled nearby skinned characters and distant VAT instancing. Not a full cognition or city navigation system.
+- `src/systems/vehicles`: multiple model families with LOD, parking, lane traffic with signal states and following distances, Rapier drivable vehicles and chase camera.
+- `src/systems/player/controller.js`: first/third-person camera with Rapier obstacle queries. Existing inputs are keyboard/mouse and pointer lock; KOVA touch-directed movement needs adaptation.
+- Weather, wet materials, atmospheric effects, signage and procedural audio are implemented modules.
+- Technical coupling: Three.js 0.186.1 WebGPU/TSL renderer/materials and Rapier 0.20.0; renderer attempts WebGL2 fallback, not yet validated on target devices. Fixed shared layout, not an existing natural-language world creator. No generative AI world assembly found, no verified automatic day/night cycle.
+- Package declares ISC; no standalone LICENSE or per-asset provenance document found in examined revision. Do not invent asset provenance or license coverage.
