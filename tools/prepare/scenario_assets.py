@@ -108,6 +108,20 @@ def main():
                     node.image.colorspace_settings.name = 'Non-Color'
         report['materials'][mat.name] = M.audit_material(mat)
     meshes = [o for o in bpy.context.scene.objects if o.type == 'MESH']
+    # The source's small baked atlas contains constant dark patches. Adapt the
+    # actual timber parts with the acquired scanned wood set, using the upstream
+    # PBR builder (explicit UV map, ORM data and OpenGL normals).
+    maps = {'base_color': os.path.join(inp, 'textures/wooden_table_02_diff_1k.jpg'),
+            'normal': os.path.join(inp, 'textures/wooden_table_02_nor_gl_1k.jpg'),
+            'orm': os.path.join(inp, 'textures/wooden_table_02_arm_1k.jpg')}
+    wood = M.pbr_from_textures('Market.scanned_timber', maps, uv_map='UVMap', ao_mode='gltf')
+    metal = M.pbr_from_textures('Market.painted_metal', {}, uv_map='UVMap', ao_mode='gltf')
+    M.principled(metal).inputs['Base Color'].default_value = (0.07, 0.19, 0.15, 1)
+    M.principled(metal).inputs['Roughness'].default_value = 0.78
+    for obj in meshes:
+        obj.data.materials.clear()
+        obj.data.materials.append(metal if any(s in obj.name for s in ['CHAIN', 'RING', 'ROOF', 'HOLDER', 'SHED']) else wood)
+    report['materials']['Market.scanned_timber'] = M.audit_material(wood)
     bpy.context.view_layer.update()
     bounds = [o.matrix_world @ Vector(c) for o in meshes for c in o.bound_box]
     lo = Vector(tuple(min(p[i] for p in bounds) for i in range(3)))

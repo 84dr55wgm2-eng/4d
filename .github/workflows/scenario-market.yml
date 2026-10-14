@@ -38,7 +38,8 @@ jobs:
           tar -xf /tmp/blender.tar.xz -C /tmp
           /tmp/blender-5.2.1-linux-x64/blender -b --factory-startup --python-exit-code 1 -P tools/prepare/scenario_assets.py -- /tmp/kova-scenario-input /tmp/kova-prepared
           node tools/prepare/scenario_world.mjs /tmp/kova-prepared /tmp/kova-scenario-input
-          node tools/prepare/bake_world.mjs /tmp/kova-market-collision.glb public/content/worlds/lagos-market
+          node tools/prepare/bake_world.mjs /tmp/kova-market-collision.glb public/content/worlds/lagos-market --authored-market
+          node tools/prepare/scenario_navigation.mjs
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - name: Exercise the real world and pointer controls

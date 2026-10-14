@@ -27,5 +27,14 @@ export default async ({page,run,capture,log,step}) => {
  if(Math.hypot(motion.p[0]-initial[0],motion.p[2]-initial[2])<1)throw new Error('Pointer walking did not move actor');
  await run(()=>{const s=window.studio;s.cameras.setMode('follow');});
  await step(0.5);await capture('follow-camera');
+ const cameraBefore=await run(()=>window.studio.cameras.manualYaw);
+ const rect=await page.locator('canvas').first().boundingBox();
+ await page.mouse.move(rect.x+rect.width*.5,rect.y+rect.height*.45);
+ await page.mouse.down();await page.mouse.move(rect.x+rect.width*.5+80,rect.y+rect.height*.45+20,{steps:8});await page.mouse.up();
+ const manual=await run(()=>window.studio.cameras.manualYaw);
+ if(manual===null||manual===cameraBefore)throw new Error('Follow camera did not accept pointer angle override');
+ await step(1);
+ if(await run(()=>window.studio.cameras.manualYaw)!==manual)throw new Error('Follow tracking erased manual camera angle');
+ await capture('manual-angle');
  log({pointerSelection:selected,motion,crowdMoved:true});
 };

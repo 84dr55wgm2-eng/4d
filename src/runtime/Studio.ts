@@ -377,16 +377,16 @@ export class Studio extends Emitter<Events> {
       const a = await this.registry.loadGLTF(ent.assetId, track(rec.name));
       const c = characterClips(a.gltf.animations);
       if (!c.walk || !c.idle) throw new Error(`${rec.name} : aucune animation de locomotion dans le fichier — personnage non dirigeable`);
-      const loco = (clip: THREE.AnimationClip) => {
+      const loco = (clip: THREE.AnimationClip, fallbackSpeed = 1.3) => {
         const k = clip.clone();
         const root = k.tracks.find((t) => /hips.*\.position$/i.test(t.name))?.name.split('.')[0];
         const dist = root ? stripRootMotion(k, root) : 0;
         // clips animated in place have no root travel: a walking pace is assumed and recorded
-        return { clip: k, speed: dist > 0.05 ? dist / k.duration : 1.3 };
+        return { clip: k, speed: dist > 0.05 ? dist / k.duration : fallbackSpeed };
       };
       const model = this.registry.instantiate(a);
       model.traverse((o) => { if ((o as THREE.SkinnedMesh).isSkinnedMesh) o.frustumCulled = false; });
-      const actor = new Actor(model, { idle: c.idle.clone(), walk: loco(c.walk), run: c.run === c.walk ? { ...loco(c.walk), speed: loco(c.walk).speed * 1.9 } : loco(c.run!) });
+      const actor = new Actor(model, { idle: c.idle.clone(), walk: loco(c.walk), run: c.run === c.walk ? { ...loco(c.walk), speed: loco(c.walk).speed * 1.9 } : loco(c.run!, 2.6) });
       return { actor, entityId: ent.id };
     }
     const clipIds = rec.runtime?.clips as Record<'idle' | 'walk' | 'run', string>;

@@ -13,6 +13,7 @@ import { init, exportNavMesh } from '@recast-navigation/core';
 import { generateTiledNavMesh } from '@recast-navigation/generators';
 
 const [inp, outDir] = process.argv.slice(2);
+const authoredMarket = process.argv.includes('--authored-market');
 await MeshoptDecoder.ready;
 await MeshoptSimplifier.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
@@ -28,6 +29,10 @@ const el = [];
 for (const node of doc.getRoot().listNodes()) {
   const mesh = node.getMesh();
   if (!mesh) continue;
+  // The authored alley has decorative ground scatter and a distant background
+  // floor crossing its real foreground floor. They are visual details, not
+  // separate walkable floors or obstacles for a human capsule.
+  if (authoredMarket && /^(BG_floor|leaves|stones|grass|weed_plants)$|paralax_interior_panel/.test(node.getName())) continue;
   m4.fromArray(node.getWorldMatrix());
   const gi = node.getExtension('EXT_mesh_gpu_instancing');
   const matrices = [];

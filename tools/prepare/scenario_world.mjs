@@ -18,6 +18,14 @@ const measured = {};
 for (const name of ['civilian','market-stall','market-sign','table']) {
   const doc = await io.read(name==='table' ? path.join(raw,'table.gltf') : path.join(prepared,name+'.glb'));
   const scene=doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  if(name==='civilian'){
+    // getBounds() does not evaluate skinning. Mixamo's mesh positions and rig
+    // use different bind-space scales; a static AABB would inflate the actor.
+    measured[name]={min:[-0.4,0,-0.3],max:[0.4,1.7,0.3],height:1.7};
+    await doc.transform(textureCompress({encoder:sharp,targetFormat:'webp',resize:[1024,1024],quality:88}),meshopt({encoder:MeshoptEncoder,level:'medium'}));
+    await io.write(path.join(dir,name+'.glb'),doc);
+    continue;
+  }
   const b=getBounds(scene), c=[(b.min[0]+b.max[0])/2,b.min[1],(b.min[2]+b.max[2])/2];
   const origin=doc.createNode('NormalizedOrigin').setTranslation(c.map(x=>-x));
   for(const n of scene.listChildren()){scene.removeChild(n);origin.addChild(n);}
@@ -33,7 +41,7 @@ const manifest=JSON.parse(await fs.readFile('public/content/manifest.json','utf8
 const base=JSON.parse(await fs.readFile('public/content/worlds/hidden-alley/world.json','utf8'));
 const entities=[];
 const e=(id,type,name,assetId,p,yaw=0,scale=[1,1,1],caps=['selectable'])=>({id,type,name,assetId,transform:{position:p,rotation:[0,Math.sin(yaw/2),0,Math.cos(yaw/2)],scale},tags:['market','authored'],capabilities:caps});
-const placements=[[-3.1,0,-4,Math.PI/2],[3.1,0,-10,-Math.PI/2],[-3.1,0,-16,Math.PI/2]];
+const placements=[[-3.1,0,-3,Math.PI/2],[3.1,0,-7,-Math.PI/2],[-3.1,0,-11,Math.PI/2]];
 placements.forEach(([x,y,z,yaw],i)=>{
  const stall=e(`stall.${i}`,'FURNITURE',`Étal ${i+1}`,'market.stall',[x,y,z],yaw);stall.locked=true;entities.push(stall);
  const sign=e(`sign.${i}`,'PROP','Enseigne du marché','market.sign',[x,y+2.5,z],yaw);sign.locked=true;entities.push(sign);
@@ -44,8 +52,8 @@ placements.forEach(([x,y,z,yaw],i)=>{
  }
 });
 entities.push(e('table.0','FURNITURE','Table de vente','market.table',[2.8,0,-3],0,[1,1,1]));
-const actor=e('performer','ACTOR','Interprète civil','market.civilian',[0,0,0],Math.PI,[1,1,1],['selectable','directable']);entities.push(actor);
-const people=[[-1,0,-5],[1,0,-7],[-0.5,0,-11],[1.4,0,-15],[-1.4,0,-18],[0.8,0,-2]];
+const actor=e('performer','ACTOR','Interprète civil','market.civilian',[0,0,1],Math.PI,[1,1,1],['selectable','directable']);entities.push(actor);
+const people=[[-0.9,0,-2],[1,0,-4],[-0.5,0,-6],[1.2,0,-9],[-1.2,0,-10],[0.8,0,-1]];
 people.forEach((p,i)=>{
  const person=e(`person.${i}`,'ACTOR',`Passante ${i+1}`,'market.civilian',p,0,[1,1+(i%3-1)*0.035,1],['selectable','directable']);
  person.metadata={procedural:{kind:'sim'},sim:{kind:'person',behavior:'wander',home:''}};entities.push(person);
@@ -59,12 +67,12 @@ const assets=[
 ];
 for(const [file,id,name,category,entityType,source,sourceUrl,license] of assets){
  const record={id,name,category,entityType,source,sourceUrl,url:`content/worlds/lagos-market/${file}.glb`,format:'glb',bytes:(await fs.stat(`${dir}/${file}.glb`)).size,license:{id:license,verified:true,notes:'Used in the interactive scene; not a standalone asset distribution service.'},tags:['market','blender','scenario'],footprint:{min:measured[file].min,max:measured[file].max}};
- if(file==='civilian')record.runtime={embeddedClips:true,preserveOrigin:true};
+ if(file==='civilian'){record.runtime={embeddedClips:true};record.scale={unitsToMetres:1,targetHeight:1.7};}
  manifest.assets=manifest.assets.filter(a=>a.id!==id);manifest.assets.push(record);
 }
 const world={...base,id:'lagos-market',name:'Lagos — marché / essai Scenario',revision:'scenario-market-1',
  environment:{...base.environment,collision:'content/worlds/lagos-market/collision.json',navmesh:'content/worlds/lagos-market/navmesh.bin',sun:{azimuth:145,elevation:48,intensity:2.5},exposure:0.95},
- entities,spawn:{position:[0,0,0],heading:Math.PI},shots:[
+ entities,spawn:{position:[0,0,1],heading:Math.PI},shots:[
  {id:'market.overview',name:'Le marché',position:[0,2.5,4],target:[0,1.5,-11],focalLength:24},
  {id:'market.stall',name:'Les étals',position:[0.3,1.8,-1],target:[-3.1,1.3,-5],focalLength:28},
  {id:'market.deep',name:'La traversée',position:[1,2,-12],target:[0,1.3,0],focalLength:28}],
