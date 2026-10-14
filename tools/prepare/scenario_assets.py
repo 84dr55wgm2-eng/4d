@@ -124,7 +124,7 @@ def main():
                 remove.update(ids)
             elif lo[1] > 20 and hi[1] < 105 and len(ids) > 200:
                 pants.update(ids)
-            elif lo[1] > 110 and hi[1] < 133 and len(ids) > 200:
+            elif lo[1] > 110 and hi[1] < 133 and len(ids) > 200 and max(abs(lo[0]), abs(hi[0])) < 20:
                 tops.update(ids)
         cloth = M.pbr_from_textures('Civilian.trousers', {}, uv_map='UVMap', ao_mode='gltf')
         shirt = M.pbr_from_textures('Civilian.shirt', {}, uv_map='UVMap', ao_mode='gltf')
