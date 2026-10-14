@@ -51,12 +51,16 @@ jobs:
           node tools/studio.mjs tools/scenarios/lagos-market.mjs public/content/worlds/lagos-market/review 'http://127.0.0.1:5173/?world=lagos-market&capture'
           test -s public/content/worlds/lagos-market/review/market-overview.png
           test -s public/content/worlds/lagos-market/review/follow-camera.png
+          VIEWPORT=390x844 node tools/studio.mjs tools/scenarios/lagos-market.mjs public/content/worlds/lagos-market/review/mobile 'http://127.0.0.1:5173/?world=lagos-market&capture'
+          test -s public/content/worlds/lagos-market/review/mobile/manual-angle.png
       - name: Preserve prepared content on the review branch
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add public/content/worlds/lagos-market public/content/manifest.json
           if ! git diff --cached --quiet; then
+            git fetch origin codex/scenario-market
+            test "$(git rev-parse FETCH_HEAD)" = "$(git rev-parse HEAD)" || { echo 'Sources changed during preparation; refusing stale content'; exit 1; }
             git commit -m 'Prepare Scenario Blender market assets and verify animated population'
             git push origin HEAD:codex/scenario-market
           fi

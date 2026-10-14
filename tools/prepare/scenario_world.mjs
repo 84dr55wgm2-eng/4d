@@ -15,10 +15,10 @@ await MeshoptEncoder.ready;
 await MeshoptDecoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({'meshopt.encoder':MeshoptEncoder,'meshopt.decoder':MeshoptDecoder});
 const measured = {};
-for (const name of ['civilian','market-stall','market-sign','table']) {
+for (const name of ['civilian','civilian-olive','civilian-rust','market-stall','market-sign','table']) {
   const doc = await io.read(name==='table' ? path.join(raw,'table.gltf') : path.join(prepared,name+'.glb'));
   const scene=doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
-  if(name==='civilian'){
+  if(name.startsWith('civilian')){
     // getBounds() does not evaluate skinning. Mixamo's mesh positions and rig
     // use different bind-space scales; a static AABB would inflate the actor.
     measured[name]={min:[-0.4,0,-0.3],max:[0.4,1.7,0.3],height:1.7};
@@ -55,7 +55,7 @@ entities.push(e('table.0','FURNITURE','Table de vente','market.table',[2.8,0,-3]
 const actor=e('performer','ACTOR','Interprète civil','market.civilian',[0,0,1],Math.PI,[1,1,1],['selectable','directable']);entities.push(actor);
 const people=[[-0.9,0,-2],[1,0,-4],[-0.5,0,-6],[1.2,0,-9],[-1.2,0,-10],[0.8,0,-1]];
 people.forEach((p,i)=>{
- const person=e(`person.${i}`,'ACTOR',`Passante ${i+1}`,'market.civilian',p,0,[1,1+(i%3-1)*0.035,1],['selectable','directable']);
+ const person=e(`person.${i}`,'ACTOR',`Passante ${i+1}`,['market.civilian','market.civilian-olive','market.civilian-rust'][i%3],p,0,[1,1+(i%3-1)*0.035,1],['selectable','directable']);
  person.metadata={procedural:{kind:'sim'},sim:{kind:'person',behavior:'wander',home:''}};entities.push(person);
 });
 entities.push(e('radio.0','PROP','Radio du marché','lagos.transceiver',[2.8,0.82,-3],0,[1,1,1],['selectable','interactable','pickable']));
@@ -65,15 +65,16 @@ const assets=[
  ['market-sign','market.sign','Enseigne du marché','PROPS','PROP','KOVA, prepared with Scenario MIT toolkit','https://github.com/scenario-labs/skills','CC0-1.0'],
  ['table','market.table','Table en bois','FURNITURE','FURNITURE','Poly Haven','https://polyhaven.com/a/wooden_table_02','CC0-1.0']
 ];
+for(const variant of ['olive','rust'])assets.push([`civilian-${variant}`,`market.civilian-${variant}`,`Interprète — tenue ${variant}`,'CHARACTERS','ACTOR',assets[0][5],assets[0][6],assets[0][7]]);
 for(const [file,id,name,category,entityType,source,sourceUrl,license] of assets){
  const record={id,name,category,entityType,source,sourceUrl,url:`content/worlds/lagos-market/${file}.glb`,format:'glb',bytes:(await fs.stat(`${dir}/${file}.glb`)).size,license:{id:license,verified:true,notes:'Used in the interactive scene; not a standalone asset distribution service.'},tags:['market','blender','scenario'],footprint:{min:measured[file].min,max:measured[file].max}};
- if(file==='civilian'){record.runtime={embeddedClips:true};record.scale={unitsToMetres:1,targetHeight:1.7};}
+ if(file.startsWith('civilian')){record.runtime={embeddedClips:true};record.scale={unitsToMetres:1,targetHeight:1.7};}
  manifest.assets=manifest.assets.filter(a=>a.id!==id);manifest.assets.push(record);
 }
 const world={...base,id:'lagos-market',name:'Lagos — marché / essai Scenario',revision:'scenario-market-1',
  environment:{...base.environment,collision:'content/worlds/lagos-market/collision.json',navmesh:'content/worlds/lagos-market/navmesh.bin',sun:{azimuth:145,elevation:48,intensity:2.5},exposure:0.95},
  entities,spawn:{position:[0,0,1],heading:Math.PI},shots:[
- {id:'market.overview',name:'Le marché',position:[0,2.5,4],target:[0,1.5,-11],focalLength:24},
+ {id:'market.overview',name:'Le marché',position:[0,2.2,6],target:[0,1.3,-7],focalLength:24},
  {id:'market.stall',name:'Les étals',position:[0.3,1.8,-1],target:[-3.1,1.3,-5],focalLength:28},
  {id:'market.deep',name:'La traversée',position:[1,2,-12],target:[0,1.3,0],focalLength:28}],
  sequences:[],worldState:{timeOfDay:'day',openingShot:true,brief:'Marché de quartier à Lagos, piétons et étals',preparation:'Scenario Blender offline toolkit + 3D Asset Server'}};

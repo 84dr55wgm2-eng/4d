@@ -7,6 +7,7 @@ import bpy
 import json
 import os
 import sys
+import bmesh
 from mathutils import Vector
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -50,27 +51,35 @@ def main():
     new_actions = []
     for name, action in motions.items():
         slot = next(s for s in action.slots if 'Character' in s.identifier)
-        bag = action_get_channelbag_for_slot(action, slot)
+        source.animation_data_create()
+        source.animation_data.action = action
+        source.animation_data.action_slot = slot
         new = bpy.data.actions.new(name + '.civilian')
         target.animation_data_create()
         target.animation_data.action = new
         new_slot = new.slots.new(id_type='OBJECT', name=target.name)
         target.animation_data.action_slot = new_slot
-        layer = new.layers.new('Motion')
-        strip = layer.strips.new(type='KEYFRAME')
-        dest = strip.channelbags.new(new_slot)
-        for fc in bag.fcurves:
-            if '.rotation_quaternion' not in fc.data_path and '.rotation_euler' not in fc.data_path:
-                continue
-            if not fc.data_path.startswith('pose.bones['):
-                continue
-            bone_name = fc.data_path.split('"')[1]
-            if bone_name not in target.pose.bones:
-                continue
-            dst = dest.fcurves.new(fc.data_path, index=fc.array_index)
-            for key in fc.keyframe_points:
-                k = dst.keyframe_points.insert(key.co.x, key.co.y)
-                k.interpolation = 'LINEAR'
+        for frame in range(int(action.frame_range[0]), int(action.frame_range[1]) + 1):
+            bpy.context.scene.frame_set(frame)
+            desired = {}
+            for bone in target.pose.bones:
+                src = source.pose.bones.get(bone.name)
+                if not src:
+                    continue
+                # Transfer world rotation deltas between the two actual rest
+                # bases. Copying local quaternion values left the arms raised.
+                rest = bone.bone.matrix_local.to_quaternion()
+                delta = src.matrix.to_quaternion() @ src.bone.matrix_local.to_quaternion().inverted()
+                desired[bone.name] = delta @ rest
+            for bone in target.pose.bones:
+                if bone.name not in desired:
+                    continue
+                rest = bone.bone.matrix_local.to_quaternion()
+                parent = bone.parent
+                base = (desired.get(parent.name, parent.matrix.to_quaternion()) @ parent.bone.matrix_local.to_quaternion().inverted() @ rest) if parent else rest
+                bone.rotation_mode = 'QUATERNION'
+                bone.rotation_quaternion = base.inverted() @ desired[bone.name]
+                bone.keyframe_insert(data_path='rotation_quaternion', frame=frame, group=bone.name)
         new.use_fake_user = True
         new_actions.append(new)
     target.animation_data.action = new_actions[0]
@@ -86,7 +95,55 @@ def main():
             bpy.data.actions.remove(a)
     for mesh in meshes:
         report['assets'][mesh.name] = {'vertices': len(mesh.data.vertices), 'bones': len(target.data.bones), 'clips': [a.name for a in new_actions]}
+        # Adapt the authored character into an ordinary civilian: remove the
+        # disconnected headset/lenses and the oversized hair puffs. Keep eyes,
+        # face, central hair, skin weights and the actual authored clothing.
+        data = mesh.data
+        adj = [[] for _ in data.vertices]
+        for edge in data.edges:
+            a, b = edge.vertices
+            adj[a].append(b); adj[b].append(a)
+        seen, remove, pants, tops = set(), set(), set(), set()
+        for start in range(len(adj)):
+            if start in seen:
+                continue
+            todo, ids = [start], []
+            seen.add(start)
+            while todo:
+                k = todo.pop(); ids.append(k)
+                for nxt in adj[k]:
+                    if nxt not in seen:
+                        seen.add(nxt); todo.append(nxt)
+            points = [data.vertices[k].co for k in ids]
+            lo = [min(p[i] for p in points) for i in range(3)]
+            hi = [max(p[i] for p in points) for i in range(3)]
+            lenses = lo[1] > 141 and hi[1] < 149 and lo[2] > 8.1 and (lo[0] > .7 or hi[0] < -.7)
+            headset = lo[1] > 139 and hi[1] < 161 and hi[2] < 4.6 and len(ids) > 400
+            puffs = lo[1] > 138 and max(abs(lo[0]), abs(hi[0])) > 20 and len(ids) < 150
+            if lenses or headset or puffs:
+                remove.update(ids)
+            elif lo[1] > 20 and hi[1] < 105 and len(ids) > 200:
+                pants.update(ids)
+            elif lo[1] > 110 and hi[1] < 133 and len(ids) > 200:
+                tops.update(ids)
+        cloth = M.pbr_from_textures('Civilian.trousers', {}, uv_map='UVMap', ao_mode='gltf')
+        shirt = M.pbr_from_textures('Civilian.shirt', {}, uv_map='UVMap', ao_mode='gltf')
+        for mat, color in [(cloth, (.035, .045, .06, 1)), (shirt, (.36, .25, .16, 1))]:
+            M.principled(mat).inputs['Base Color'].default_value = color
+            M.principled(mat).inputs['Roughness'].default_value = .85
+        data.materials.append(cloth); data.materials.append(shirt)
+        for face in data.polygons:
+            if all(v in pants for v in face.vertices): face.material_index = len(data.materials) - 2
+            elif all(v in tops for v in face.vertices): face.material_index = len(data.materials) - 1
+        bm = bmesh.new(); bm.from_mesh(data); bm.verts.ensure_lookup_table()
+        bmesh.ops.delete(bm, geom=[bm.verts[i] for i in remove], context='VERTS')
+        bm.to_mesh(data); bm.free()
+        report['assets'][mesh.name]['removed_accessory_vertices'] = len(remove)
     export(os.path.join(out, 'civilian.glb'), list(keep), True)
+    for variant, trouser_color, shirt_color in [('olive', (.12,.16,.08,1),(.5,.44,.32,1)),('rust',(.23,.08,.04,1),(.035,.1,.09,1))]:
+        M.principled(cloth).inputs['Base Color'].default_value = trouser_color
+        M.principled(shirt).inputs['Base Color'].default_value = shirt_color
+        export(os.path.join(out, 'civilian-' + variant + '.glb'), list(keep), True)
 
     # Adapt the acquired food stall instead of rebuilding a stall from boxes.
     bpy.ops.wm.read_factory_settings(use_empty=True)
