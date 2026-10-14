@@ -97,3 +97,21 @@ Profile inventory checked (19 public repositories at inspection). Retain these c
 - https://github.com/xikhar/imagex — README inspected: visual generation graph, references, selective output runs, reusable assets and durable job recovery; local Express/React implementation, not a 3D world generator. Its authentication/provider path must not be assumed available in KOVA.
 - https://github.com/xikhar/spiderbench — README inspected: dense procedural city and traversal/rendering systems, but explicit non-commercial and no-redistribution terms. Technical assessment reference only; do not mark as freely reusable or copy into the published product under an assumed MIT license.
 Priority judgment: Cybercity for coordinated urban world; Beyond Fable for natural-world/day-night/streaming; Atlas for production tools. Walden, Persona and Imagex complement specific needs and require source-level integration assessment.
+
+## 2026-10-14 — RoundtableSpace UI-design reference collection
+
+User source: https://x.com/roundtablespace/status/2110255627704455591
+Syndication returns the beginning of a long post and the first four exact URLs. Remaining six names corroborated by an indexed reproduction; four short links resolved to upstream repositories. Hyperiux and Trickle URLs below are primary repository matches, not confirmed redirects of the original post's links. These are UI/agent-design references, not city simulation, assets or runtime intelligence. No installation or integration performed.
+
+- https://github.com/superdesigndev/superdesign — exact user-post URL; original IDE extension, README now explicitly says unmaintained. Current maintained skill: https://github.com/superdesigndev/superdesign-skill (upstream README examined); designs against existing code, style references, branchable drafts and cross-session source-context continuity. Cloud design/CLI account requirements are not satisfied merely by saving this reference.
+- https://github.com/marvkr/better-design — exact URL, README examined. Design MCP, semantic tokens, component registry, accessibility and visual-review principles. Priority for KOVA UI consistency and real reusable component code, subject to concrete source integration assessment.
+- https://github.com/madebymustafa/design-taste — exact URL, README examined. Agent instruction skills, deliberate design direction and genre packs; do not present these instructions as trained intelligence or installed product features.
+- https://github.com/DavidHDev/canvas-ui — exact URL, README examined. Real source components for WebGL/WebGPU effects over live HTML. Experimental HTML-in-canvas path plus documented fallback. Optional effects; validate touch interactions and GPU cost alongside the 3D viewport.
+- https://github.com/paper-design/shaders — short URL resolved; primary repository examined. UI shader effects, optional.
+- https://github.com/ui-layouts/uilayouts — short URL resolved; primary repository examined. Reusable UI blocks/components, candidate for panels and layout.
+- https://github.com/Hyperiux-Immersion-Labs/hyperiux-components — repository matches Hyperiux Components name via primary search; source not inspected. Do not assume Pro effects are freely included.
+- https://github.com/ibelick/motion-primitives — short URL resolved; primary repository examined. Reusable animated UI components; optional transition polish.
+- https://github.com/ui-layouts/cursify — short URL resolved; primary search identifies cursor-animation library. Low priority for KOVA's touch-first requirements.
+- https://github.com/akaieuan/trickle-UI-kit — repository matches Trickle UI Kit via primary search; source not inspected. Pure-CSS text animation components; optional, not an editor/timeline engine.
+
+Assessment priority: Better Design + current Superdesign skill + Design Taste for interface production; UI Layouts and Motion Primitives for concrete reusable components. Preserve Cybercity/Beyond Fable/Atlas as priorities for the actual world and asset pipeline. Do not claim all ten have been tested or integrated.
