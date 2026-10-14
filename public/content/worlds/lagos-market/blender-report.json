@@ -1,0 +1,275 @@
+{
+  "blender": "5.2.1 LTS",
+  "toolkit": "scenario-labs/skills",
+  "materials": {
+    "BACK_BLOCK_Baked": [],
+    "BAR_L_Baked": [],
+    "BAR_R_Baked": [],
+    "CHAIN_1_Baked": [],
+    "CHAIN_2_Baked": [],
+    "CHAIN_3_Baked": [],
+    "CHAIN_4_Baked": [],
+    "food banner": [
+      [
+        "info",
+        "constant Roughness 0.50: roughness variation is what sells a surface"
+      ]
+    ],
+    "food banner 2": [
+      [
+        "info",
+        "constant Roughness 0.50: roughness variation is what sells a surface"
+      ]
+    ],
+    "FRONT_BANNER_HOLDER_Baked": [],
+    "HOLDER_3_Baked": [],
+    "HOLDER_4_Baked": [],
+    "HOLDER_5_Baked": [],
+    "HOLDER_6_Baked": [],
+    "LANTERN_1_Baked": [],
+    "LANTERN_2_Baked": [],
+    "LETTER_1_Baked": [],
+    "LETTER_2_Baked": [],
+    "LETTER_3_Baked": [],
+    "LETTER_3a_Baked": [],
+    "LETTER_4_Baked": [],
+    "LETTER_4a_Baked": [],
+    "LETTER_4b_Baked": [],
+    "m2 inside": [
+      [
+        "info",
+        "constant Roughness 0.50: roughness variation is what sells a surface"
+      ]
+    ],
+    "m4 inside": [
+      [
+        "info",
+        "constant Roughness 0.50: roughness variation is what sells a surface"
+      ]
+    ],
+    "m4 inside.001": [
+      [
+        "info",
+        "constant Roughness 0.50: roughness variation is what sells a surface"
+      ]
+    ],
+    "Material.023": [
+      [
+        "info",
+        "constant Roughness 0.50: roughness variation is what sells a surface"
+      ]
+    ],
+    "Material.023_unique_HOLDER_1": [
+      [
+        "info",
+        "constant Roughness 0.50: roughness variation is what sells a surface"
+      ]
+    ],
+    "Material.024": [
+      [
+        "info",
+        "constant Roughness 0.50: roughness variation is what sells a surface"
+      ]
+    ],
+    "Material.033": [
+      [
+        "info",
+        "constant Roughness 0.50: roughness variation is what sells a surface"
+      ]
+    ],
+    "Material.044": [
+      [
+        "warn",
+        "image node 'Pink Fabric _Diffuse' has no explicit UV Map/vector input (uses the active render UV; Kaspar: set it)"
+      ],
+      [
+        "warn",
+        "image node 'DarkBlue fabric_Roughness' has no explicit UV Map/vector input (uses the active render UV; Kaspar: set it)"
+      ],
+      [
+        "warn",
+        "image node 'DarkBlue fabric_Normal' has no explicit UV Map/vector input (uses the active render UV; Kaspar: set it)"
+      ]
+    ],
+    "Oak Wood2.001": [
+      [
+        "warn",
+        "image node 'Wood_Diffuse(Oak)' has no explicit UV Map/vector input (uses the active render UV; Kaspar: set it)"
+      ],
+      [
+        "warn",
+        "image node 'Wood_Roughness(Light Oak)' has no explicit UV Map/vector input (uses the active render UV; Kaspar: set it)"
+      ],
+      [
+        "warn",
+        "image node 'Wood_Normal(LIght Oak)' has no explicit UV Map/vector input (uses the active render UV; Kaspar: set it)"
+      ]
+    ],
+    "Oak Wood2.001_unique_BOARD_1": [
+      [
+        "warn",
+        "image node 'Wood_Diffuse(Oak)' has no explicit UV Map/vector input (uses the active render UV; Kaspar: set it)"
+      ],
+      [
+        "warn",
+        "image node 'Wood_Roughness(Light Oak)' has no explicit UV Map/vector input (uses the active render UV; Kaspar: set it)"
+      ],
+      [
+        "warn",
+        "image node 'Wood_Normal(LIght Oak)' has no explicit UV Map/vector input (uses the active render UV; Kaspar: set it)"
+      ]
+    ],
+    "Oak Wood2.001_unique_BOARD_2": [
+      [
+        "warn",
+        "image node 'Wood_Diffuse(Oak)' has no explicit UV Map/vector input (uses the active render UV; Kaspar: set it)"
+      ],
+      [
+        "warn",
+        "image node 'Wood_Roughness(Light Oak)' has no explicit UV Map/vector input (uses the active render UV; Kaspar: set it)"
+      ],
+      [
+        "warn",
+        "image node 'Wood_Normal(LIght Oak)' has no explicit UV Map/vector input (uses the active render UV; Kaspar: set it)"
+      ]
+    ],
+    "Oak Wood2.001_unique_BOARD_3": [],
+    "PLANK_Baked": [],
+    "POSTER_10_Baked": [],
+    "POSTER_1_Baked": [],
+    "RING_1_Baked": [],
+    "RING_2_Baked": [],
+    "ROOF_Baked": [],
+    "SHED_Baked": [],
+    "SHED_SUPPORT_Baked": [],
+    "SHELF_1_Baked": [],
+    "SHELF_2_Baked": [],
+    "SUPPORT_DOWN_Baked": [],
+    "SUPPORT_UP_Baked": [],
+    "TABLE_TOP_Baked": [],
+    "Market.scanned_timber": [],
+    "KOVA.market.paint": [
+      [
+        "info",
+        "constant Roughness 0.75: roughness variation is what sells a surface"
+      ]
+    ]
+  },
+  "assets": {
+    "Ch03": {
+      "vertices": 16340,
+      "bones": 65,
+      "clips": [
+        "Idle.civilian",
+        "Walk.civilian",
+        "Run.civilian"
+      ],
+      "removed_accessory_vertices": 4727
+    },
+    "market-stall": {
+      "removed_regional_signs": [
+        "BOARD_1",
+        "BOARD_2",
+        "BOARD_3",
+        "BOARD_4",
+        "FRONT_BANNER",
+        "FRONT_BANNER_HOLDER",
+        "LANTERN_1",
+        "LANTERN_2",
+        "LEFT_BANNER",
+        "LETTER_1",
+        "LETTER_2",
+        "LETTER_3",
+        "LETTER_3a",
+        "LETTER_4",
+        "LETTER_4a",
+        "LETTER_4b",
+        "LONG_POSTER",
+        "POSTER_1",
+        "POSTER_10",
+        "RIGHT_BANNER"
+      ],
+      "source_width": 4.461974620819092,
+      "target_width": 3.5
+    },
+    "sign": {
+      "audit": {
+        "object": "SignBoard",
+        "verts": 8,
+        "edges": 12,
+        "faces": 6,
+        "tris_equivalent": 12,
+        "tris": 0,
+        "quads": 6,
+        "ngons": 0,
+        "quads_pct": 100.0,
+        "valence_hist_interior": {
+          "3": 8
+        },
+        "poles_e3": 8,
+        "poles_e5plus": 0,
+        "valence_6plus": 0,
+        "non_manifold_edges": 0,
+        "boundary_loops": [],
+        "loose_verts": 0,
+        "loose_edges": 0,
+        "zero_area_faces": 0,
+        "duplicate_verts": 0,
+        "flipped_faces": 0,
+        "self_intersections": 0,
+        "edge_len_mean": 1.32,
+        "edge_len_cv": 1.123,
+        "symmetry_pct": 100.0,
+        "dimensions": [
+          3.4,
+          0.06,
+          0.5
+        ],
+        "ngon_faces_sample": [],
+        "pole_e5_sample": [],
+        "pole_e3_sample": [
+          [
+            -1.7,
+            -0.03,
+            0.0
+          ],
+          [
+            -1.7,
+            -0.03,
+            0.5
+          ],
+          [
+            -1.7,
+            0.03,
+            0.0
+          ],
+          [
+            -1.7,
+            0.03,
+            0.5
+          ],
+          [
+            1.7,
+            -0.03,
+            0.0
+          ],
+          [
+            1.7,
+            -0.03,
+            0.5
+          ],
+          [
+            1.7,
+            0.03,
+            0.0
+          ],
+          [
+            1.7,
+            0.03,
+            0.5
+          ]
+        ]
+      }
+    }
+  }
+}

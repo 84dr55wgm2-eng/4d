@@ -1,0 +1,124 @@
+{
+  "toolkit": "scenario-labs/skills",
+  "toolkitCommit": "907764d4490920a913b60947f9b673359b7a002e",
+  "blender": "5.2.1",
+  "environment": "Poly Haven Hidden Alley, CC0, reused authored shell",
+  "assets": [
+    {
+      "id": "market.civilian",
+      "source": "https://github.com/mrdoob/three.js/tree/5d8e8a89347650ee210e120cdd70f9e9288f0abc/examples/models/gltf",
+      "license": "LicenseRef-Mixamo"
+    },
+    {
+      "id": "market.stall",
+      "source": "https://www.blendkit.com/asset-gallery-detail/cff796e6-57fb-4260-b241-be5d1f8fa13d/",
+      "license": "LicenseRef-BlenderKit-RoyaltyFree"
+    },
+    {
+      "id": "market.sign",
+      "source": "https://github.com/scenario-labs/skills",
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "market.table",
+      "source": "https://polyhaven.com/a/wooden_table_02",
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "market.civilian-olive",
+      "source": "https://github.com/mrdoob/three.js/tree/5d8e8a89347650ee210e120cdd70f9e9288f0abc/examples/models/gltf",
+      "license": "LicenseRef-Mixamo"
+    },
+    {
+      "id": "market.civilian-rust",
+      "source": "https://github.com/mrdoob/three.js/tree/5d8e8a89347650ee210e120cdd70f9e9288f0abc/examples/models/gltf",
+      "license": "LicenseRef-Mixamo"
+    }
+  ],
+  "limitations": [
+    "Adapted fictional market; not a reconstruction of Lagos",
+    "Six crowd members share one civilian mesh and rig",
+    "No Scenario paid generation used",
+    "No live language model connected"
+  ],
+  "measured": {
+    "civilian": {
+      "min": [
+        -0.4,
+        0,
+        -0.3
+      ],
+      "max": [
+        0.4,
+        1.7,
+        0.3
+      ],
+      "height": 1.7
+    },
+    "civilian-olive": {
+      "min": [
+        -0.4,
+        0,
+        -0.3
+      ],
+      "max": [
+        0.4,
+        1.7,
+        0.3
+      ],
+      "height": 1.7
+    },
+    "civilian-rust": {
+      "min": [
+        -0.4,
+        0,
+        -0.3
+      ],
+      "max": [
+        0.4,
+        1.7,
+        0.3
+      ],
+      "height": 1.7
+    },
+    "market-stall": {
+      "min": [
+        -1.7499999793223253,
+        0,
+        -1.389382244050097
+      ],
+      "max": [
+        1.7499999793223253,
+        2.553738785274895,
+        1.389382244050097
+      ],
+      "height": 2.553738785274895
+    },
+    "market-sign": {
+      "min": [
+        -1.7000000476837158,
+        0,
+        -0.033000010506985616
+      ],
+      "max": [
+        1.7000000476837158,
+        0.5,
+        0.033000010506985616
+      ],
+      "height": 0.5
+    },
+    "table": {
+      "min": [
+        -0.56720831990242,
+        0,
+        -0.35301241278648376
+      ],
+      "max": [
+        0.56720831990242,
+        0.7995428870490286,
+        0.35301241278648376
+      ],
+      "height": 0.7995428870490286
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-14T17:45:45.127Z",
+  "service": "https://3d.shep.bot",
+  "assets": [
+    {
+      "id": "blenderkit:cff796e6-57fb-4260-b241-be5d1f8fa13d",
+      "title": "Japanese/Korean Food Stall",
+      "source": "https://www.blendkit.com/asset-gallery-detail/cff796e6-57fb-4260-b241-be5d1f8fa13d/",
+      "license": {
+        "name": "Royalty Free",
+        "url": "https://www.blendkit.com/docs/licenses/",
+        "commercialUse": true,
+        "attributionRequired": false
+      },
+      "format": "glb",
+      "bytes": 3091288,
+      "companions": []
+    },
+    {
+      "id": "polyhaven:wooden_table_02",
+      "title": "Wooden Table 02",
+      "source": "https://polyhaven.com/a/wooden_table_02",
+      "license": {
+        "name": "CC0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "commercialUse": true,
+        "attributionRequired": false
+      },
+      "format": "gltf",
+      "bytes": 2687,
+      "companions": [
+        "textures/wooden_table_02_diff_1k.jpg",
+        "textures/wooden_table_02_nor_gl_1k.jpg",
+        "wooden_table_02.bin",
+        "textures/wooden_table_02_arm_1k.jpg"
+      ]
+    }
+  ],
+  "motionSource": "https://github.com/mrdoob/three.js/tree/5d8e8a89347650ee210e120cdd70f9e9288f0abc/examples/models/gltf",
+  "motionTerms": "https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html"
+}

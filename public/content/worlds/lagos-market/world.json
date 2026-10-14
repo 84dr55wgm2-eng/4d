@@ -1,0 +1,2035 @@
+{
+ "format": "cws-world",
+ "version": 3,
+ "revision": "scenario-market-1",
+ "id": "lagos-market",
+ "name": "Lagos — marché / essai Scenario",
+ "environment": {
+  "assetId": "env.hidden-alley",
+  "collision": "content/worlds/lagos-market/collision.json",
+  "navmesh": "content/worlds/lagos-market/navmesh.bin",
+  "hdri": "hdri.pedestrian-overpass",
+  "sun": {
+   "azimuth": 145,
+   "elevation": 48,
+   "intensity": 2.5
+  },
+  "exposure": 0.95
+ },
+ "spawn": {
+  "position": [
+   0,
+   0,
+   -1
+  ],
+  "heading": 3.141592653589793
+ },
+ "zones": [
+  {
+   "id": "alley",
+   "name": "Ruelle",
+   "kind": "alley",
+   "bounds": [
+    -15,
+    -35,
+    15,
+    10
+   ],
+   "tags": [
+    "authored",
+    "urban"
+   ]
+  }
+ ],
+ "entities": [
+  {
+   "id": "stall.0",
+   "type": "FURNITURE",
+   "name": "Étal 1",
+   "assetId": "market.stall",
+   "transform": {
+    "position": [
+     -3.1,
+     0,
+     -3
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "locked": true
+  },
+  {
+   "id": "sign.0",
+   "type": "PROP",
+   "name": "Enseigne du marché",
+   "assetId": "market.sign",
+   "transform": {
+    "position": [
+     -3.1,
+     2.5,
+     -3
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "locked": true
+  },
+  {
+   "id": "goods.0.0",
+   "type": "PROP",
+   "name": "Caisse de légumes",
+   "assetId": "lagos.crate3",
+   "transform": {
+    "position": [
+     -3.45,
+     1.05,
+     -3.55
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     0.8,
+     0.8,
+     0.8
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.0.0.0",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     -3.5,
+     1.25,
+     -3.55
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.0.0.1",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     -3.41,
+     1.25,
+     -3.55
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.0.0.2",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     -3.5,
+     1.25,
+     -3.46
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.0.0.3",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     -3.41,
+     1.25,
+     -3.46
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "goods.0.1",
+   "type": "PROP",
+   "name": "Caisse de légumes",
+   "assetId": "lagos.crate3",
+   "transform": {
+    "position": [
+     -3.45,
+     1.05,
+     -3
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     0.8,
+     0.8,
+     0.8
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.0.1.0",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     -3.5,
+     1.25,
+     -3
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.0.1.1",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     -3.41,
+     1.25,
+     -3
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.0.1.2",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     -3.5,
+     1.25,
+     -2.91
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.0.1.3",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     -3.41,
+     1.25,
+     -2.91
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "goods.0.2",
+   "type": "PROP",
+   "name": "Caisse de légumes",
+   "assetId": "lagos.crate3",
+   "transform": {
+    "position": [
+     -3.45,
+     1.05,
+     -2.45
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     0.8,
+     0.8,
+     0.8
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.0.2.0",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     -3.5,
+     1.25,
+     -2.45
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.0.2.1",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     -3.41,
+     1.25,
+     -2.45
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.0.2.2",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     -3.5,
+     1.25,
+     -2.3600000000000003
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.0.2.3",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     -3.41,
+     1.25,
+     -2.3600000000000003
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "stall.1",
+   "type": "FURNITURE",
+   "name": "Étal 2",
+   "assetId": "market.stall",
+   "transform": {
+    "position": [
+     3.1,
+     0,
+     -7
+    ],
+    "rotation": [
+     0,
+     -0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "locked": true
+  },
+  {
+   "id": "sign.1",
+   "type": "PROP",
+   "name": "Enseigne du marché",
+   "assetId": "market.sign",
+   "transform": {
+    "position": [
+     3.1,
+     2.5,
+     -7
+    ],
+    "rotation": [
+     0,
+     -0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "locked": true
+  },
+  {
+   "id": "goods.1.0",
+   "type": "PROP",
+   "name": "Caisse de légumes",
+   "assetId": "lagos.crate3",
+   "transform": {
+    "position": [
+     3.45,
+     1.05,
+     -7.55
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     0.8,
+     0.8,
+     0.8
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.1.0.0",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     3.4000000000000004,
+     1.25,
+     -7.55
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.1.0.1",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     3.49,
+     1.25,
+     -7.55
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.1.0.2",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     3.4000000000000004,
+     1.25,
+     -7.46
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.1.0.3",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     3.49,
+     1.25,
+     -7.46
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "goods.1.1",
+   "type": "PROP",
+   "name": "Caisse de légumes",
+   "assetId": "lagos.crate3",
+   "transform": {
+    "position": [
+     3.45,
+     1.05,
+     -7
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     0.8,
+     0.8,
+     0.8
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.1.1.0",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     3.4000000000000004,
+     1.25,
+     -7
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.1.1.1",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     3.49,
+     1.25,
+     -7
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.1.1.2",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     3.4000000000000004,
+     1.25,
+     -6.91
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.1.1.3",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     3.49,
+     1.25,
+     -6.91
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "goods.1.2",
+   "type": "PROP",
+   "name": "Caisse de légumes",
+   "assetId": "lagos.crate3",
+   "transform": {
+    "position": [
+     3.45,
+     1.05,
+     -6.45
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     0.8,
+     0.8,
+     0.8
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.1.2.0",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     3.4000000000000004,
+     1.25,
+     -6.45
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.1.2.1",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     3.49,
+     1.25,
+     -6.45
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.1.2.2",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     3.4000000000000004,
+     1.25,
+     -6.36
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.1.2.3",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     3.49,
+     1.25,
+     -6.36
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "stall.2",
+   "type": "FURNITURE",
+   "name": "Étal 3",
+   "assetId": "market.stall",
+   "transform": {
+    "position": [
+     -3.1,
+     0,
+     -11
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "locked": true
+  },
+  {
+   "id": "sign.2",
+   "type": "PROP",
+   "name": "Enseigne du marché",
+   "assetId": "market.sign",
+   "transform": {
+    "position": [
+     -3.1,
+     2.5,
+     -11
+    ],
+    "rotation": [
+     0,
+     0.7071067811865475,
+     0,
+     0.7071067811865476
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ],
+   "locked": true
+  },
+  {
+   "id": "goods.2.0",
+   "type": "PROP",
+   "name": "Caisse de légumes",
+   "assetId": "lagos.crate3",
+   "transform": {
+    "position": [
+     -3.45,
+     1.05,
+     -11.55
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     0.8,
+     0.8,
+     0.8
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.2.0.0",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     -3.5,
+     1.25,
+     -11.55
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.2.0.1",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     -3.41,
+     1.25,
+     -11.55
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.2.0.2",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     -3.5,
+     1.25,
+     -11.46
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.2.0.3",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     -3.41,
+     1.25,
+     -11.46
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "goods.2.1",
+   "type": "PROP",
+   "name": "Caisse de légumes",
+   "assetId": "lagos.crate3",
+   "transform": {
+    "position": [
+     -3.45,
+     1.05,
+     -11
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     0.8,
+     0.8,
+     0.8
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.2.1.0",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     -3.5,
+     1.25,
+     -11
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.2.1.1",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     -3.41,
+     1.25,
+     -11
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.2.1.2",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     -3.5,
+     1.25,
+     -10.91
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.2.1.3",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     -3.41,
+     1.25,
+     -10.91
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "goods.2.2",
+   "type": "PROP",
+   "name": "Caisse de légumes",
+   "assetId": "lagos.crate3",
+   "transform": {
+    "position": [
+     -3.45,
+     1.05,
+     -10.45
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     0.8,
+     0.8,
+     0.8
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.2.2.0",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     -3.5,
+     1.25,
+     -10.45
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.2.2.1",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     -3.41,
+     1.25,
+     -10.45
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.2.2.2",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.onion",
+   "transform": {
+    "position": [
+     -3.5,
+     1.25,
+     -10.36
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "food.2.2.3",
+   "type": "PROP",
+   "name": "Produits frais",
+   "assetId": "lagos.sweet_potato",
+   "transform": {
+    "position": [
+     -3.41,
+     1.25,
+     -10.36
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "table.0",
+   "type": "FURNITURE",
+   "name": "Table de vente",
+   "assetId": "market.table",
+   "transform": {
+    "position": [
+     2.8,
+     0,
+     -3
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable"
+   ]
+  },
+  {
+   "id": "performer",
+   "type": "ACTOR",
+   "name": "Interprète civil",
+   "assetId": "market.civilian",
+   "transform": {
+    "position": [
+     0,
+     0,
+     -1
+    ],
+    "rotation": [
+     0,
+     1,
+     0,
+     6.123233995736766e-17
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable",
+    "directable"
+   ]
+  },
+  {
+   "id": "person.0",
+   "type": "ACTOR",
+   "name": "Passante 1",
+   "assetId": "market.civilian",
+   "transform": {
+    "position": [
+     -0.9,
+     0,
+     -2
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     0.965,
+     1
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable",
+    "directable"
+   ],
+   "metadata": {
+    "procedural": {
+     "kind": "sim"
+    },
+    "sim": {
+     "kind": "person",
+     "behavior": "wander",
+     "home": ""
+    }
+   }
+  },
+  {
+   "id": "person.1",
+   "type": "ACTOR",
+   "name": "Passante 2",
+   "assetId": "market.civilian-olive",
+   "transform": {
+    "position": [
+     1,
+     0,
+     -4
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable",
+    "directable"
+   ],
+   "metadata": {
+    "procedural": {
+     "kind": "sim"
+    },
+    "sim": {
+     "kind": "person",
+     "behavior": "wander",
+     "home": ""
+    }
+   }
+  },
+  {
+   "id": "person.2",
+   "type": "ACTOR",
+   "name": "Passante 3",
+   "assetId": "market.civilian-rust",
+   "transform": {
+    "position": [
+     -0.5,
+     0,
+     -6
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1.035,
+     1
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable",
+    "directable"
+   ],
+   "metadata": {
+    "procedural": {
+     "kind": "sim"
+    },
+    "sim": {
+     "kind": "person",
+     "behavior": "wander",
+     "home": ""
+    }
+   }
+  },
+  {
+   "id": "person.3",
+   "type": "ACTOR",
+   "name": "Passante 4",
+   "assetId": "market.civilian",
+   "transform": {
+    "position": [
+     1.2,
+     0,
+     -9
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     0.965,
+     1
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable",
+    "directable"
+   ],
+   "metadata": {
+    "procedural": {
+     "kind": "sim"
+    },
+    "sim": {
+     "kind": "person",
+     "behavior": "wander",
+     "home": ""
+    }
+   }
+  },
+  {
+   "id": "person.4",
+   "type": "ACTOR",
+   "name": "Passante 5",
+   "assetId": "market.civilian-olive",
+   "transform": {
+    "position": [
+     -1.2,
+     0,
+     -10
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable",
+    "directable"
+   ],
+   "metadata": {
+    "procedural": {
+     "kind": "sim"
+    },
+    "sim": {
+     "kind": "person",
+     "behavior": "wander",
+     "home": ""
+    }
+   }
+  },
+  {
+   "id": "person.5",
+   "type": "ACTOR",
+   "name": "Passante 6",
+   "assetId": "market.civilian-rust",
+   "transform": {
+    "position": [
+     0.8,
+     0,
+     -1
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1.035,
+     1
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable",
+    "directable"
+   ],
+   "metadata": {
+    "procedural": {
+     "kind": "sim"
+    },
+    "sim": {
+     "kind": "person",
+     "behavior": "wander",
+     "home": ""
+    }
+   }
+  },
+  {
+   "id": "radio.0",
+   "type": "PROP",
+   "name": "Radio du marché",
+   "assetId": "lagos.transceiver",
+   "transform": {
+    "position": [
+     2.8,
+     0.82,
+     -3
+    ],
+    "rotation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "tags": [
+    "market",
+    "authored"
+   ],
+   "capabilities": [
+    "selectable",
+    "interactable",
+    "pickable"
+   ]
+  }
+ ],
+ "shots": [
+  {
+   "id": "market.overview",
+   "name": "Le marché",
+   "position": [
+    0,
+    2.2,
+    4
+   ],
+   "target": [
+    0,
+    1.3,
+    -7
+   ],
+   "focalLength": 24
+  },
+  {
+   "id": "market.stall",
+   "name": "Les étals",
+   "position": [
+    0.3,
+    1.8,
+    -1
+   ],
+   "target": [
+    -3.1,
+    1.3,
+    -5
+   ],
+   "focalLength": 28
+  },
+  {
+   "id": "market.deep",
+   "name": "La traversée",
+   "position": [
+    1,
+    2,
+    -12
+   ],
+   "target": [
+    0,
+    1.3,
+    0
+   ],
+   "focalLength": 28
+  }
+ ],
+ "sequences": [],
+ "worldState": {
+  "timeOfDay": "day",
+  "openingShot": true,
+  "brief": "Marché de quartier à Lagos, piétons et étals",
+  "preparation": "Scenario Blender offline toolkit + 3D Asset Server"
+ }
+}

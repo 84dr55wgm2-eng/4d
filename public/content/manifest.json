@@ -1,6 +1,6 @@
 {
  "format": "cws-manifest",
- "version": "2026.10.12-yaba-shops-hidden-alley-1",
+ "version": "2026.10.12-yaba-shops-hidden-alley-1-scenario-market-1",
  "assets": [
   {
    "id": "env.bistro",
@@ -2864,6 +2864,225 @@
     "complete-scene"
    ],
    "entityType": "ENVIRONMENT"
+  },
+  {
+   "id": "market.civilian",
+   "name": "Interprète civil animé",
+   "category": "CHARACTERS",
+   "entityType": "ACTOR",
+   "source": "Adobe Mixamo, via three.js examples",
+   "sourceUrl": "https://github.com/mrdoob/three.js/tree/5d8e8a89347650ee210e120cdd70f9e9288f0abc/examples/models/gltf",
+   "url": "content/worlds/lagos-market/civilian.glb",
+   "format": "glb",
+   "bytes": 479444,
+   "license": {
+    "id": "LicenseRef-Mixamo",
+    "verified": true,
+    "notes": "Used in the interactive scene; not a standalone asset distribution service."
+   },
+   "tags": [
+    "market",
+    "blender",
+    "scenario"
+   ],
+   "footprint": {
+    "min": [
+     -0.4,
+     0,
+     -0.3
+    ],
+    "max": [
+     0.4,
+     1.7,
+     0.3
+    ]
+   },
+   "runtime": {
+    "embeddedClips": true
+   },
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 1.7
+   }
+  },
+  {
+   "id": "market.stall",
+   "name": "Étal adapté dans Blender",
+   "category": "FURNITURE",
+   "entityType": "FURNITURE",
+   "source": "BlenderKit, Japanese/Korean Food Stall",
+   "sourceUrl": "https://www.blendkit.com/asset-gallery-detail/cff796e6-57fb-4260-b241-be5d1f8fa13d/",
+   "url": "content/worlds/lagos-market/market-stall.glb",
+   "format": "glb",
+   "bytes": 1806524,
+   "license": {
+    "id": "LicenseRef-BlenderKit-RoyaltyFree",
+    "verified": true,
+    "notes": "Used in the interactive scene; not a standalone asset distribution service."
+   },
+   "tags": [
+    "market",
+    "blender",
+    "scenario"
+   ],
+   "footprint": {
+    "min": [
+     -1.7499999793223253,
+     0,
+     -1.389382244050097
+    ],
+    "max": [
+     1.7499999793223253,
+     2.553738785274895,
+     1.389382244050097
+    ]
+   }
+  },
+  {
+   "id": "market.sign",
+   "name": "Enseigne du marché",
+   "category": "PROPS",
+   "entityType": "PROP",
+   "source": "KOVA, prepared with Scenario MIT toolkit",
+   "sourceUrl": "https://github.com/scenario-labs/skills",
+   "url": "content/worlds/lagos-market/market-sign.glb",
+   "format": "glb",
+   "bytes": 34388,
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "notes": "Used in the interactive scene; not a standalone asset distribution service."
+   },
+   "tags": [
+    "market",
+    "blender",
+    "scenario"
+   ],
+   "footprint": {
+    "min": [
+     -1.7000000476837158,
+     0,
+     -0.033000010506985616
+    ],
+    "max": [
+     1.7000000476837158,
+     0.5,
+     0.033000010506985616
+    ]
+   }
+  },
+  {
+   "id": "market.table",
+   "name": "Table en bois",
+   "category": "FURNITURE",
+   "entityType": "FURNITURE",
+   "source": "Poly Haven",
+   "sourceUrl": "https://polyhaven.com/a/wooden_table_02",
+   "url": "content/worlds/lagos-market/table.glb",
+   "format": "glb",
+   "bytes": 335848,
+   "license": {
+    "id": "CC0-1.0",
+    "verified": true,
+    "notes": "Used in the interactive scene; not a standalone asset distribution service."
+   },
+   "tags": [
+    "market",
+    "blender",
+    "scenario"
+   ],
+   "footprint": {
+    "min": [
+     -0.56720831990242,
+     0,
+     -0.35301241278648376
+    ],
+    "max": [
+     0.56720831990242,
+     0.7995428870490286,
+     0.35301241278648376
+    ]
+   }
+  },
+  {
+   "id": "market.civilian-olive",
+   "name": "Interprète — tenue olive",
+   "category": "CHARACTERS",
+   "entityType": "ACTOR",
+   "source": "Adobe Mixamo, via three.js examples",
+   "sourceUrl": "https://github.com/mrdoob/three.js/tree/5d8e8a89347650ee210e120cdd70f9e9288f0abc/examples/models/gltf",
+   "url": "content/worlds/lagos-market/civilian-olive.glb",
+   "format": "glb",
+   "bytes": 478860,
+   "license": {
+    "id": "LicenseRef-Mixamo",
+    "verified": true,
+    "notes": "Used in the interactive scene; not a standalone asset distribution service."
+   },
+   "tags": [
+    "market",
+    "blender",
+    "scenario"
+   ],
+   "footprint": {
+    "min": [
+     -0.4,
+     0,
+     -0.3
+    ],
+    "max": [
+     0.4,
+     1.7,
+     0.3
+    ]
+   },
+   "runtime": {
+    "embeddedClips": true
+   },
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 1.7
+   }
+  },
+  {
+   "id": "market.civilian-rust",
+   "name": "Interprète — tenue rust",
+   "category": "CHARACTERS",
+   "entityType": "ACTOR",
+   "source": "Adobe Mixamo, via three.js examples",
+   "sourceUrl": "https://github.com/mrdoob/three.js/tree/5d8e8a89347650ee210e120cdd70f9e9288f0abc/examples/models/gltf",
+   "url": "content/worlds/lagos-market/civilian-rust.glb",
+   "format": "glb",
+   "bytes": 478876,
+   "license": {
+    "id": "LicenseRef-Mixamo",
+    "verified": true,
+    "notes": "Used in the interactive scene; not a standalone asset distribution service."
+   },
+   "tags": [
+    "market",
+    "blender",
+    "scenario"
+   ],
+   "footprint": {
+    "min": [
+     -0.4,
+     0,
+     -0.3
+    ],
+    "max": [
+     0.4,
+     1.7,
+     0.3
+    ]
+   },
+   "runtime": {
+    "embeddedClips": true
+   },
+   "scale": {
+    "unitsToMetres": 1,
+    "targetHeight": 1.7
+   }
   }
  ],
  "worlds": [
@@ -2881,6 +3100,11 @@
    "id": "hidden-alley",
    "name": "Hidden Alley — essai Blender",
    "url": "content/worlds/hidden-alley/world.json"
+  },
+  {
+   "id": "lagos-market",
+   "name": "Lagos — marché / essai Scenario",
+   "url": "content/worlds/lagos-market/world.json"
   }
  ]
 }
