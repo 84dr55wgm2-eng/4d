@@ -52,7 +52,7 @@ placements.forEach(([x,y,z,yaw],i)=>{
  }
 });
 entities.push(e('table.0','FURNITURE','Table de vente','market.table',[2.8,0,-3],0,[1,1,1]));
-const actor=e('performer','ACTOR','Interprète civil','market.civilian',[0,0,1],Math.PI,[1,1,1],['selectable','directable']);entities.push(actor);
+const actor=e('performer','ACTOR','Interprète civil','market.civilian',[0,0,-1],Math.PI,[1,1,1],['selectable','directable']);entities.push(actor);
 const people=[[-0.9,0,-2],[1,0,-4],[-0.5,0,-6],[1.2,0,-9],[-1.2,0,-10],[0.8,0,-1]];
 people.forEach((p,i)=>{
  const person=e(`person.${i}`,'ACTOR',`Passante ${i+1}`,['market.civilian','market.civilian-olive','market.civilian-rust'][i%3],p,0,[1,1+(i%3-1)*0.035,1],['selectable','directable']);
@@ -73,8 +73,8 @@ for(const [file,id,name,category,entityType,source,sourceUrl,license] of assets)
 }
 const world={...base,id:'lagos-market',name:'Lagos — marché / essai Scenario',revision:'scenario-market-1',
  environment:{...base.environment,collision:'content/worlds/lagos-market/collision.json',navmesh:'content/worlds/lagos-market/navmesh.bin',sun:{azimuth:145,elevation:48,intensity:2.5},exposure:0.95},
- entities,spawn:{position:[0,0,1],heading:Math.PI},shots:[
- {id:'market.overview',name:'Le marché',position:[0,2.2,6],target:[0,1.3,-7],focalLength:24},
+ entities,spawn:{position:[0,0,-1],heading:Math.PI},shots:[
+ {id:'market.overview',name:'Le marché',position:[0,2.2,4],target:[0,1.3,-7],focalLength:24},
  {id:'market.stall',name:'Les étals',position:[0.3,1.8,-1],target:[-3.1,1.3,-5],focalLength:28},
  {id:'market.deep',name:'La traversée',position:[1,2,-12],target:[0,1.3,0],focalLength:28}],
  sequences:[],worldState:{timeOfDay:'day',openingShot:true,brief:'Marché de quartier à Lagos, piétons et étals',preparation:'Scenario Blender offline toolkit + 3D Asset Server'}};
