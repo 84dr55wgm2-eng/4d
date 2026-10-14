@@ -150,17 +150,20 @@ export class Studio extends Emitter<Events> {
   // ---------------------------------------------------------------- boot
   async boot() {
     try {
+      const stage = (label: string) => this.set({ loading: [{ label, loaded: 0, total: 0 }] });
       this.set({ phase: 'loading' });
       this.registry.setRenderer(this.engine.renderer);
       performance.mark('boot:start');
-      await this.registry.init();
+      await this.registry.init(stage);
       performance.mark('boot:manifest');
       this.assembly = new StudioAssembly(this);
       this.sim = new Simulation(this.registry, this.assembly.runtime);
       this.engine.scene.add(this.sim.root);
+      stage('Paquets et projets enregistrés');
       await this.assembly.loadInstalled();
       const localWorlds = await idb.all<WorldDocument>('worlds');
       this.worlds = [...this.registry.manifest.worlds.map(({id, name}) => ({id, name})), ...localWorlds.filter((d) => (d.composition || d.imported || d.district || d.assembly) && !this.registry.manifest.worlds.some((w) => w.id === d.id)).map(({id, name}) => ({id, name}))];
+      stage('Description du monde');
       const doc = await this.loadWorldDocument();
       for (const e of doc.entities) {
         const rec = e.assetId ? this.registry.manifest.assets.find((a) => a.id === e.assetId) : undefined;
@@ -193,9 +196,11 @@ export class Studio extends Emitter<Events> {
       const envRec = env.assetId ? this.registry.get(env.assetId) : null;
       const composedGeometry = doc.composition ? worldGeometry(doc, this.registry.manifest.assets) : null;
       const base = import.meta.env.BASE_URL;
+      stage('Éclairage du monde');
       await this.engine.loadEnvironment(`${base}${this.registry.get(env.hdri).url}`, env.sun, env.exposure);
       this.thumbnails = new Thumbnails(this.engine.renderer, this.engine.scene.environment);
-      await this.thumbnails.preload(this.registry.manifest.assets.map((a) => a.id));
+      // Library previews are optional; loading every cached thumbnail must not delay the world.
+      void this.thumbnails.preload(this.registry.manifest.assets.map((a) => a.id)).then(() => this.set({}), (e) => console.warn('[thumbnails]', e));
       this.registry.onLoaded = (a) => {
         if (a.record.entityType && a.record.entityType !== 'ENVIRONMENT' && !this.thumbnails.get(a.record.id))
           this.thumbnails.make(a.record.id, a.template, this.registry.version).then(() => this.set({}), (e) => console.warn('[thumbnail]', a.record.id, e));
@@ -227,6 +232,7 @@ export class Studio extends Emitter<Events> {
         this.entities.factories.set('sim', (e) => { const g = new THREE.Group(); g.name = e.name; return g; });
       }
       this.appliedSun = JSON.stringify([env.sun, env.exposure]);
+      stage('Décor, personnage et navigation');
       const [world, bakedCollision, bakedNav, actor] = await Promise.all([
         env.assetId ? this.registry.loadGLTF(env.assetId, track(envRec!.name)) : null,
         this.district ? Promise.resolve(new CollisionWorld(this.district.build.collide.clone())) :

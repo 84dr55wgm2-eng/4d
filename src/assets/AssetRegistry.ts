@@ -67,10 +67,12 @@ export class AssetRegistry {
     this.loader.setKTX2Loader(ktx2);
   }
 
-  async init() {
-    const res = await fetch(`${this.baseUrl}content/manifest.json`, { cache: 'no-cache' });
+  async init(onStage?: (label: string) => void) {
+    onStage?.('Catalogue du monde');
+    const res = await fetch(`${this.baseUrl}content/manifest.json`, { cache: 'no-cache', signal: AbortSignal.timeout(30000) });
     if (!res.ok) throw new Error(`manifest HTTP ${res.status}`);
     this.manifest = await res.json();
+    onStage?.('Projets et assets sauvegardés dans ce navigateur');
     // User-discovered assets survive reloads without changing the checked-in manifest.
     const external = await idb.get<AssetRecord[]>('settings', 'external-assets').catch(() => undefined);
     if (external?.length) {
@@ -78,8 +80,10 @@ export class AssetRegistry {
       for (const a of external) if (!known.has(a.id)) this.manifest.assets.push(a);
     }
     // optional: split-file index written by tools/package_artifact.mjs for hosts with a per-file size cap
-    const parts = await fetch(`${this.baseUrl}content/parts.json`).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
+    onStage?.('Index des fichiers');
+    const parts = await fetch(`${this.baseUrl}content/parts.json`, { signal: AbortSignal.timeout(10000) }).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
     this.cache.parts = parts;
+    onStage?.('Cache des assets');
     await this.cache.refreshStatuses(this.manifest.assets.map((a) => this.resolveUrl(a)), this.manifest.version);
   }
 

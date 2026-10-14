@@ -41,7 +41,7 @@ function Loading({ studio }: { studio: Studio }) {
       <div className="glass loading-card">
         <div className="brand">Cinematic World Studio</div>
         {ui.phase === 'error' ? (
-          <div className="error">Could not open the world: {ui.error}</div>
+          <div className="error" role="alert">Impossible d’ouvrir le monde : {ui.error}<button className="btn" onClick={() => location.reload()}>Réessayer</button></div>
         ) : (
           <>
             <div className="loading-title">Ouverture du monde…</div>

@@ -10,12 +10,29 @@ function open(): Promise<IDBDatabase> {
   if (dbPromise) return dbPromise;
   dbPromise = new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, DB_VERSION);
+    let settled = false;
+    const fail = (error: Error | DOMException | null) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      reject(error ?? new Error('Le stockage local est indisponible.'));
+    };
+    const timer = setTimeout(() => fail(new Error('Le stockage local ne répond pas. Ferme les autres onglets du studio puis recharge cette page.')), 10000);
+    req.onblocked = () => fail(new Error('Un ancien onglet du studio bloque la mise à jour du stockage. Ferme les autres onglets du studio puis recharge cette page. Tes projets sont conservés.'));
     req.onupgradeneeded = () => {
       const db = req.result;
       for (const s of ['worlds', 'contentMeta', 'settings', 'packageFiles']) if (!db.objectStoreNames.contains(s)) db.createObjectStore(s);
     };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+    req.onsuccess = () => {
+      const db = req.result;
+      if (settled) { db.close(); return; }
+      settled = true;
+      clearTimeout(timer);
+      // Release the old connection when another tab needs a newer schema.
+      db.onversionchange = () => { db.close(); dbPromise = null; };
+      resolve(db);
+    };
+    req.onerror = () => fail(req.error);
   });
   return dbPromise;
 }

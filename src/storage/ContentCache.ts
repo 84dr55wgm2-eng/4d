@@ -52,8 +52,9 @@ export class ContentCache extends Emitter<CacheEvents> {
 
   /** Load cached status for many urls at startup (so the library can show cache state). */
   async refreshStatuses(urls: string[], version: string) {
+    const metas = new Map((await idb.all<ContentMeta>('contentMeta').catch(() => [])).map((m) => [m.url, m]));
     for (const url of urls) {
-      const meta = await idb.get<ContentMeta>('contentMeta', url).catch(() => undefined);
+      const meta = metas.get(url);
       if (meta && meta.version === version && meta.store === 'opfs') this.setStatus(url, 'cached');
     }
   }
