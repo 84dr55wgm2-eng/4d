@@ -63,3 +63,12 @@ Aucun téléchargement de fichiers du jeu, aucun asset Rockstar dans le dépôt 
 - **Anthropic SDK TypeScript** `@anthropic-ai/sdk@0.133` → `server/agent-relay/server.mjs` (clé côté serveur, modèle et prompt fixés) → **INTÉGRÉ** côté code, testé jusqu’à `provider_not_configured` ; appel réel au modèle **BLOQUÉ** (aucune clé ni hébergement fourni).
 - **fflate** `Unzip` en flux → `src/content/PackageStore.ts` (OPFS / IndexedDB, quota) → **INTÉGRÉ**.
 - **CesiumMan** (Khronos glTF-Sample-Assets, CC BY 4.0) → personnage du paquet de test → **INTÉGRÉ** (contenu de test, non GTA).
+
+
+## 2026-10-14 — Scenario Blender and 3D Asset Server
+
+- `scenario-labs/skills`, commit `907764d4490920a913b60947f9b673359b7a002e`: actual MIT `bx_materials.py` and `bx_audit.py` vendored in `tools/vendor/scenario-blender`. Executed under Blender 5.2.1 by `tools/prepare/scenario_assets.py` (PBR builder, material checks and mesh audit). No paid Scenario generation invoked.
+- `arielshad/3d-asset-server` / `https://3d.shep.bot`: acquisition script executes search and file discovery, downloads BlenderKit stall and Poly Haven table plus all companions. Sources and per-asset terms recorded in `acquisition.json`.
+- Existing authored Poly Haven Hidden Alley shell reused in a fictional market adaptation. This is not geographic Lagos, GTA, a full city, or live AI world generation.
+- Mixamo Michelle and compatible source motion from three.js examples: own mesh/rig and three embedded clips, replacing the old default RPM performer for this route. The crowd currently shares the same civilian mesh.
+- Existing Detour simulation extended to authored worlds; no new crowd algorithm written. Existing tap-to-direct, manual follow-camera override and sequence clock reused. Foreground navigation derived from the actual authored floor, with acquired-stall footprints carved out; full collision mesh kept separately.

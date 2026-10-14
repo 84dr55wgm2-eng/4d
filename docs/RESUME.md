@@ -1,3 +1,11 @@
+# Current integration pass — 2026-10-14
+
+Scenario offline Blender preparation has been implemented in `tools/prepare/scenario_assets.py` and `scenario_world.mjs`. The `lagos-market` route is an adapted fictional market with a new civilian performer, three clips and six crowd members sharing its model. Blender 5.2.1 executes the vendored MIT material and mesh tools; acquisition uses actual 3D Asset Server responses. See `docs/scenario-blender-integration.md`. The previous GTA limitations remain. No language model service or paid Scenario generation has been connected.
+
+The review workflow prepares content and captures the real app before production promotion. Source work is on `codex/scenario-market`.
+
+---
+
 # Resume state
 
 _Last pass: 2026-10-12 — studio de lieux (correction « séparer le studio du contenu GTA »)._
