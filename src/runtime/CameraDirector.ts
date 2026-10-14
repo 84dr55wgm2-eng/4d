@@ -151,12 +151,18 @@ export class CameraDirector extends Emitter<Events> {
   goTo(shot: Pick<CameraShot, 'position' | 'target' | 'focalLength'>, duration = 0.9) {
     this.setMode('director');
     const toT = new THREE.Vector3(...shot.target);
+    if (duration <= 0) {
+      // A cut is synchronous: loading or pausing the renderer must not leave
+      // the previous follow pose active until a future animation frame.
+      this.setPose(new THREE.Vector3(...shot.position), toT);
+      this.setLens(shot.focalLength);
+      return;
+    }
     this.transition = {
       from: this.camera.position.clone(), fromT: this.orbit.target.clone(),
       to: new THREE.Vector3(...shot.position), toT,
       fromF: this.focalLength, toF: shot.focalLength, t: 0, dur: duration,
     };
-    if (duration <= 0) this.transition.t = 1;
   }
 
   lookAt(p: THREE.Vector3) {
@@ -167,6 +173,7 @@ export class CameraDirector extends Emitter<Events> {
   }
 
   setPose(position: THREE.Vector3, target: THREE.Vector3) {
+    this.transition = null;
     this.camera.position.copy(position);
     this.camera.lookAt(target);
     if (this.mode !== 'follow') { this.orbit.target.copy(target); this.orbit.update(); }

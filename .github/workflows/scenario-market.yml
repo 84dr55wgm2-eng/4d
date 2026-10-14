@@ -8,6 +8,7 @@ on:
       - 'tools/vendor/scenario-blender/**'
       - 'tools/scenarios/lagos-market.mjs'
       - 'src/runtime/Studio.ts'
+      - 'src/runtime/CameraDirector.ts'
       - 'src/runtime/SequencePlayer.ts'
       - 'src/sim/Simulation.ts'
       - '.github/workflows/scenario-market.yml'
