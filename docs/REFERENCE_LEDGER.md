@@ -115,3 +115,15 @@ Syndication returns the beginning of a long post and the first four exact URLs. 
 - https://github.com/akaieuan/trickle-UI-kit — repository matches Trickle UI Kit via primary search; source not inspected. Pure-CSS text animation components; optional, not an editor/timeline engine.
 
 Assessment priority: Better Design + current Superdesign skill + Design Taste for interface production; UI Layouts and Motion Primitives for concrete reusable components. Preserve Cybercity/Beyond Fable/Atlas as priorities for the actual world and asset pipeline. Do not claim all ten have been tested or integrated.
+
+## 2026-10-14 — Poly Haven parquet + TechAI general tools
+
+- User announcement https://x.com/polyhaven/status/2110370128072208802 resolves to https://polyhaven.com/a/raw_wooden_floor_01 (Raw Wooden Floor 01).
+- Official file API verified: https://api.polyhaven.com/files/raw_wooden_floor_01 offers 1k/2k/4k/8k/16k, Diffuse, Rough, AO, ARM packing, displacement, OpenGL/DirectX normals, plus Blender/glTF/MaterialX material packaging. Poly Haven asset license is CC0 (official https://polyhaven.com/license).
+- Candidate actual asset for wooden interior floors, studios/rooms and appropriate shop floors. Use native PBR maps with proper colour spaces and scale; evaluate 1k/2k/4k runtime versions and retain 16k only where high-resolution offline work needs it. Do not assume this is a complete environment or that textures alone solve geometry/lighting. Files are not yet acquired/integrated.
+
+- User source https://x.com/the_techai/status/2110350011829801268 is a general 50-site utilities collection. Full post recovered via public FxTwitter API after official syndication truncation; no assumption that all listed products are current, free, open source or integrable.
+- Concrete candidate: https://github.com/GoogleChromeLabs/squoosh / https://squoosh.app — official README checked; open-source browser image compression. Useful asset-preparation reference, not GLB geometry/streaming repair or a 3D engine.
+- https://www.photopea.com/ — official product page checked; browser image editing, layers/masks/PSD. Consider supported product API separately; do not treat website access as source code reuse.
+- Research/discovery references directly visible in original syndication: https://unpaywall.org, https://openlibrary.org, https://doaj.org, https://alternativeto.net. General tools, not world modules.
+- Remaining post entries include ambience/audio, editing and utility sites; only inventory read. Service access does not grant redistribution rights to audio/images. No installs or product integration performed.
