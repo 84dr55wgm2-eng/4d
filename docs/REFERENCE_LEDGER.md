@@ -137,3 +137,30 @@ User post https://x.com/the_techai/status/2110527173769732603 (2026-10-14 Toront
 - https://radiooooo.com/ — candidate listening reference by place/period as described in the post, not an acquired music library; distribution rights not verified. Website redirects to https://app.radiooooo.com/.
 - Weather, astronomy, cultural archives and Observable in the post remain secondary discovery references. Avoid claiming every site's footage, music, images or data is freely redistributable.
 Priority interpretation: evaluate OSM as geographic input to the retained Cybercity/Beyond Fable systems, rather than replacing those systems with a map viewer. Keep world runtime, asset pipeline and reference research distinct.
+
+## 2026-10-15 — robinstetic browser-games collection / existing-engine track
+
+User source https://x.com/robinstetic/status/2110313714431733781. Full post retrieved via public FxTwitter API. Fifteen browser-game links; the post's attribution to an AI model is not independently verified. Do not label original games as recreated by AI based on this post.
+Retain the existing-game-engine/modding route as a distinct candidate for KOVA, rather than assuming a new Three.js scene is the only option. A playable hosted game alone does not establish source availability, modification hooks, exportability or readiness as a world editor.
+
+Primary follow-up:
+- https://github.com/joncodeofficial/gta-vice-city-wasm — README rechecked: browser shell, WASM engine, OPFS, service worker, worker archive extraction, saves/skins, touch controls. Source repository excludes original game data; runtime expects a separately supplied game.tar.gz. Already retained technical reference, not a new complete GTA V source.
+- https://wasmarcade.com/gta3 — provider describes re3 + streamed data. Page checked; gameplay, engine implementation and advertised performance not verified. Useful lead for engine/runtime architecture, not source audited.
+- https://gta-chinatown-wars.pages.dev/ — HTML shell retrieved (Angular module, game-config.js, PWA). Config request returned HTTP 403 in this environment. Underlying engine, playable state, source and editor capabilities not established.
+- Original GTA V post URL is archived playgta5: https://web.archive.org/web/20261005232456/playgta5.com . Previously investigated; do not claim a new playable build from this archive link.
+- Additional lead found through WASM Arcade GTA III page: https://wasmarcade.com/gta-5 embeds https://gta.deloskiyt.pl/ . Provider claims RAGE/WASM/WebGPU and sandbox mode. Search fetch of external page shows only starting screen; direct metadata fetch returned 403. No gameplay test or binary/source verification. Treat as unverified lead, not a working integration or confirmed genuine GTA V port.
+- https://chronodivide.com/ — primary page describes browser RTS, multiplayer, replays and mod support. Potential example of adapting an existing engine for web/modding; not a 3D city base.
+
+Other user-post links retained, not tested:
+https://vel.gg/bo1z
+https://vibeslops.luckeysystems.com
+https://cheese-cube.pages.dev
+https://zombies.bitcoinsapi.com
+https://ovz-game-production.up.railway.app
+https://csjs.live
+https://surfd.net
+https://johnimril.github.io/diablo_web/
+https://pixelsuft.github.io/hl/
+https://wasmarcade.com/minecraft
+
+No game-content download, account action, runtime launch or product integration performed. Keep this track alongside coordinated open city systems (Cybercity/Beyond Fable); assess concrete engine APIs and mod/scene control before selecting a production base.
