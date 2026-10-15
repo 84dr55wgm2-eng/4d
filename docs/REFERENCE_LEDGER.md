@@ -127,3 +127,13 @@ Assessment priority: Better Design + current Superdesign skill + Design Taste fo
 - https://www.photopea.com/ — official product page checked; browser image editing, layers/masks/PSD. Consider supported product API separately; do not treat website access as source code reuse.
 - Research/discovery references directly visible in original syndication: https://unpaywall.org, https://openlibrary.org, https://doaj.org, https://alternativeto.net. General tools, not world modules.
 - Remaining post entries include ambience/audio, editing and utility sites; only inventory read. Service access does not grant redistribution rights to audio/images. No installs or product integration performed.
+
+## 2026-10-15 UTC — TechAI exploration/geography collection
+
+User post https://x.com/the_techai/status/2110527173769732603 (2026-10-14 Toronto session). Full 50-site post retrieved via public FxTwitter API. General exploration/reference collection, not 50 world-building modules. No source/runtime integration or data acquisition performed.
+- Main concrete candidate for KOVA: https://www.openstreetmap.org — official about/copyright pages inspected. Open map data can supply real road layouts and mapped features as inputs to a Lagos-world adapter; building footprints/heights and historical 2003 accuracy/coverage for the chosen area are NOT verified. OSM is not a textured 3D city or population/traffic engine. ODbL data and attribution requirements apply; don't assume unlimited use of OSM's hosted tiles/services.
+- https://www.davidrumsey.com/ and https://www.oldmapsonline.org/ — historical map discovery references, potentially useful for period geography. Rumsey collection page checked; no specific Lagos/2003 source or reusable item identified.
+- https://virtualvacation.us/, https://www.mapcrunch.com/, https://www.window-swap.com/ — post-listed visual location references; services and integration rights not independently assessed. Do not confuse reference imagery with downloadable licensed assets.
+- https://radiooooo.com/ — candidate listening reference by place/period as described in the post, not an acquired music library; distribution rights not verified. Website redirects to https://app.radiooooo.com/.
+- Weather, astronomy, cultural archives and Observable in the post remain secondary discovery references. Avoid claiming every site's footage, music, images or data is freely redistributable.
+Priority interpretation: evaluate OSM as geographic input to the retained Cybercity/Beyond Fable systems, rather than replacing those systems with a map viewer. Keep world runtime, asset pipeline and reference research distinct.
