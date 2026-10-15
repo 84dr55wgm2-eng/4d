@@ -175,3 +175,22 @@ Most relevant candidates:
 - https://www.krea.ai/ — official product page inspected; candidate visual/asset preparation. Source, API, output quality and individual commercial integration not assessed.
 Other items (Kling, Suno, Magnific, Clipdrop, D-ID, SadTalker, Cursor, Bolt, v0, Replit, etc.) were read as post entries only; do not mark source examined or installed. Keep user's no-Vercel-deployment preference. No provider accounts, paid calls, installs, secrets or product changes performed.
 Assessment: production-tools reference, secondary to coordinated city/terrain/actor runtime integration. Existing native/connected generation capabilities should be checked before adding redundant providers. Preserve distinction between a hosted service, reusable code, generated media, runtime world and real site AI.
+
+## 2026-10-15 — so_ainsight agent-engineering / video / CAD collection
+
+Source https://x.com/so_ainsight/status/2110568864115560471 . Full ten-repository post recovered via public FxTwitter API; primary README pages checked for all ten. No installation, provider calls, analysis target execution, memory capture or KOVA integration performed. Star/trending/model-performance claims not independently established.
+
+Priority reusable candidates:
+1. https://github.com/calesthio/OpenMontage — cloned revision e45f5b12bd46440b04f3675af9a77d0718e6a254; docs/ARCHITECTURE.md and tools/video/video_compose.py inspected. CUT candidate: explicit edit_decisions/asset_manifest, FFmpeg/Remotion/HyperFrames renderer routing, tool contracts, provider dependencies and lib/checkpoint.py resume infrastructure. An external coding agent orchestrates tools and YAML/skills; there is no autonomous Python LLM orchestrator supplied merely by installing the package. VideoCompose is marked experimental. Add alongside browser-use/video-use as a concrete CUT integration reference, not a new independent replacement app.
+2. https://github.com/thedotmack/claude-mem — README checked: lifecycle hooks, worker, SQLite observations and summaries, contextual search/index/timeline/full-observation retrieval. Candidate cross-session development context or adapted memory patterns for the site agent. Not currently active in this chat or KOVA; saving references in REFERENCE_LEDGER does not mean claude-mem installed. Claims of token savings are upstream claims.
+3. https://github.com/morluto/rea — README checked: MCP/CLI analysis of behavior and code/binaries, evidence-backed findings; native targets depend on actual input files and tools such as Ghidra/Hopper/IDA. Candidate existing-engine/modding investigation tool; not a replacement game engine, asset library or automatic GTA recovery solution.
+4. https://github.com/earthtojake/text-to-cad — cloned revision 24573128ceaab564f497d7c12f995c41784c9539; README checked. Local build123d CAD workflows, STEP main output with GLB/STL/3MF export, viewers and dimensional/manufacturing utilities. Candidate exact props/furniture/architectural components; not animated humans or complete urban simulation.
+5. https://github.com/mattpocock/skills — README checked: small composable engineering skills. Apply only relevant implementation/refactoring/context techniques and preserve user's preference against repetitive questioning and unnecessary verification.
+Other inventory:
+6. https://github.com/cathrynlavery/diagram-design — editorial diagram HTML/SVG production; documentation aid.
+7. https://github.com/Alishahryar1/free-claude-code — provider/model routing and coding harness integration, not free access guaranteed to proprietary frontier models; quotas and claims require provider-specific verification.
+8. https://github.com/anthropics/knowledge-work-plugins — Cowork-oriented knowledge-work plugins, secondary to world runtime.
+9. https://github.com/lyogavin/airllm — low-VRAM layer-wise inference candidate; model storage, throughput and hardware constraints are not validated for KOVA. Do not promise large models at usable interactive speed on 4GB.
+10. https://github.com/Tracer-Cloud/opensre — SRE-agent toolkit, potential future operations aid.
+
+Assessment: OpenMontage is high relevance for CUT; claude-mem for development/site-agent context with a deliberate adapter; REA for concrete existing-system investigation; text-to-cad for missing measured assets. These complement Cybercity/Beyond Fable/Atlas, not evidence that a world or site AI has already been implemented.
