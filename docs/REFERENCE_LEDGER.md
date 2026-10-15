@@ -164,3 +164,14 @@ https://pixelsuft.github.io/hl/
 https://wasmarcade.com/minecraft
 
 No game-content download, account action, runtime launch or product integration performed. Keep this track alongside coordinated open city systems (Cybercity/Beyond Fable); assess concrete engine APIs and mod/scene control before selecting a production base.
+
+## 2026-10-15 — wanerfu general AI-services collection
+
+User post https://x.com/wanerfu/status/2110313921341259854 . Full 30-site post retrieved through public FxTwitter API. A mixed catalog of hosted image/video/audio tools, coding assistants and productivity services; not 30 source repositories or verified freely integrable components. Do not adopt promotional free/unlimited/quality/voice-cloning claims without provider checks.
+Most relevant candidates:
+- https://huggingface.co/spaces — official Spaces documentation inspected. Public Space repositories expose source that can be evaluated for specific KOVA capabilities; model/code licenses, weights, hardware and service availability must be checked per selected Space. No specific new model selected or integrated.
+- https://elevenlabs.io/ — official text-to-speech documentation inspected; candidate dialogue/voice production for actors and CUT. No audio generation or voice cloning performed.
+- https://docs.dev.runwayml.com/ — official API documentation inspected; candidate generation/editing route for CUT media. Generated clips are not persistent navigable 3D worlds.
+- https://www.krea.ai/ — official product page inspected; candidate visual/asset preparation. Source, API, output quality and individual commercial integration not assessed.
+Other items (Kling, Suno, Magnific, Clipdrop, D-ID, SadTalker, Cursor, Bolt, v0, Replit, etc.) were read as post entries only; do not mark source examined or installed. Keep user's no-Vercel-deployment preference. No provider accounts, paid calls, installs, secrets or product changes performed.
+Assessment: production-tools reference, secondary to coordinated city/terrain/actor runtime integration. Existing native/connected generation capabilities should be checked before adding redundant providers. Preserve distinction between a hosted service, reusable code, generated media, runtime world and real site AI.
